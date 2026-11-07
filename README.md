@@ -32,7 +32,7 @@ Auf der Synology läuft die App zusammen mit `sync.php`. Dann können alle Gerä
 
 Die App funktioniert auch ohne Verbindung zur Synology. Sie speichert dann auf dem Gerät und gleicht ab, sobald die Synology wieder erreichbar ist (zu Hause oder per VPN).
 
-Der Lernstand liegt im Docker-Volume `rechenheft-daten`. **Update:** Neue `index.html` von GitHub herunterladen (https://raw.githubusercontent.com/Legula/rechenheft/main/index.html) und in `docker/rechenheft` ersetzen. Ein Neustart ist nicht nötig, einfach die Seite auf den Geräten neu laden. Nur wenn sich `sync.php` oder `docker-compose.yml` ändern, das ganze ZIP neu einspielen und das Projekt neu starten.
+Der Lernstand liegt im Docker-Volume `rechenheft-daten`. **Updates kommen automatisch:** `index.php` holt sich höchstens einmal pro Stunde die neueste `index.html` von GitHub und speichert sie im Volume. Ohne Internet läuft die zuletzt geladene Version weiter. Nur wenn sich `sync.php`, `index.php` oder `docker-compose.yml` ändern, das ZIP neu einspielen und das Projekt neu erstellen.
 
 ## Aufbau
 

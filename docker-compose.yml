@@ -10,10 +10,13 @@ services:
       - "8088:80"
     environment:
       RECHENHEFT_DATA: /data
+      # "aus" setzen, um automatische Updates abzuschalten
+      RECHENHEFT_UPDATE_URL: https://raw.githubusercontent.com/Legula/rechenheft/main/index.html
     volumes:
       - ./:/var/www/html:ro
       - rechenheft-daten:/data
-    command: sh -c "chown -R www-data:www-data /data && exec apache2-foreground"
+    # index.php liefert die App aus und holt neue Versionen automatisch von GitHub (stündlich).
+    command: sh -c "chown -R www-data:www-data /data && echo 'DirectoryIndex index.php index.html' > /etc/apache2/conf-enabled/rechenheft.conf && exec apache2-foreground"
 
 volumes:
   rechenheft-daten:
