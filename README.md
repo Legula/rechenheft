@@ -10,7 +10,9 @@ Mathe-Übungsheft für die 2. Klasse als einzelne Web-Seite. Läuft in jedem Bro
 - Schwierigkeit passt sich in jeder Runde an: nach 3 richtigen Antworten in Folge kommt eine Profi-Aufgabe aus der nächsten Stufe, nach 2 Fehlern in Folge eine leichtere Übungsaufgabe
 - Ab 8 von 10 richtig wird die nächste Stufe freigeschaltet; nach zwei Runden mit höchstens 4 richtigen geht es eine Stufe zurück
 - Sterne für richtige Aufgaben; für 5 Sterne gibt es ein Minispiel (Ballons platzen lassen oder Memory); auf der Baustelle wird pro Stern ein Klemmbaustein gesetzt, bis Haus, Leuchtturm, Burg und Baumhaus stehen
-- Elternbereich mit Lernstand (hinter einer kleinen Rechenaufgabe)
+- Eule Olli als Maskottchen: begrüßt und lobt
+- 18 Abzeichen für Meilensteine, mit Sammelseite
+- Elternbereich mit Lernstand (hinter einer kleinen Rechenaufgabe) und einer echten Belohnung mit Sterne-Ziel
 
 Der Lernstand wird im Browser des Geräts gespeichert (`localStorage`). Mit Familien-Code wird er zusätzlich nur mit der eigenen Synology abgeglichen. Sonst werden keine Daten verschickt; nur die Schriften kommen von Google Fonts.
 
