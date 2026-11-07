@@ -10,6 +10,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
+
 <title>Philians Rechenheft</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +22,7 @@
   --paper: #fbfcfe; --grid: #dde6f2; --ink: #1f2a44; --muted: #5b6782;
   --margin: #e0525a; --accent: #1d72b0; --accent-ink: #ffffff; --accent-soft: #e3effa;
   --star: #e9a800; --good: #23874c; --good-soft: #e2f4e9; --bad: #c73d3d; --bad-soft: #fbe6e6;
-  --card: #ffffff; --line: #cfd9e6; --hour: #c73d3d;
+  --card: #ffffff; --line: #cfd9e6; --hour: #c73d3d; --accent-dark: #11446a; --good-dark: #155130;
   --b1: #ef5b5b; --b2: #3fa7e0; --b3: #f7b733; --b4: #59c27a; --b5: #a77ee8;
   --f-display: "Baloo 2", "Comic Sans MS", "Trebuchet MS", system-ui, sans-serif;
   --f-body: "Andika", "Trebuchet MS", Verdana, system-ui, sans-serif;
@@ -31,12 +32,12 @@
   --paper: #1b2824; --grid: #23332e; --ink: #eef3ee; --muted: #a8b8ae;
   --margin: #e8767d; --accent: #6cc0ec; --accent-ink: #0d1c18; --accent-soft: #233c44;
   --star: #ffcc33; --good: #67d593; --good-soft: #1f3b2c; --bad: #ff8585; --bad-soft: #3e2426;
-  --card: #22322d; --line: #34473f; --hour: #ff8585; color-scheme: dark } }
+  --card: #22322d; --line: #34473f; --hour: #ff8585; --accent-dark: #3d7390; --good-dark: #3d8058; color-scheme: dark } }
 :root[data-theme="dark"] {
   --paper: #1b2824; --grid: #23332e; --ink: #eef3ee; --muted: #a8b8ae;
   --margin: #e8767d; --accent: #6cc0ec; --accent-ink: #0d1c18; --accent-soft: #233c44;
   --star: #ffcc33; --good: #67d593; --good-soft: #1f3b2c; --bad: #ff8585; --bad-soft: #3e2426;
-  --card: #22322d; --line: #34473f; --hour: #ff8585; color-scheme: dark }
+  --card: #22322d; --line: #34473f; --hour: #ff8585; --accent-dark: #3d7390; --good-dark: #3d8058; color-scheme: dark }
 
 [hidden] { display: none !important; }
 html, body { height: 100%; }
@@ -85,8 +86,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .badge { align-self: flex-start; font-size: .85rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
 .parents-link { align-self: center; background: none; border: none; color: var(--muted); text-decoration: underline; font-size: .95rem; padding: 8px; }
 
-.btn { border: none; border-radius: 14px; padding: 14px 26px; font-family: var(--f-display); font-weight: 800; font-size: 1.3rem; background: var(--accent); color: var(--accent-ink); box-shadow: 0 4px 0 color-mix(in srgb, var(--accent) 60%, #000); }
-.btn:active { transform: translateY(3px); box-shadow: 0 1px 0 color-mix(in srgb, var(--accent) 60%, #000); }
+.btn { border: none; border-radius: 14px; padding: 14px 26px; font-family: var(--f-display); font-weight: 800; font-size: 1.3rem; background: var(--accent); color: var(--accent-ink); box-shadow: 0 4px 0 var(--accent-dark); }
+.btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--accent-dark); }
 .btn.ghost { background: var(--card); color: var(--ink); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
 .btn:disabled { opacity: .45; cursor: default; }
 .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
@@ -113,7 +114,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 420px; width: 100%; margin: 0 auto; }
 .pad button { font-family: var(--f-display); font-weight: 800; font-size: 2rem; padding: 12px 0; border-radius: 14px; background: var(--card); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
 .pad button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
-.pad .ok { background: var(--good); color: var(--accent-ink); border-color: var(--good); box-shadow: 0 4px 0 color-mix(in srgb, var(--good) 60%, #000); }
+.pad .ok { background: var(--good); color: var(--accent-ink); border-color: var(--good); box-shadow: 0 4px 0 var(--good-dark); }
 .pad .del { font-size: 1.3rem; }
 .clockbox { display: flex; justify-content: center; }
 .clockbox svg { width: min(260px, 70vw); height: auto; }
@@ -157,6 +158,11 @@ select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px;
 @media (prefers-reduced-motion: reduce) { .starrow span, .burst { animation: none; } .topic, .btn { transition: none; } }
 </style>
 
+<div id="errbox" hidden style="margin:16px;padding:16px;border:3px solid #c73d3d;background:#fff;color:#1f2a44;border-radius:12px;font:16px/1.4 sans-serif"></div>
+<script>
+window.onerror = function (msg, src, line) { var b = document.getElementById('errbox'); if (b) { b.hidden = false; b.style.display = 'block'; b.textContent = 'Fehler: ' + msg + ' (Zeile ' + line + ') · Browser: ' + navigator.userAgent; } };
+</script>
+<noscript><p style="margin:16px;font:18px sans-serif">Bitte JavaScript im Browser einschalten.</p></noscript>
 <div class="wrap">
 
 <!-- START -->
@@ -257,9 +263,10 @@ select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px;
 var KEY = 'philian-rechenheft-v1';
 var COST = 5, GAME_SECONDS = 25, PASS = 8, ROUND = 10;
 
+function merge(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call(b, k)) a[k] = b[k]; return a; }
 function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, uhr: 1 }, mastered: {}, history: [], best: { balloon: 0 } }; }
 var S = fresh();
-try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = Object.assign(fresh(), p); S.levels = Object.assign({ plus: 1, uhr: 1 }, p.levels || {}); S.best = Object.assign({ balloon: 0 }, p.best || {}); } } catch (e) {}
+try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, uhr: 1 }, p.levels || {}); S.best = merge({ balloon: 0 }, p.best || {}); } } catch (e) {}
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
 
 function $(id) { return document.getElementById(id); }
