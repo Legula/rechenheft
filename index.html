@@ -185,9 +185,59 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .badge-item span { font-size: .85rem; color: var(--muted); }
 .badge-item.locked svg { filter: grayscale(1); opacity: .35; }
 .badge-item.locked b { color: var(--muted); }
+.testbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: #6b3fb0; color: #fff; }
+.testbar .btn { padding: 8px 18px; font-size: 1rem; background: #fff; color: #6b3fb0; box-shadow: none; }
+body.testing .wrap { padding-bottom: 90px; }
 .popup { position: fixed; inset: 0; z-index: 60; background: rgba(15, 25, 40, .45); display: flex; align-items: center; justify-content: center; padding: 16px; }
 .popcard { max-width: 520px; width: 100%; animation: popin .4s cubic-bezier(.3, 1.4, .5, 1) both; }
 @keyframes popin { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+.isl-wrap { max-width: 720px; width: 100%; margin: 0 auto; }
+.isl { display: grid; grid-template-columns: repeat(16, 1fr); border-radius: 14px; overflow: hidden; border: 2px solid var(--line); position: relative; touch-action: manipulation; user-select: none; -webkit-user-select: none;
+  background: linear-gradient(#9fd8ff, #e6f6ff 75%); transition: background .6s; }
+.isl.night { background: radial-gradient(circle at 15% 20%, #fff 0 1px, transparent 2px), radial-gradient(circle at 70% 12%, #fff 0 1px, transparent 2px), radial-gradient(circle at 45% 30%, #fff 0 1px, transparent 2px), radial-gradient(circle at 85% 35%, #fff 0 1.5px, transparent 2.5px), radial-gradient(circle at 30% 8%, #fff 0 1px, transparent 2px), linear-gradient(#0d1a36, #2a3a63 80%); }
+.isl::after { content: ""; position: absolute; right: 6%; top: 6%; width: 9%; aspect-ratio: 1; border-radius: 50%; background: #ffd23f; box-shadow: 0 0 24px 6px rgba(255,210,63,.6); pointer-events: none; transition: all .6s; }
+.isl.night::after { background: #f4f1d0; box-shadow: inset -8px -4px 0 0 #d9d4a8, 0 0 18px 4px rgba(244,241,208,.35); }
+.c { aspect-ratio: 1 / 1; position: relative; min-width: 0; }
+.m-t, .m-l, .m-b, .m-a { background-size: 100% 100%; background-repeat: no-repeat; }
+.c.free { cursor: pointer; }
+.c.free:hover { outline: 2px dashed rgba(255,255,255,.8); outline-offset: -3px; }
+.c.fresh { animation: place .35s cubic-bezier(.3, 1.5, .5, 1); }
+@keyframes place { from { transform: scale(.3); } to { transform: none; } }
+.m-w { background: repeating-linear-gradient(#c58b52 0 30%, #9c6a39 30% 34%, #b57d47 34% 64%, #9c6a39 64% 68%, #c58b52 68% 100%); box-shadow: inset 0 0 0 1px #7d5530; }
+.m-s { background: radial-gradient(circle at 30% 35%, #b5bcc4 0 18%, transparent 20%), radial-gradient(circle at 70% 70%, #858e98 0 16%, transparent 18%), #9aa3ad; box-shadow: inset 0 0 0 1px #6b737c; }
+.m-z { background: linear-gradient(#e2d6c4 0 0) 0 48% / 100% 6% no-repeat, linear-gradient(#e2d6c4 0 0) 50% 0 / 6% 48% no-repeat, linear-gradient(#e2d6c4 0 0) 20% 100% / 6% 48% no-repeat, linear-gradient(#e2d6c4 0 0) 80% 100% / 6% 48% no-repeat, #c4482f; box-shadow: inset 0 0 0 1px #8f3220; }
+.m-h { background: repeating-linear-gradient(80deg, #f0cf5a 0 3px, #d9b23c 3px 5px); box-shadow: inset 0 0 0 1px #b8922a; }
+.m-d { background: repeating-linear-gradient(0deg, #c4302b 0 22%, #8f2420 22% 26%), #c4302b; border-radius: 0 0 40% 40% / 0 0 18% 18%; box-shadow: inset 0 0 0 1px #7a1e1a; }
+.m-g { background: linear-gradient(135deg, transparent 0 40%, rgba(255,255,255,.75) 40% 48%, transparent 48% 58%, rgba(255,255,255,.5) 58% 62%, transparent 62%), rgba(168,220,245,.65); box-shadow: inset 0 0 0 3px #7d8fa0; }
+.m-t { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='4' y='2' width='32' height='38' rx='3' fill='%238a5a3b'/%3E%3Crect x='9' y='7' width='22' height='12' rx='2' fill='%236b4329'/%3E%3Crect x='9' y='23' width='22' height='13' rx='2' fill='%236b4329'/%3E%3Ccircle cx='29' cy='22' r='2.5' fill='%23ffd23f'/%3E%3C/svg%3E"); }
+.m-l { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='18' y='16' width='4' height='24' fill='%233b4252'/%3E%3Crect x='12' y='36' width='16' height='4' rx='1' fill='%233b4252'/%3E%3Cpath d='M11 16h18l-4-12h-10z' fill='%233b4252'/%3E%3Cpath d='M14 14h12l-3-8h-6z' fill='%23ffe58a'/%3E%3C/svg%3E"); }
+.m-b { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M20 22v18' stroke='%232f9e5b' stroke-width='3'/%3E%3Cpath d='M20 32q-8-2-10-8q8 0 10 8M20 30q8-2 10-8q-8 0-10 8' fill='%2359c27a'/%3E%3Cg fill='%23ef5b8a'%3E%3Ccircle cx='20' cy='9' r='5'/%3E%3Ccircle cx='27' cy='14' r='5'/%3E%3Ccircle cx='24' cy='22' r='5'/%3E%3Ccircle cx='16' cy='22' r='5'/%3E%3Ccircle cx='13' cy='14' r='5'/%3E%3C/g%3E%3Ccircle cx='20' cy='16' r='4' fill='%23ffd23f'/%3E%3C/svg%3E"); }
+.m-a { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='17' y='24' width='6' height='16' fill='%237a4d30'/%3E%3Ccircle cx='20' cy='15' r='13' fill='%232f9e5b'/%3E%3Ccircle cx='13' cy='19' r='8' fill='%233fb26b'/%3E%3Ccircle cx='27' cy='19' r='8' fill='%233fb26b'/%3E%3Ccircle cx='15' cy='12' r='2.5' fill='%23d64541'/%3E%3Ccircle cx='26' cy='14' r='2.5' fill='%23d64541'/%3E%3Ccircle cx='21' cy='21' r='2.5' fill='%23d64541'/%3E%3C/svg%3E"); }
+.t-G { background: linear-gradient(#5cc15f 0 28%, #3f9d4f 28% 34%, #8a5a3b 34%); }
+.t-E { background: radial-gradient(circle at 30% 40%, #6b4329 0 8%, transparent 10%), radial-gradient(circle at 70% 75%, #6b4329 0 7%, transparent 9%), #8a5a3b; }
+.t-S { background: linear-gradient(#f0d896 0 60%, #e2c47a 60%); }
+.t-W { background: repeating-linear-gradient(90deg, transparent 0 20%, rgba(255,255,255,.35) 20% 40%) 0 12% / 100% 6% no-repeat, linear-gradient(#4fb3e8, #1d72b0); }
+.isl.night .m-g { background: linear-gradient(135deg, transparent 0 40%, rgba(255,255,255,.5) 40% 48%, transparent 48%), #ffd96b; box-shadow: inset 0 0 0 3px #7d8fa0, 0 0 14px 2px rgba(255,210,80,.55); z-index: 1; }
+.isl.night .m-l { box-shadow: 0 -6px 26px 10px rgba(255,214,90,.55); z-index: 2; }
+.isl.night .c:not(.m-g):not(.m-l) { filter: brightness(.62) saturate(.85); }
+.animal { position: absolute; inset: 8% 6% 0; pointer-events: none; animation: hop 1.6s ease-in-out infinite; transform-origin: 50% 100%; }
+.animal svg { width: 100%; height: 100%; display: block; }
+@keyframes hop { 0%, 100% { transform: translateY(0); } 15% { transform: translateY(-14%) scaleX(.95); } 30% { transform: translateY(0); } }
+.isl-tools .btn { padding: 10px 18px; font-size: 1.1rem; }
+.mats { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+.mat { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 12px; background: var(--card); border: 2px solid var(--line); min-width: 0; }
+.mat .sw { width: 40px; height: 40px; border-radius: 6px; }
+.mat b { font-size: .95rem; }
+.mat span { font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.mat.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.mat.empty .sw { opacity: .45; }
+.photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.photos figure { margin: 0; background: var(--card); border: 2px solid var(--line); border-radius: 10px; padding: 6px; text-align: center; font-size: .85rem; color: var(--muted); }
+.photos .isl { border-width: 1px; border-radius: 6px; pointer-events: none; }
+.photos .animal { animation: none; }
+.flash { animation: flash .5s; }
+@keyframes flash { from { filter: brightness(2.2); } to { filter: none; } }
 .memgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 560px; width: 100%; margin: 0 auto; }
 .mcard { aspect-ratio: 3 / 4; max-width: 100%; border-radius: 14px; border: 2px solid var(--line); background: var(--accent); box-shadow: 0 4px 0 var(--accent-dark); display: flex; align-items: center; justify-content: center; padding: 0; transition: transform .2s; }
 .mcard svg { width: 70%; height: auto; display: none; }
@@ -208,7 +258,7 @@ th { color: var(--muted); font-weight: 700; font-size: .85rem; text-transform: u
 .kv strong { font-family: var(--f-display); font-size: 1.6rem; }
 select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); }
 .danger { color: var(--bad); }
-@media (prefers-reduced-motion: reduce) { .starrow span, .burst, .drop, .trophy svg, .result-big.perfect, .mascot.bob svg, .popcard { animation: none; } .topic, .btn { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .animal, .c.fresh, .flash { animation: none; } .starrow span, .burst, .drop, .trophy svg, .result-big.perfect, .mascot.bob svg, .popcard { animation: none; } .topic, .btn { transition: none; } }
 </style>
 
 <div id="errbox" hidden style="margin:16px;padding:16px;border:3px solid #c73d3d;background:#fff;color:#1f2a44;border-radius:12px;font:16px/1.4 sans-serif"></div>
@@ -241,6 +291,12 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
       <h3>Baustelle</h3>
       <p class="level" id="buildInfo">1 Stern pro Baustein</p>
       <span class="badge" id="buildBadge"></span>
+    </button>
+    <button class="topic play" id="playIsland">
+      <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="0" y="44" width="64" height="20" rx="4" fill="#3fa7e0"/><path d="M8 48q24-10 48 0v6H8z" fill="#e9c98a"/><rect x="18" y="26" width="22" height="18" fill="#b07a45"/><path d="M14 28l15-12 15 12z" fill="#c4302b"/><rect x="26" y="34" width="7" height="10" fill="#6b4329"/><circle cx="50" cy="30" r="8" fill="#2f9e5b"/><rect x="48" y="36" width="4" height="10" fill="#7a4d30"/></svg>
+      <h3>Olafs Insel</h3>
+      <p class="level">Bau, was du willst: Holz, Stein, Glas und mehr</p>
+      <span class="badge" id="islandBadge">Kreativ bauen</span>
     </button>
     <button class="topic play" id="playMemory">
       <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="10" width="24" height="32" rx="5" fill="var(--b4)"/><rect x="34" y="22" width="24" height="32" rx="5" fill="var(--accent)"/><circle cx="18" cy="26" r="6" fill="var(--card)"/></svg>
@@ -323,6 +379,25 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   </div>
 </section>
 
+<!-- OLAFS INSEL -->
+<section id="v-island" hidden>
+  <div class="row" style="justify-content:space-between">
+    <button class="back" data-go="home">← Zurück</button>
+    <div class="stars"><b>★</b><span id="iStars">0</span></div>
+  </div>
+  <div class="mascot-row"><div class="mascot" id="iMascot" style="width:64px"></div><p class="bubble" id="iBubble">Willkommen auf meiner Insel! Wähle unten ein Material und tippe auf einen freien Platz.</p></div>
+  <div class="isl-wrap"><div class="isl" id="isl"></div></div>
+  <div class="row isl-tools">
+    <button class="btn" id="iBuild">Bauen</button>
+    <button class="btn ghost" id="iRemove">Abreißen</button>
+    <button class="btn ghost" id="iNight">Nacht</button>
+    <button class="btn ghost" id="iPhoto">Foto</button>
+  </div>
+  <div class="mats" id="iMats"></div>
+  <div class="row"><button class="btn" id="iBuy"></button><span class="muted" id="iBuyHint"></span></div>
+  <div id="iPhotosWrap" hidden><h3>Fotoalbum</h3><div class="photos" id="iPhotos"></div></div>
+</section>
+
 <!-- ABZEICHEN -->
 <section id="v-badges" hidden>
   <button class="back" data-go="home">← Zurück</button>
@@ -362,12 +437,15 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <div class="row"><label for="codeIn">Familien-Code</label><input type="text" id="codeIn" maxlength="40" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="z. B. sonnenblume-42"><button class="btn ghost" id="codeSave">Speichern</button><button class="btn ghost" id="syncBtn">Jetzt abgleichen</button></div>
     <p id="syncStatus" class="muted"></p>
     <div class="row"><button class="btn ghost" id="updBtn">Jetzt aktualisieren</button><span class="muted" id="updMsg">Holt sofort die neueste Version auf die Synology.</span></div>
+    <div class="row"><button class="btn ghost" id="testBtn">Testmodus starten</button><span class="muted">Alles ausprobieren mit 999 Sternen, ohne Philians Stand zu verändern.</span></div>
     <div class="row"><button class="btn ghost" id="resetAsk">Alles zurücksetzen</button>
       <span id="resetConfirm" hidden class="row"><span class="danger">Wirklich alles löschen?</span><button class="btn" id="resetYes">Ja, löschen</button><button class="btn ghost" id="resetNo">Nein</button></span></div>
   </div>
 </section>
 
 </div>
+
+<div class="testbar" id="testBar" hidden><span><b>Testmodus</b> · 999 Sterne · Philians Stand bleibt unverändert</span><button class="btn" id="testEnd">Beenden</button></div>
 
 <div class="popup" id="badgePop" hidden role="dialog" aria-live="polite">
   <div class="sheet popcard">
@@ -381,6 +459,9 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
 (function () {
 'use strict';
 var KEY = 'philian-rechenheft-v1';
+/* Testmodus für Erwachsene: eigener Speicher, 999 Sterne, kein Abgleich. Endet beim Schließen des Tabs. */
+var TEST = false; try { TEST = sessionStorage.getItem('rechenheft-test') === '1'; } catch (e) {}
+if (TEST) KEY = KEY + '-test';
 var COST = 5, GAME_SECONDS = 25, PASS = 8, LOW = 4, ROUND = 10;
 function lastScore(theme, level) { for (var i = S.history.length - 1; i >= 0; i--) { var x = S.history[i]; if (x.theme === theme) return x.level === level ? x.score : null; } return null; }
 
@@ -399,6 +480,7 @@ function ensure() {
   if (!S.dev) S.dev = {};
   if (!S.dev[DEV]) S.dev[DEV] = { e: 0, s: 0 };
   if (!S.migrated) { S.dev[DEV].e += S.stars || 0; S.stars = 0; S.migrated = true; }
+  if (TEST && !S.testInit) { S.dev[DEV].e += 999; S.testInit = true; }
   if (!S.at) S.at = {};
   if (!S.epoch) S.epoch = 0;
   S.levels = merge({ plus: 1, uhr: 1, geld: 1, sach: 1 }, S.levels || {});
@@ -421,6 +503,7 @@ function mergeState(L, R) {
   if ((Ra.name || 0) > (o.at.name || 0)) { o.name = R.name; o.at.name = Ra.name; }
   if ((Ra.silben || 0) > (o.at.silben || 0)) { o.silben = R.silben; o.at.silben = Ra.silben; }
   if ((Ra.reward || 0) > (o.at.reward || 0)) { o.reward = R.reward || null; o.at.reward = Ra.reward; }
+  if ((Ra.island || 0) > (o.at.island || 0) && R.island) { o.island = R.island; o.at.island = Ra.island; }
   var seen = {}, all = [];
   o.history.concat(R.history || []).forEach(function (h) { var id = h.d + h.theme; if (!seen[id]) { seen[id] = 1; all.push(h); } });
   all.sort(function (x, y) { return x.d < y.d ? -1 : x.d > y.d ? 1 : 0; });
@@ -432,8 +515,9 @@ function mergeState(L, R) {
 }
 
 /* Abgleich mit der Synology: sync.php liegt neben dieser Seite. Ohne Verbindung wird nur lokal gespeichert. */
-var SYNC = { code: lsGet(KEY + '-code') || '', state: 'off', last: 0, timer: 0, busy: false };
+var SYNC = { code: TEST ? '' : (lsGet(KEY + '-code') || ''), state: 'off', last: 0, timer: 0, busy: false };
 function syncNow() {
+  if (TEST) { SYNC.state = 'off'; return; }
   if (!SYNC.code) { SYNC.state = 'off'; return; }
   if (!window.fetch) { SYNC.state = 'error'; SYNC.err = 'Browser zu alt'; return; }
   if (SYNC.busy) { scheduleSync(); return; }
@@ -446,7 +530,7 @@ function syncNow() {
     })
     .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); SYNC.state = 'ok'; SYNC.last = Date.now(); })
     .catch(function (e) { SYNC.state = 'error'; SYNC.err = String((e && e.message) || e); })
-    .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); if (!$('v-build').hidden && !BV.busy) renderBuild(); });
+    .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); if (!$('v-build').hidden && !BV.busy) renderBuild(); if (!$('v-island').hidden) renderIsland(); });
 }
 function scheduleSync() { if (!SYNC.code) return; clearTimeout(SYNC.timer); SYNC.timer = setTimeout(syncNow, 1200); }
 function showSync() {
@@ -690,7 +774,7 @@ var THEMES = {
 };
 
 /* ---------- Navigation ---------- */
-var VIEWS = ['home', 'learn', 'quiz', 'result', 'game', 'memory', 'build', 'badges', 'gate', 'parents'];
+var VIEWS = ['home', 'learn', 'quiz', 'result', 'game', 'memory', 'build', 'island', 'badges', 'gate', 'parents'];
 function go(v) { VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
 document.addEventListener('click', function (e) { var t = e.target.closest('[data-go]'); if (t) { stopGame(); go(t.getAttribute('data-go')); } });
 
@@ -898,9 +982,9 @@ function endGame() {
 }
 function stopGame() { if (G) { cancelAnimationFrame(G.raf); G = null; } }
 
-/* ---------- Maskottchen: Eule Olli ---------- */
+/* ---------- Maskottchen: Eule Olaf ---------- */
 function owlSVG(mood) {
-  var up = mood === 'cheer', s = '<svg viewBox="0 0 120 130" role="img" aria-label="Eule Olli">';
+  var up = mood === 'cheer', s = '<svg viewBox="0 0 120 130" role="img" aria-label="Eule Olaf">';
   s += '<path d="M28 40 L30 12 L48 32Z M92 40 L90 12 L72 32Z" fill="#7a4d30"/>';
   s += up ? '<path d="M22 70 Q4 40 14 26 Q26 46 34 62Z M98 70 Q116 40 106 26 Q94 46 86 62Z" fill="#6a4228"/>'
           : '<path d="M22 64 Q8 84 22 104 Q30 90 32 72Z M98 64 Q112 84 98 104 Q90 90 88 72Z" fill="#6a4228"/>';
@@ -917,7 +1001,7 @@ function owlSVG(mood) {
 function hello() {
   var n = S.name, st = stars(), r = rewardState(), opts = [
     'Hallo ' + n + '! Schön, dass du da bist. Was möchtest du heute üben?',
-    'Hallo ' + n + '! Ich bin Olli. Rechnen wir zusammen?',
+    'Hallo ' + n + '! Ich bin Olaf. Rechnen wir zusammen?',
     'Na, ' + n + '? Jede richtige Aufgabe bringt dir einen Stern.',
     'Hallo ' + n + '! Fehler sind nicht schlimm. Daraus lernt man!'
   ];
@@ -1007,6 +1091,106 @@ function showPop() {
 }
 $('popOk').addEventListener('click', function () { $('badgePop').hidden = true; if (!$('v-home').hidden) renderHome(); });
 $('toBadges').addEventListener('click', function () { go('badges'); renderBadges(); });
+
+/* ---------- Olafs Insel: frei bauen ---------- */
+var IW = 16, IROWS = 8;
+var MATS = [
+  { k: 'w', name: 'Holz' }, { k: 's', name: 'Stein' }, { k: 'z', name: 'Ziegel' }, { k: 'h', name: 'Stroh' }, { k: 'd', name: 'Dach' },
+  { k: 'g', name: 'Fenster' }, { k: 't', name: 'Tür' }, { k: 'l', name: 'Lampe' }, { k: 'b', name: 'Blume' }, { k: 'a', name: 'Baum' }
+];
+var TERRAIN = ['WWSGGGGGGGGGGSWW', 'WWWEEEEEEEEEEWWW'];
+var ANIMALS = [
+  { name: 'Ein Hase', svg: '<svg viewBox="0 0 40 40"><ellipse cx="20" cy="30" rx="11" ry="9" fill="#d9d2c5"/><circle cx="20" cy="19" r="7" fill="#e8e2d6"/><ellipse cx="16" cy="8" rx="2.5" ry="7" fill="#e8e2d6"/><ellipse cx="24" cy="8" rx="2.5" ry="7" fill="#e8e2d6"/><ellipse cx="16" cy="8" rx="1.2" ry="5" fill="#f2b8c6"/><ellipse cx="24" cy="8" rx="1.2" ry="5" fill="#f2b8c6"/><circle cx="17.5" cy="18" r="1.3" fill="#1f2a44"/><circle cx="22.5" cy="18" r="1.3" fill="#1f2a44"/><circle cx="20" cy="21" r="1.2" fill="#e57a95"/></svg>' },
+  { name: 'Eine Katze', svg: '<svg viewBox="0 0 40 40"><path d="M30 30q8-2 6-12" stroke="#f08a24" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="20" cy="31" rx="10" ry="8" fill="#f08a24"/><circle cx="20" cy="19" r="8" fill="#f5a04a"/><path d="M13 15l1-8 5 5zM27 15l-1-8-5 5z" fill="#f5a04a"/><circle cx="17" cy="18" r="1.4" fill="#1f2a44"/><circle cx="23" cy="18" r="1.4" fill="#1f2a44"/><path d="M18.5 21.5l1.5 1 1.5-1" stroke="#1f2a44" stroke-width="1" fill="none"/></svg>' },
+  { name: 'Ein Igel', svg: '<svg viewBox="0 0 40 40"><path d="M6 34q0-16 14-18q12 0 14 10l-4 8z" fill="#6b4329"/><path d="M8 26l-4-4M11 21l-3-6M16 18l-1-7M22 17l2-7M27 19l4-5M31 23l5-2" stroke="#4d2f1c" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="31" cy="30" rx="6" ry="5" fill="#d9b48a"/><circle cx="32" cy="28" r="1.2" fill="#1f2a44"/><circle cx="37" cy="31" r="1.5" fill="#1f2a44"/></svg>' },
+  { name: 'Eine Ente', svg: '<svg viewBox="0 0 40 40"><ellipse cx="18" cy="29" rx="12" ry="8" fill="#ffd23f"/><circle cx="26" cy="17" r="7" fill="#ffd23f"/><path d="M32 17l6 1-6 3z" fill="#f08a24"/><circle cx="27" cy="15" r="1.4" fill="#1f2a44"/><path d="M10 27q6-4 12 0" stroke="#e0b21f" stroke-width="2" fill="none"/></svg>' }
+];
+var IV = { tool: 'build', sel: 'w', night: false, fresh: -1, residents: -1 };
+function islandEnsure() {
+  if (!S.island || typeof S.island.g !== 'string' || S.island.g.length !== IW * IROWS) {
+    S.island = { g: new Array(IW * IROWS + 1).join('.'), inv: { w: 12, d: 6, t: 1, g: 2, b: 3 }, photos: [] };
+    S.at.island = Date.now(); save();
+  }
+  if (!S.island.inv) S.island.inv = {};
+  if (!S.island.photos) S.island.photos = [];
+}
+function islandResidents(g) {
+  var out = [];
+  for (var i = 0; i < g.length; i++) {
+    if (g[i] !== 't') continue;
+    var r = Math.floor(i / IW), c = i % IW, roof = false;
+    for (var rr = 0; rr < r && !roof; rr++) for (var dc = -1; dc <= 1; dc++) { var cc = c + dc; if (cc >= 0 && cc < IW && g[rr * IW + cc] === 'd') roof = true; }
+    if (!roof) continue;
+    var spot = -1;
+    [c + 1, c - 1].forEach(function (cc) { if (spot < 0 && cc >= 0 && cc < IW && g[r * IW + cc] === '.') spot = r * IW + cc; });
+    if (spot < 0 && r + 1 < IROWS && g[(r + 1) * IW + c] === '.') spot = (r + 1) * IW + c;
+    if (spot >= 0) out.push(spot);
+  }
+  return out;
+}
+function islandHTML(g, night, interactive, freshIdx) {
+  var res = islandResidents(g), h = '<div class="isl' + (night ? ' night' : '') + '"' + (interactive ? ' id="isl"' : '') + '>';
+  for (var i = 0; i < g.length; i++) {
+    var ch = g[i], ri = res.indexOf(i);
+    h += '<div class="c' + (ch === '.' ? (interactive ? ' free' : '') : ' m-' + ch) + (i === freshIdx ? ' fresh' : '') + '" data-i="' + i + '">' + (ri >= 0 ? '<div class="animal" style="animation-delay:' + (ri * .37) + 's">' + ANIMALS[ri % ANIMALS.length].svg + '</div>' : '') + '</div>';
+  }
+  TERRAIN.forEach(function (row) { for (var c = 0; c < IW; c++) h += '<div class="c t-' + row[c] + '"></div>'; });
+  return h + '</div>';
+}
+function islandSay(t) { $('iBubble').textContent = t; }
+function renderIsland() {
+  islandEnsure();
+  var I = S.island, st = stars();
+  $('iStars').textContent = st;
+  var wrap = $('isl').parentNode; wrap.innerHTML = islandHTML(I.g, IV.night, true, IV.fresh); IV.fresh = -1;
+  $('iBuild').className = 'btn' + (IV.tool === 'build' ? '' : ' ghost');
+  $('iRemove').className = 'btn' + (IV.tool === 'remove' ? '' : ' ghost');
+  $('iNight').textContent = IV.night ? 'Tag' : 'Nacht';
+  $('iMats').innerHTML = MATS.map(function (m) { var n = I.inv[m.k] || 0; return '<button class="mat' + (IV.sel === m.k ? ' on' : '') + (n ? '' : ' empty') + '" data-m="' + m.k + '"><div class="sw m-' + m.k + '"></div><b>' + m.name + '</b><span>' + n + ' Stück</span></button>'; }).join('');
+  var sel = MATS.filter(function (m) { return m.k === IV.sel; })[0];
+  $('iBuy').textContent = '2× ' + sel.name + ' kaufen · 1 ★'; $('iBuy').disabled = st < 1;
+  $('iBuyHint').textContent = st < 1 ? 'Keine Sterne mehr. Rechne ein paar Aufgaben!' : '';
+  var ph = I.photos || [];
+  $('iPhotosWrap').hidden = !ph.length;
+  $('iPhotos').innerHTML = ph.map(function (x) { return '<figure>' + islandHTML(x.g, x.n, false, -1) + '<figcaption>' + new Date(x.d).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + '</figcaption></figure>'; }).join('');
+  var nres = islandResidents(I.g).length;
+  if (IV.residents >= 0 && nres > IV.residents) islandSay(ANIMALS[(nres - 1) % ANIMALS.length].name + ' ist in dein Haus eingezogen! Häuser mit Tür und Dach gefallen den Tieren.');
+  IV.residents = nres;
+}
+function islandSet(i, ch) { var g = S.island.g; S.island.g = g.slice(0, i) + ch + g.slice(i + 1); S.at.island = Date.now(); }
+$('playIsland').addEventListener('click', function () {
+  islandEnsure(); IV.residents = -1; go('island');
+  $('iMascot').innerHTML = owlSVG('happy');
+  islandSay('Willkommen auf meiner Insel, ' + S.name + '! Wähle unten ein Material und tippe auf einen freien Platz. Tipp: Ein Haus mit Tür und Dach lockt Tiere an.');
+  renderIsland();
+});
+document.addEventListener('click', function (e) {
+  if ($('v-island').hidden) return;
+  var cell = e.target.closest('#isl .c[data-i]');
+  if (cell) {
+    var i = +cell.getAttribute('data-i'), ch = S.island.g[i], inv = S.island.inv;
+    if (IV.tool === 'build') {
+      if (ch !== '.') { islandSay('Da ist schon etwas. Mit „Abreißen“ kannst du Platz machen.'); return; }
+      if (!(inv[IV.sel] > 0)) { islandSay('Du hast kein Material mehr davon. Kauf neues für einen Stern!'); return; }
+      inv[IV.sel]--; islandSet(i, IV.sel); IV.fresh = i; save(); renderIsland();
+    } else if (ch !== '.') {
+      inv[ch] = (inv[ch] || 0) + 1; islandSet(i, '.'); save(); renderIsland();
+    }
+    return;
+  }
+  var m = e.target.closest('#iMats [data-m]'); if (m) { IV.sel = m.getAttribute('data-m'); IV.tool = 'build'; renderIsland(); return; }
+  if (e.target.closest('#iBuild')) { IV.tool = 'build'; renderIsland(); }
+  else if (e.target.closest('#iRemove')) { IV.tool = 'remove'; islandSay('Tippe auf einen Block, um ihn abzubauen. Du bekommst ihn zurück.'); renderIsland(); }
+  else if (e.target.closest('#iNight')) { IV.night = !IV.night; islandSay(IV.night ? 'Gute Nacht! Lampen und Fenster leuchten jetzt.' : 'Guten Morgen!'); renderIsland(); }
+  else if (e.target.closest('#iBuy')) {
+    if (stars() < 1) return;
+    spendStars(1); S.island.inv[IV.sel] = (S.island.inv[IV.sel] || 0) + 2; S.at.island = Date.now(); save(); renderIsland();
+  } else if (e.target.closest('#iPhoto')) {
+    S.island.photos.unshift({ g: S.island.g, n: IV.night, d: new Date().toISOString() });
+    S.island.photos = S.island.photos.slice(0, 6); S.at.island = Date.now(); save(); renderIsland();
+    var isl = $('isl'); isl.classList.add('flash'); islandSay('Klick! Das Foto ist im Fotoalbum.');
+  }
+});
 
 /* ---------- Feier bei 10 von 10 ---------- */
 var TROPHY = '<svg viewBox="0 0 120 130" aria-hidden="true"><path d="M30 14h60v26a30 30 0 0 1-60 0Z" fill="#ffd23f" stroke="#c99a0a" stroke-width="4"/><path d="M30 22H14c0 18 8 28 18 30M90 22h16c0 18-8 28-18 30" fill="none" stroke="#c99a0a" stroke-width="5" stroke-linecap="round"/><rect x="52" y="68" width="16" height="22" fill="#e9b81f"/><rect x="34" y="90" width="52" height="14" rx="4" fill="#d64541"/><rect x="28" y="104" width="64" height="16" rx="4" fill="#9e2f2c"/><path d="M60 24l5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1Z" fill="#fff6c9"/><text x="60" y="116" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="12" fill="#fff">10/10</text></svg>';
@@ -1228,10 +1412,17 @@ $('resetYes').addEventListener('click', function () { var n = S.name, ep = (S.ep
 
 $('codeSave').addEventListener('click', function () {
   var c = $('codeIn').value.trim();
+  if (TEST) { $('syncStatus').textContent = 'Im Testmodus ist der Abgleich aus.'; return; }
   if (c && !/^[A-Za-z0-9-]{4,40}$/.test(c)) { $('syncStatus').textContent = 'Der Code braucht 4 bis 40 Zeichen: Buchstaben ohne Umlaute, Ziffern oder Bindestriche.'; $('syncStatus').className = 'danger'; return; }
   SYNC.code = c; lsSet(KEY + '-code', c); SYNC.state = c ? 'busy' : 'off'; showSync(); if (c) syncNow();
 });
 $('syncBtn').addEventListener('click', syncNow);
+$('testBtn').addEventListener('click', function () {
+  try { sessionStorage.setItem('rechenheft-test', '1'); ['', '-dev', '-badges-seen', '-code'].forEach(function (x) { localStorage.removeItem('philian-rechenheft-v1-test' + x); }); } catch (e) {}
+  location.reload();
+});
+$('testEnd').addEventListener('click', function () { try { sessionStorage.removeItem('rechenheft-test'); } catch (e) {} location.reload(); });
+if (TEST) { $('testBar').hidden = false; document.body.classList.add('testing'); }
 $('updBtn').addEventListener('click', function () { $('updMsg').textContent = 'Lade neueste Version …'; location.href = './?update=' + Date.now(); });
 (function () {
   var h = location.hash;
