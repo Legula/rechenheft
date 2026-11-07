@@ -148,6 +148,13 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .balloon::after { content: ""; position: absolute; left: 50%; top: 100%; width: 2px; height: 34px; background: var(--muted); opacity: .6; }
 .burst { position: absolute; font-family: var(--f-display); font-weight: 800; font-size: 1.6rem; color: var(--star); pointer-events: none; animation: rise .6s forwards; }
 @keyframes rise { to { transform: translateY(-40px); opacity: 0; } }
+.buildbox { padding: 12px; align-items: center; }
+.buildsvg { width: 100%; max-width: 520px; height: auto; display: block; margin: 0 auto; overflow: visible; }
+.drop { animation: drop .5s cubic-bezier(.3, 1.35, .6, 1) both; }
+@keyframes drop { from { transform: translateY(-160px); opacity: 0; } to { transform: none; opacity: 1; } }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+.gallery figure { margin: 0; background: var(--card); border: 2px solid var(--line); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 4px; align-items: center; text-align: center; font-size: .9rem; min-width: 0; }
+.gallery svg { width: 100%; height: auto; }
 .memgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 560px; width: 100%; margin: 0 auto; }
 .mcard { aspect-ratio: 3 / 4; max-width: 100%; border-radius: 14px; border: 2px solid var(--line); background: var(--accent); box-shadow: 0 4px 0 var(--accent-dark); display: flex; align-items: center; justify-content: center; padding: 0; transition: transform .2s; }
 .mcard svg { width: 70%; height: auto; display: none; }
@@ -168,7 +175,7 @@ th { color: var(--muted); font-weight: 700; font-size: .85rem; text-transform: u
 .kv strong { font-family: var(--f-display); font-size: 1.6rem; }
 select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); }
 .danger { color: var(--bad); }
-@media (prefers-reduced-motion: reduce) { .starrow span, .burst { animation: none; } .topic, .btn { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .starrow span, .burst, .drop { animation: none; } .topic, .btn { transition: none; } }
 </style>
 
 <div id="errbox" hidden style="margin:16px;padding:16px;border:3px solid #c73d3d;background:#fff;color:#1f2a44;border-radius:12px;font:16px/1.4 sans-serif"></div>
@@ -193,6 +200,12 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
       <h3>Ballons platzen lassen</h3>
       <p class="level" id="balloonInfo">Kostet 5 Sterne · 25 Sekunden</p>
       <span class="badge" id="balloonBadge">Rekord: 0</span>
+    </button>
+    <button class="topic play" id="playBuild">
+      <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="40" width="52" height="16" rx="3" fill="#d64541"/><rect x="12" y="35" width="10" height="5" rx="1.5" fill="#d64541"/><rect x="42" y="35" width="10" height="5" rx="1.5" fill="#d64541"/><rect x="14" y="22" width="36" height="16" rx="3" fill="#2f6fd6"/><rect x="20" y="17" width="10" height="5" rx="1.5" fill="#2f6fd6"/><rect x="36" y="17" width="10" height="5" rx="1.5" fill="#2f6fd6"/><rect x="22" y="6" width="20" height="14" rx="3" fill="#ffd23f"/></svg>
+      <h3>Baustelle</h3>
+      <p class="level" id="buildInfo">1 Stern pro Baustein</p>
+      <span class="badge" id="buildBadge"></span>
     </button>
     <button class="topic play" id="playMemory">
       <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="10" width="24" height="32" rx="5" fill="var(--b4)"/><rect x="34" y="22" width="24" height="32" rx="5" fill="var(--accent)"/><circle cx="18" cy="26" r="6" fill="var(--card)"/></svg>
@@ -247,6 +260,19 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <p id="gEndText"></p>
     <div class="row"><button class="btn" data-go="home">Zur Startseite</button></div>
   </div>
+</section>
+
+<!-- BAUSTELLE -->
+<section id="v-build" hidden>
+  <div class="row" style="justify-content:space-between">
+    <button class="back" data-go="home">← Zurück</button>
+    <div class="stars"><b>★</b><span id="bStars">0</span></div>
+  </div>
+  <div><h2 id="bTitle"></h2><p class="muted" id="bInfo"></p></div>
+  <div class="sheet buildbox" id="bScene"></div>
+  <div class="row" id="bActions"></div>
+  <p class="muted" id="bHint"></p>
+  <div id="bGalleryWrap" hidden><h3>Deine Bauwerke</h3><div class="gallery" id="bGallery"></div></div>
 </section>
 
 <!-- MEMORY -->
@@ -328,7 +354,7 @@ function mergeState(L, R) {
   if ((R.epoch || 0) > (L.epoch || 0)) { var o2 = merge(fresh(), R); o2.migrated = true; return o2; }
   if ((L.epoch || 0) > (R.epoch || 0)) return L;
   var o = L, Ra = R.at || {}, d;
-  for (d in R.dev) { var a = o.dev[d] || { e: 0, s: 0 }, b = R.dev[d] || {}; o.dev[d] = { e: Math.max(a.e || 0, b.e || 0), s: Math.max(a.s || 0, b.s || 0) }; }
+  for (d in R.dev) { var a = o.dev[d] || { e: 0, s: 0 }, b = R.dev[d] || {}; o.dev[d] = { e: Math.max(a.e || 0, b.e || 0), s: Math.max(a.s || 0, b.s || 0), b: Math.max(a.b || 0, b.b || 0) }; }
   for (var k in (R.levels || {})) { var la = o.at['lv-' + k] || 0, ra = Ra['lv-' + k] || 0; if (ra > la) { o.levels[k] = R.levels[k]; o.mastered[k] = !!(R.mastered || {})[k]; o.at['lv-' + k] = ra; } }
   if ((Ra.name || 0) > (o.at.name || 0)) { o.name = R.name; o.at.name = Ra.name; }
   var seen = {}, all = [];
@@ -356,7 +382,7 @@ function syncNow() {
     })
     .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); SYNC.state = 'ok'; SYNC.last = Date.now(); })
     .catch(function (e) { SYNC.state = 'error'; SYNC.err = String((e && e.message) || e); })
-    .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); });
+    .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); if (!$('v-build').hidden && !BV.busy) renderBuild(); });
 }
 function scheduleSync() { if (!SYNC.code) return; clearTimeout(SYNC.timer); SYNC.timer = setTimeout(syncNow, 1200); }
 function showSync() {
@@ -553,7 +579,7 @@ var THEMES = {
 };
 
 /* ---------- Navigation ---------- */
-var VIEWS = ['home', 'learn', 'quiz', 'result', 'game', 'memory', 'gate', 'parents'];
+var VIEWS = ['home', 'learn', 'quiz', 'result', 'game', 'memory', 'build', 'gate', 'parents'];
 function go(v) { VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
 document.addEventListener('click', function (e) { var t = e.target.closest('[data-go]'); if (t) { stopGame(); go(t.getAttribute('data-go')); } });
 
@@ -573,6 +599,9 @@ function renderHome() {
   $('playBalloons').disabled = !can; $('playBalloons').style.opacity = can ? 1 : .6;
   $('playMemory').disabled = !can; $('playMemory').style.opacity = can ? 1 : .6;
   $('memoryInfo').textContent = can ? 'Kostet ' + COST + ' Sterne · finde alle Paare' : 'Du brauchst ' + COST + ' Sterne. Noch ' + (COST - stars()) + ' sammeln!';
+  var bp = buildPos();
+  $('buildInfo').textContent = '1 Stern pro Baustein · ' + bp.plan.name + ': ' + bp.placed + ' von ' + bp.total;
+  $('buildBadge').textContent = bp.idx ? bp.idx + (bp.idx === 1 ? ' Bauwerk fertig' : ' Bauwerke fertig') : 'Bau dein erstes Haus';
   $('memoryBadge').textContent = 'Rekord: ' + (S.best.memory ? S.best.memory + ' Züge' : '–');
 }
 $('topicCards').addEventListener('click', function (e) { var b = e.target.closest('[data-topic]'); if (b) openLearn(b.getAttribute('data-topic')); });
@@ -743,6 +772,94 @@ function endGame() {
 }
 function stopGame() { if (G) { cancelAnimationFrame(G.raf); G = null; } }
 
+/* ---------- Baustelle: pro Stern ein Klemmbaustein ---------- */
+var BRICK = { r: ['#d64541', '#9e2f2c'], w: ['#a8dcf5', '#5fa6cc'], d: ['#8a5a3b', '#5e3c26'], y: ['#3d4b63', '#252f40'], s: ['#9aa3ad', '#6b737c'], f: ['#f4f4f4', '#b9b9b9'], l: ['#ffd23f', '#c99a0a'], b: ['#2f6fd6', '#1d4b99'], k: ['#2f9e5b', '#1e6b3c'], o: ['#f08a24', '#b05e10'] };
+var PLANS = [
+  { name: 'Das rote Haus', rows: ['.rrrddrrrrr.', '.rwwddrwwrr.', '.rwwddrwwrr.', '.rrrrrrrrrr.', 'yyyyyyyyyyyy', '.yyyyyyyyyy.', '..yyyyyyyy..', '...yyyyyy...', '....yyyy....'] },
+  { name: 'Der Leuchtturm', rows: ['..ssssssss..', '....rddr....', '....rddr....', '....ffff....', '....rrrr....', '....fwwf....', '....rrrr....', '....ffff....', '...bbbbbb...', '....wllw....', '....rrrr....', '.....rr.....'] },
+  { name: 'Die Burg', rows: ['ssssssssssss', 'sswssddsswss', 'sswssddsswss', 'ssssssssssss', 'ssssssssssss', 's.s.ssss.s.s', '....swws....', '....ssss....', '....s..s....', '......bb....', '......k.....'] },
+  { name: 'Das Baumhaus', rows: ['.....dd.....', '.....dd.....', '.....dd.....', '...oooooo...', '..oowwoooo..', '..oowwoooo..', '..oooooooo..', '.kkkkkkkkkk.', '..kkkkkkkk..', '...kkkkkk...', '....kkkk....'] }
+];
+function planBricks(pl) {
+  if (pl.bricks) return pl.bricks;
+  var out = [];
+  pl.rows.forEach(function (row, r) {
+    var x = 0;
+    while (x < row.length) {
+      var c = row[x]; if (c === '.') { x++; continue; }
+      var e = x; while (e < row.length && row[e] === c) e++;
+      var pos = x;
+      if (r % 2 === 1 && e - x >= 3) { out.push({ x: pos, y: r, w: 1, c: c }); pos++; }
+      while (pos < e) { var w = Math.min(2, e - pos); out.push({ x: pos, y: r, w: w, c: c }); pos += w; }
+      x = e;
+    }
+  });
+  pl.bricks = out; return out;
+}
+function bricksPlaced() { var t = 0; for (var k in S.dev) t += S.dev[k].b || 0; return t; }
+function buildPos() {
+  var n = bricksPlaced(), i = 0;
+  for (;;) { var pl = PLANS[i % PLANS.length], len = planBricks(pl).length; if (n < len) return { idx: i, plan: pl, placed: n, total: len }; n -= len; i++; }
+}
+function planName(i) { var r = Math.floor(i / PLANS.length); return PLANS[i % PLANS.length].name + (r ? ' ' + (r + 1) : ''); }
+function buildSVG(pl, placed, ghost, drop) {
+  var bricks = planBricks(pl), CW = 40, CH = 30, ST = 7, BASE = 14, rows = pl.rows.length, W = 12 * CW, H = rows * CH + ST + BASE + 4;
+  var s = '<svg class="buildsvg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + pl.name + '">';
+  s += '<rect x="0" y="' + (H - BASE) + '" width="' + W + '" height="' + BASE + '" rx="3" fill="#3f9d4f"/>';
+  for (var i = 0; i < 12; i++) s += '<rect x="' + (i * CW + 10) + '" y="' + (H - BASE - 5) + '" width="20" height="6" rx="1.5" fill="#4fb35f" stroke="#2f7a3c" stroke-width="1"/>';
+  bricks.forEach(function (b, k) {
+    var x = b.x * CW, y = H - BASE - (b.y + 1) * CH, col = BRICK[b.c], bw = b.w * CW;
+    if (k >= placed) { if (ghost) s += '<rect x="' + (x + 3) + '" y="' + (y + 3) + '" width="' + (bw - 6) + '" height="' + (CH - 6) + '" rx="3" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="5 4"/>'; return; }
+    var g = '<g' + (k === drop ? ' class="drop"' : '') + '>';
+    for (var j = 0; j < b.w; j++) g += '<rect x="' + (x + j * CW + 10) + '" y="' + (y - ST + 1) + '" width="20" height="' + ST + '" rx="2" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="1.5"/>';
+    g += '<rect x="' + (x + 1) + '" y="' + y + '" width="' + (bw - 2) + '" height="' + CH + '" rx="3" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="2"/>';
+    g += '<rect x="' + (x + 5) + '" y="' + (y + CH - 8) + '" width="' + (bw - 10) + '" height="4" rx="2" fill="' + col[1] + '" opacity=".45"/></g>';
+    s += g;
+  });
+  return s + '</svg>';
+}
+var BV = { done: -1, drop: -1, busy: false };
+function renderBuild() {
+  var pos = buildPos(), st = stars();
+  $('bStars').textContent = st;
+  if (BV.done >= 0) {
+    var pl = PLANS[BV.done % PLANS.length];
+    $('bTitle').textContent = 'Fertig: ' + planName(BV.done) + '!';
+    $('bInfo').textContent = 'Alle ' + planBricks(pl).length + ' Steine sind verbaut. Super gebaut!';
+    $('bScene').innerHTML = buildSVG(pl, 9999, false, BV.drop);
+    $('bActions').innerHTML = '<button class="btn" id="bNext">Nächstes Bauwerk: ' + planName(BV.done + 1) + '</button>';
+    $('bHint').textContent = '';
+  } else {
+    $('bTitle').textContent = planName(pos.idx);
+    $('bInfo').textContent = pos.placed + ' von ' + pos.total + ' Steinen gesetzt · noch ' + (pos.total - pos.placed);
+    $('bScene').innerHTML = buildSVG(pos.plan, pos.placed, true, BV.drop);
+    $('bActions').innerHTML = '<button class="btn" id="bOne"' + (st < 1 ? ' disabled' : '') + '>Stein setzen · 1 ★</button>' + (st >= 5 ? '<button class="btn ghost" id="bFive">5 Steine setzen</button>' : '');
+    $('bHint').textContent = st < 1 ? 'Keine Sterne mehr. Rechne ein paar Aufgaben, dann geht es weiter!' : 'Du hast ' + st + (st === 1 ? ' Stern' : ' Sterne') + ' für neue Steine.';
+  }
+  BV.drop = -1;
+  var g = '', from = Math.max(0, pos.idx - 6);
+  for (var i = pos.idx - 1; i >= from; i--) g += '<figure>' + buildSVG(PLANS[i % PLANS.length], 9999, false, -1) + '<figcaption>' + esc(planName(i)) + '</figcaption></figure>';
+  $('bGallery').innerHTML = g; $('bGalleryWrap').hidden = !g;
+}
+function placeBrick() {
+  if (stars() < 1 || BV.done >= 0) return false;
+  var before = buildPos();
+  spendStars(1); S.dev[DEV].b = (S.dev[DEV].b || 0) + 1; save();
+  BV.drop = before.placed;
+  if (before.placed + 1 === before.total) BV.done = before.idx;
+  renderBuild(); return true;
+}
+$('playBuild').addEventListener('click', function () { BV.done = -1; BV.drop = -1; go('build'); renderBuild(); });
+$('bActions').addEventListener('click', function (e) {
+  if (BV.busy) return;
+  if (e.target.closest('#bOne')) placeBrick();
+  else if (e.target.closest('#bNext')) { BV.done = -1; renderBuild(); }
+  else if (e.target.closest('#bFive')) {
+    BV.busy = true; var n = 0;
+    (function step() { if (n < 5 && !$('v-build').hidden && placeBrick()) { n++; setTimeout(step, 380); } else BV.busy = false; })();
+  }
+});
+
 /* ---------- Memory ---------- */
 var SHAPES = [
   '<circle cx="50" cy="50" r="38" fill="var(--b1)"/>',
@@ -798,7 +915,7 @@ $('gateIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') $(
 function fmtDate(iso) { var d = new Date(iso); return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); }
 function renderParents() {
   $('nameIn').value = S.name; $('codeIn').value = SYNC.code; showSync();
-  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Ballon-Rekord</span><strong>' + S.best.balloon + '</strong></div><div><span>Memory-Rekord</span><strong>' + (S.best.memory ? S.best.memory + ' Züge' : '–') + '</strong></div></div></div>';
+  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Ballon-Rekord</span><strong>' + S.best.balloon + '</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Memory-Rekord</span><strong>' + (S.best.memory ? S.best.memory + ' Züge' : '–') + '</strong></div></div></div>';
   Object.keys(THEMES).forEach(function (k) {
     var T = THEMES[k], hist = S.history.filter(function (x) { return x.theme === k; }), last5 = hist.slice(-5);
     var rate = last5.length ? Math.round(last5.reduce(function (s, x) { return s + x.score; }, 0) / (last5.length * ROUND) * 100) + ' %' : '–';

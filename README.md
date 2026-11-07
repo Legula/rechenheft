@@ -9,7 +9,7 @@ Mathe-Übungsheft für die 2. Klasse als einzelne Web-Seite. Läuft in jedem Bro
 - Kurze Erklärung vor jeder Runde, 10 Aufgaben, Lösungsweg bei Fehlern
 - Schwierigkeit passt sich in jeder Runde an: nach 3 richtigen Antworten in Folge kommt eine Profi-Aufgabe aus der nächsten Stufe, nach 2 Fehlern in Folge eine leichtere Übungsaufgabe
 - Ab 8 von 10 richtig wird die nächste Stufe freigeschaltet; nach zwei Runden mit höchstens 4 richtigen geht es eine Stufe zurück
-- Sterne für richtige Aufgaben; für 5 Sterne gibt es ein Minispiel: Ballons platzen lassen oder Memory
+- Sterne für richtige Aufgaben; für 5 Sterne gibt es ein Minispiel (Ballons platzen lassen oder Memory); auf der Baustelle wird pro Stern ein Klemmbaustein gesetzt, bis Haus, Leuchtturm, Burg und Baumhaus stehen
 - Elternbereich mit Lernstand (hinter einer kleinen Rechenaufgabe)
 
 Der Lernstand wird im Browser des Geräts gespeichert (`localStorage`). Mit Familien-Code wird er zusätzlich nur mit der eigenen Synology abgeglichen. Sonst werden keine Daten verschickt; nur die Schriften kommen von Google Fonts.
@@ -32,7 +32,7 @@ Auf der Synology läuft die App zusammen mit `sync.php`. Dann können alle Gerä
 
 Die App funktioniert auch ohne Verbindung zur Synology. Sie speichert dann auf dem Gerät und gleicht ab, sobald die Synology wieder erreichbar ist (zu Hause oder per VPN).
 
-Der Lernstand liegt im Docker-Volume `rechenheft-daten`. **Update:** neues ZIP in den Ordner legen und im Container Manager das Projekt neu starten.
+Der Lernstand liegt im Docker-Volume `rechenheft-daten`. **Update:** Neue `index.html` von GitHub herunterladen (https://raw.githubusercontent.com/Legula/rechenheft/main/index.html) und in `docker/rechenheft` ersetzen. Ein Neustart ist nicht nötig, einfach die Seite auf den Geräten neu laden. Nur wenn sich `sync.php` oder `docker-compose.yml` ändern, das ganze ZIP neu einspielen und das Projekt neu starten.
 
 ## Aufbau
 
