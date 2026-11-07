@@ -22,7 +22,7 @@
   --paper: #fbfcfe; --grid: #dde6f2; --ink: #1f2a44; --muted: #5b6782;
   --margin: #e0525a; --accent: #1d72b0; --accent-ink: #ffffff; --accent-soft: #e3effa;
   --star: #e9a800; --good: #23874c; --good-soft: #e2f4e9; --bad: #c73d3d; --bad-soft: #fbe6e6;
-  --card: #ffffff; --line: #cfd9e6; --hour: #c73d3d; --accent-dark: #11446a; --good-dark: #155130;
+  --card: #ffffff; --line: #cfd9e6; --hour: #c73d3d; --accent-dark: #11446a; --good-dark: #155130; --syl1: #1a56b8; --syl2: #c22b26;
   --b1: #ef5b5b; --b2: #3fa7e0; --b3: #f7b733; --b4: #59c27a; --b5: #a77ee8;
   --f-display: "Baloo 2", "Comic Sans MS", "Trebuchet MS", system-ui, sans-serif;
   --f-body: "Andika", "Trebuchet MS", Verdana, system-ui, sans-serif;
@@ -32,12 +32,12 @@
   --paper: #1b2824; --grid: #23332e; --ink: #eef3ee; --muted: #a8b8ae;
   --margin: #e8767d; --accent: #6cc0ec; --accent-ink: #0d1c18; --accent-soft: #233c44;
   --star: #ffcc33; --good: #67d593; --good-soft: #1f3b2c; --bad: #ff8585; --bad-soft: #3e2426;
-  --card: #22322d; --line: #34473f; --hour: #ff8585; --accent-dark: #3d7390; --good-dark: #3d8058; color-scheme: dark } }
+  --card: #22322d; --line: #34473f; --hour: #ff8585; --accent-dark: #3d7390; --good-dark: #3d8058; --syl1: #8cc0ff; --syl2: #ff9488; color-scheme: dark } }
 :root[data-theme="dark"] {
   --paper: #1b2824; --grid: #23332e; --ink: #eef3ee; --muted: #a8b8ae;
   --margin: #e8767d; --accent: #6cc0ec; --accent-ink: #0d1c18; --accent-soft: #233c44;
   --star: #ffcc33; --good: #67d593; --good-soft: #1f3b2c; --bad: #ff8585; --bad-soft: #3e2426;
-  --card: #22322d; --line: #34473f; --hour: #ff8585; --accent-dark: #3d7390; --good-dark: #3d8058; color-scheme: dark }
+  --card: #22322d; --line: #34473f; --hour: #ff8585; --accent-dark: #3d7390; --good-dark: #3d8058; --syl1: #8cc0ff; --syl2: #ff9488; color-scheme: dark }
 
 [hidden] { display: none !important; }
 html, body { height: 100%; }
@@ -115,6 +115,9 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .unit { font-size: .7em; color: var(--muted); }
 .story { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; font-size: clamp(1.25rem, 3.6vw, 1.6rem); line-height: 1.5; background: var(--accent-soft); border-radius: 14px; padding: 16px 18px; }
 .speak { font-size: 1.05rem; padding: 8px 16px; }
+.silben { word-spacing: .25em; letter-spacing: .02em; }
+.syl { color: var(--syl1); }
+.syl.s2 { color: var(--syl2); }
 .money { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
 .money svg { flex: none; }
 .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 420px; width: 100%; margin: 0 auto; }
@@ -313,6 +316,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   <div class="sheet">
     <h3>Einstellungen</h3>
     <div class="row"><label for="nameIn">Name des Kindes</label><input type="text" id="nameIn" maxlength="20"><button class="btn ghost" id="nameSave">Speichern</button></div>
+    <div class="row"><input type="checkbox" id="silbenIn" style="width:24px;height:24px"><label for="silbenIn">Silben in Sachaufgaben farbig markieren (Lesehilfe)</label></div>
     <div class="row"><label for="codeIn">Familien-Code</label><input type="text" id="codeIn" maxlength="40" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="z. B. sonnenblume-42"><button class="btn ghost" id="codeSave">Speichern</button><button class="btn ghost" id="syncBtn">Jetzt abgleichen</button></div>
     <p id="syncStatus" class="muted"></p>
     <div class="row"><button class="btn ghost" id="resetAsk">Alles zurücksetzen</button>
@@ -364,6 +368,7 @@ function mergeState(L, R) {
   for (d in R.dev) { var a = o.dev[d] || { e: 0, s: 0 }, b = R.dev[d] || {}; o.dev[d] = { e: Math.max(a.e || 0, b.e || 0), s: Math.max(a.s || 0, b.s || 0), b: Math.max(a.b || 0, b.b || 0) }; }
   for (var k in (R.levels || {})) { var la = o.at['lv-' + k] || 0, ra = Ra['lv-' + k] || 0; if (ra > la) { o.levels[k] = R.levels[k]; o.mastered[k] = !!(R.mastered || {})[k]; o.at['lv-' + k] = ra; } }
   if ((Ra.name || 0) > (o.at.name || 0)) { o.name = R.name; o.at.name = Ra.name; }
+  if ((Ra.silben || 0) > (o.at.silben || 0)) { o.silben = R.silben; o.at.silben = Ra.silben; }
   var seen = {}, all = [];
   o.history.concat(R.history || []).forEach(function (h) { var id = h.d + h.theme; if (!seen[id]) { seen[id] = 1; all.push(h); } });
   all.sort(function (x, y) { return x.d < y.d ? -1 : x.d > y.d ? 1 : 0; });
@@ -575,6 +580,53 @@ var SACH = [
     gen: function () { return pick(SACH4)(); } }
 ];
 
+/* Silbentrennung (Deutsch) für die Rechengeschichten: Regeln plus Ausnahmeliste. */
+var SILB = {
+  haltestelle: 'Hal-te-stel-le', kastanien: 'Kas-ta-ni-en', spielplatz: 'Spiel-platz', spielauto: 'Spiel-au-to',
+  federmäppchen: 'Fe-der-mäpp-chen', kuscheltier: 'Ku-schel-tier', malkasten: 'Mal-kas-ten', rucksack: 'Ruck-sack',
+  geburtstag: 'Ge-burts-tag', bahnhof: 'Bahn-hof', dienstag: 'Diens-tag', montag: 'Mon-tag', mittwoch: 'Mitt-woch',
+  wechselgeld: 'Wech-sel-geld', lehrerin: 'Leh-re-rin', fahrrad: 'Fahr-rad', fahrräder: 'Fahr-rä-der',
+  'zehn-euro-schein': 'Zehn-Eu-ro-Schein', 'zehn-euro-scheine': 'Zehn-Eu-ro-Schei-ne', euro: 'Eu-ro',
+  aussteigen: 'aus-stei-gen', danach: 'da-nach', darum: 'da-rum', übrig: 'üb-rig', zurück: 'zu-rück',
+  zusammen: 'zu-sam-men', ersten: 'ers-ten', zweiten: 'zwei-ten', sticker: 'Sti-cker', packung: 'Pa-ckung',
+  packungen: 'Pa-ckun-gen', puzzle: 'Puzz-le', philian: 'Phi-li-an', noah: 'No-ah', emma: 'Em-ma', ida: 'I-da',
+  eier: 'Ei-er', eiern: 'Ei-ern', bezahlst: 'be-zahlst', bekommst: 'be-kommst', bekommt: 'be-kommt',
+  verteilt: 'ver-teilt', gelesen: 'ge-le-sen', geschichte: 'Ge-schich-te', geschichten: 'Ge-schich-ten',
+  jedes: 'je-des', etwas: 'et-was', rechnung: 'Rech-nung', klasse: 'Klas-se', leute: 'Leu-te', beides: 'bei-des',
+  steigen: 'stei-gen', kekse: 'Kek-se', mehrere: 'meh-re-re', vögel: 'Vö-gel', räder: 'Rä-der', seiten: 'Sei-ten',
+  sammelt: 'sam-melt', schule: 'Schu-le', kinder: 'Kin-der', finger: 'Fin-ger', hände: 'Hän-de', bilder: 'Bil-der',
+  murmeln: 'Mur-meln', mama: 'Ma-ma', stifte: 'Stif-te', liegen: 'lie-gen', sitzen: 'sit-zen', spielen: 'spie-len',
+  fliegen: 'flie-gen', kommen: 'kom-men', stehen: 'ste-hen', essen: 'es-sen', haben: 'ha-ben', fehlen: 'feh-len',
+  sachaufgabe: 'Sach-auf-ga-be', kostet: 'kos-tet', braucht: 'braucht', viele: 'vie-le', eine: 'ei-ne', einen: 'ei-nen', einer: 'ei-ner', oder: 'o-der', dose: 'Do-se'
+};
+var VOW = 'aeiouäöüy', DIPH = ['ieh', 'ei', 'ie', 'eu', 'au', 'äu', 'ai', 'aa', 'ee', 'oo'], CONS2 = ['sch', 'ch', 'ck', 'ph', 'qu'];
+function syllables(word) {
+  var lw = word.toLowerCase();
+  if (SILB[lw]) { var ex = SILB[lw].split('-'), out = [], p = 0; ex.forEach(function (sy) { out.push(word.substr(p, sy.length)); p += sy.length; }); return out; }
+  var u = [], i = 0;
+  while (i < lw.length) {
+    var m = null, k;
+    for (k = 0; k < CONS2.length && !m; k++) if (lw.substr(i, CONS2[k].length) === CONS2[k]) m = { n: CONS2[k].length, v: false };
+    for (k = 0; k < DIPH.length && !m; k++) if (lw.substr(i, DIPH[k].length) === DIPH[k]) m = { n: DIPH[k].length, v: true };
+    if (!m) m = { n: 1, v: VOW.indexOf(lw[i]) >= 0 };
+    m.s = i; u.push(m); i += m.n;
+  }
+  var vs = []; u.forEach(function (x, j) { if (x.v) vs.push(j); });
+  if (vs.length < 2) return [word];
+  var cuts = [];
+  for (var a = 0; a < vs.length - 1; a++) {
+    var c = vs[a + 1] - vs[a] - 1, cutUnit = c <= 1 ? vs[a] + 1 : vs[a + 1] - 1;
+    cuts.push(u[cutUnit].s);
+  }
+  var res = [], last = 0; cuts.forEach(function (c) { res.push(word.slice(last, c)); last = c; }); res.push(word.slice(last));
+  return res;
+}
+function silbenHTML(text) {
+  return text.split(/([A-Za-zÄÖÜäöüß]+)/).map(function (part, i) {
+    if (i % 2 === 0) return esc(part);
+    return syllables(part).map(function (sy, k) { return '<span class="syl' + (k % 2 ? ' s2' : '') + '">' + esc(sy) + '</span>'; }).join('');
+  }).join('');
+}
 var canSpeak = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
 function speak(text) { try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; u.rate = .9; speechSynthesis.speak(u); } catch (e) {} }
 
@@ -649,7 +701,7 @@ function renderTask() {
   Q.locked = false;
   if (t.type === 'num') {
     Q.input = '';
-    if (t.story) h += '<div class="story"><p id="storyText">' + esc(t.story) + '</p>' + (canSpeak ? '<button class="btn ghost speak" id="speakBtn">🔊 Vorlesen</button>' : '') + '</div>';
+    if (t.story) h += '<div class="story"><p id="storyText"' + (S.silben !== false ? ' class="silben"' : '') + '>' + (S.silben !== false ? silbenHTML(t.story) : esc(t.story)) + '</p>' + (canSpeak ? '<button class="btn ghost speak" id="speakBtn">🔊 Vorlesen</button>' : '') + '</div>';
     if (t.visual) h += '<div class="money">' + t.visual + '</div>';
     h += '<div class="task' + (t.story || t.visual ? ' small' : '') + '">' + esc(t.prompt || t.q) + ' <span class="answer" id="ans">&nbsp;</span>' + (t.unit ? ' <span class="unit">' + t.unit + '</span>' : '') + '</div><div id="fb"></div><div class="pad" id="pad">';
     [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(function (n) { h += '<button data-k="' + n + '">' + n + '</button>'; });
@@ -970,7 +1022,7 @@ $('gateIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') $(
 
 function fmtDate(iso) { var d = new Date(iso); return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); }
 function renderParents() {
-  $('nameIn').value = S.name; $('codeIn').value = SYNC.code; showSync();
+  $('nameIn').value = S.name; $('codeIn').value = SYNC.code; $('silbenIn').checked = S.silben !== false; showSync();
   var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Ballon-Rekord</span><strong>' + S.best.balloon + '</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Memory-Rekord</span><strong>' + (S.best.memory ? S.best.memory + ' Züge' : '–') + '</strong></div></div></div>';
   Object.keys(THEMES).forEach(function (k) {
     var T = THEMES[k], hist = S.history.filter(function (x) { return x.theme === k; }), last5 = hist.slice(-5);
@@ -1001,6 +1053,7 @@ $('codeSave').addEventListener('click', function () {
   SYNC.code = c; lsSet(KEY + '-code', c); SYNC.state = c ? 'busy' : 'off'; showSync(); if (c) syncNow();
 });
 $('syncBtn').addEventListener('click', syncNow);
+$('silbenIn').addEventListener('change', function () { S.silben = $('silbenIn').checked; S.at.silben = Date.now(); save(); });
 
 ensure(); save(true);
 go('home');

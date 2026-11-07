@@ -5,7 +5,7 @@ Mathe-Übungsheft für die 2. Klasse als einzelne Web-Seite. Läuft in jedem Bro
 - **Plus und Minus bis 100** in 4 Stufen
 - **Uhr lesen** in 4 Stufen
 - **Geld** in 4 Stufen: Cent zählen, Euro zählen, Preise zusammenrechnen, Wechselgeld
-- **Sachaufgaben** in 4 Stufen: kurze Rechengeschichten bis hin zu Mal-Geschichten, mit Vorlese-Taste
+- **Sachaufgaben** in 4 Stufen: kurze Rechengeschichten bis hin zu Mal-Geschichten, mit Vorlese-Taste und farbigen Silben als Lesehilfe (im Elternbereich abschaltbar)
 - Kurze Erklärung vor jeder Runde, 10 Aufgaben, Lösungsweg bei Fehlern
 - Schwierigkeit passt sich in jeder Runde an: nach 3 richtigen Antworten in Folge kommt eine Profi-Aufgabe aus der nächsten Stufe, nach 2 Fehlern in Folge eine leichtere Übungsaufgabe
 - Ab 8 von 10 richtig wird die nächste Stufe freigeschaltet; nach zwei Runden mit höchstens 4 richtigen geht es eine Stufe zurück
