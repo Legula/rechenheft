@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1d72b0">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+<title>Philians Rechenheft</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+/* Layout: ein Rechenheft auf Karopapier mit rotem Rand; jede Ansicht ist eine Heftseite, große Tasten für Kinderfinger. */
+:root {
+  --paper: #fbfcfe; --grid: #dde6f2; --ink: #1f2a44; --muted: #5b6782;
+  --margin: #e0525a; --accent: #1d72b0; --accent-ink: #ffffff; --accent-soft: #e3effa;
+  --star: #e9a800; --good: #23874c; --good-soft: #e2f4e9; --bad: #c73d3d; --bad-soft: #fbe6e6;
+  --card: #ffffff; --line: #cfd9e6; --hour: #c73d3d;
+  --b1: #ef5b5b; --b2: #3fa7e0; --b3: #f7b733; --b4: #59c27a; --b5: #a77ee8;
+  --f-display: "Baloo 2", "Comic Sans MS", "Trebuchet MS", system-ui, sans-serif;
+  --f-body: "Andika", "Trebuchet MS", Verdana, system-ui, sans-serif;
+  --radius: 18px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #1b2824; --grid: #23332e; --ink: #eef3ee; --muted: #a8b8ae;
+  --margin: #e8767d; --accent: #6cc0ec; --accent-ink: #0d1c18; --accent-soft: #233c44;
+  --star: #ffcc33; --good: #67d593; --good-soft: #1f3b2c; --bad: #ff8585; --bad-soft: #3e2426;
+  --card: #22322d; --line: #34473f; --hour: #ff8585; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #1b2824; --grid: #23332e; --ink: #eef3ee; --muted: #a8b8ae;
+  --margin: #e8767d; --accent: #6cc0ec; --accent-ink: #0d1c18; --accent-soft: #233c44;
+  --star: #ffcc33; --good: #67d593; --good-soft: #1f3b2c; --bad: #ff8585; --bad-soft: #3e2426;
+  --card: #22322d; --line: #34473f; --hour: #ff8585; color-scheme: dark }
+
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  background-color: var(--paper);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink); font-family: var(--f-body); font-size: 18px; line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+.wrap {
+  max-width: 880px; margin: 0 auto; min-height: 100%;
+  padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  box-sizing: border-box; position: relative;
+}
+.wrap::before { content: ""; position: absolute; top: 0; bottom: 0; left: max(8px, env(safe-area-inset-left, 0px)); width: 2px; background: var(--margin); opacity: .55; pointer-events: none; }
+section { display: flex; flex-direction: column; gap: 18px; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.1; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2rem, 6vw, 2.8rem); font-weight: 800; }
+h2 { font-size: clamp(1.5rem, 4.5vw, 2rem); font-weight: 800; }
+h3 { font-size: 1.3rem; font-weight: 600; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.stars { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-display); font-weight: 800; font-size: 1.5rem; background: var(--card); border: 2px solid var(--line); border-radius: 999px; padding: 4px 16px; font-variant-numeric: tabular-nums; }
+.stars b { color: var(--star); font-size: 1.6rem; }
+.lead { color: var(--muted); font-size: 1.1rem; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.topic {
+  text-align: left; background: var(--card); border: 2px solid var(--line); border-radius: var(--radius);
+  padding: 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0;
+  box-shadow: 0 4px 0 var(--line); transition: transform .12s;
+}
+.topic:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
+.topic .ico { width: 64px; height: 64px; }
+.level { font-size: .95rem; color: var(--muted); }
+.steps { display: flex; gap: 6px; }
+.steps i { flex: 1; height: 10px; border-radius: 6px; background: var(--grid); border: 1px solid var(--line); }
+.steps i.on { background: var(--good); border-color: var(--good); }
+.topic.play { border-style: dashed; }
+.badge { align-self: flex-start; font-size: .85rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.parents-link { align-self: center; background: none; border: none; color: var(--muted); text-decoration: underline; font-size: .95rem; padding: 8px; }
+
+.btn { border: none; border-radius: 14px; padding: 14px 26px; font-family: var(--f-display); font-weight: 800; font-size: 1.3rem; background: var(--accent); color: var(--accent-ink); box-shadow: 0 4px 0 color-mix(in srgb, var(--accent) 60%, #000); }
+.btn:active { transform: translateY(3px); box-shadow: 0 1px 0 color-mix(in srgb, var(--accent) 60%, #000); }
+.btn.ghost { background: var(--card); color: var(--ink); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+.btn:disabled { opacity: .45; cursor: default; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.back { align-self: flex-start; background: none; border: none; color: var(--accent); font-weight: 700; padding: 6px 0; font-size: 1.05rem; }
+
+.sheet { background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.example { font-family: var(--f-display); font-size: clamp(1.4rem, 4.5vw, 2rem); font-weight: 600; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.example em { font-style: normal; color: var(--accent); }
+.example .hl { color: var(--margin); }
+.tens { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+.ten { width: 14px; height: 120px; border-radius: 4px; background: repeating-linear-gradient(var(--b2) 0 11px, var(--card) 11px 12px); border: 1px solid var(--accent); }
+.ten.alt { background: repeating-linear-gradient(var(--b4) 0 11px, var(--card) 11px 12px); border-color: var(--good); }
+.one { width: 14px; height: 11px; border-radius: 3px; background: var(--b3); border: 1px solid var(--star); }
+.ones { display: flex; flex-direction: column-reverse; gap: 1px; }
+.plus-sign { font-family: var(--f-display); font-size: 2rem; font-weight: 800; align-self: center; padding: 0 4px; }
+
+.progress { display: flex; gap: 6px; }
+.progress i { flex: 1; height: 12px; border-radius: 6px; background: var(--grid); border: 1px solid var(--line); }
+.progress i.ok { background: var(--good); border-color: var(--good); }
+.progress i.no { background: var(--bad); border-color: var(--bad); }
+.progress i.now { border: 2px solid var(--accent); }
+.task { text-align: center; font-family: var(--f-display); font-weight: 800; font-size: clamp(2.6rem, 11vw, 4.6rem); font-variant-numeric: tabular-nums; letter-spacing: .02em; line-height: 1.1; }
+.answer { display: inline-block; min-width: 2.2em; border-bottom: 5px solid var(--accent); color: var(--accent); }
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 420px; width: 100%; margin: 0 auto; }
+.pad button { font-family: var(--f-display); font-weight: 800; font-size: 2rem; padding: 12px 0; border-radius: 14px; background: var(--card); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+.pad button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
+.pad .ok { background: var(--good); color: var(--accent-ink); border-color: var(--good); box-shadow: 0 4px 0 color-mix(in srgb, var(--good) 60%, #000); }
+.pad .del { font-size: 1.3rem; }
+.clockbox { display: flex; justify-content: center; }
+.clockbox svg { width: min(260px, 70vw); height: auto; }
+.choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 560px; width: 100%; margin: 0 auto; }
+.choices button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 8px; border-radius: 14px; background: var(--card); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); min-width: 0; }
+.choices .dig { font-family: var(--f-display); font-weight: 800; font-size: 1.9rem; font-variant-numeric: tabular-nums; }
+.choices .wrd { font-size: .95rem; color: var(--muted); }
+.choices button.right { background: var(--good-soft); border-color: var(--good); }
+.choices button.wrong { background: var(--bad-soft); border-color: var(--bad); }
+.feedback { border-radius: 14px; padding: 14px 18px; font-size: 1.15rem; display: flex; flex-direction: column; gap: 10px; }
+.feedback.good { background: var(--good-soft); color: var(--ink); border: 2px solid var(--good); }
+.feedback.bad { background: var(--bad-soft); color: var(--ink); border: 2px solid var(--bad); }
+.feedback strong { font-family: var(--f-display); font-size: 1.4rem; }
+
+.result-big { font-family: var(--f-display); font-weight: 800; font-size: clamp(3rem, 12vw, 5rem); text-align: center; line-height: 1; font-variant-numeric: tabular-nums; }
+.earned { text-align: center; font-size: 1.4rem; font-family: var(--f-display); font-weight: 600; }
+.earned b { color: var(--star); }
+.starrow { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; font-size: 2rem; color: var(--star); }
+.starrow span { animation: pop .4s both; }
+@keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+
+.arena { position: relative; height: min(68vh, 620px); border-radius: var(--radius); overflow: hidden; border: 2px solid var(--line); background: linear-gradient(var(--accent-soft), var(--card)); touch-action: none; user-select: none; -webkit-user-select: none; }
+.balloon { position: absolute; width: 64px; height: 78px; border-radius: 50% 50% 48% 48%; will-change: transform; }
+.balloon::before { content: ""; position: absolute; left: 22%; top: 16%; width: 22%; height: 18%; border-radius: 50%; background: rgba(255,255,255,.55); }
+.balloon::after { content: ""; position: absolute; left: 50%; top: 100%; width: 2px; height: 34px; background: var(--muted); opacity: .6; }
+.burst { position: absolute; font-family: var(--f-display); font-weight: 800; font-size: 1.6rem; color: var(--star); pointer-events: none; animation: rise .6s forwards; }
+@keyframes rise { to { transform: translateY(-40px); opacity: 0; } }
+.hud { display: flex; justify-content: space-between; font-family: var(--f-display); font-weight: 800; font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .95rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; }
+.muted { color: var(--muted); }
+.kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.kv div { display: flex; flex-direction: column; }
+.kv span { font-size: .85rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.kv strong { font-family: var(--f-display); font-size: 1.6rem; }
+select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); }
+.danger { color: var(--bad); }
+@media (prefers-reduced-motion: reduce) { .starrow span, .burst { animation: none; } .topic, .btn { transition: none; } }
+</style>
+
+<div class="wrap">
+
+<!-- START -->
+<section id="v-home">
+  <div class="topbar">
+    <h1 id="hello">Hallo Philian!</h1>
+    <div class="stars" aria-label="Sterne"><b>★</b><span id="starCount">0</span></div>
+  </div>
+  <p class="lead">Was möchtest du heute üben? Für jede richtige Aufgabe bekommst du einen Stern.</p>
+  <div class="cards" id="topicCards"></div>
+  <h2>Spielzimmer</h2>
+  <div class="cards">
+    <button class="topic play" id="playBalloons">
+      <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="24" cy="24" rx="14" ry="17" fill="var(--b1)"/><ellipse cx="42" cy="28" rx="13" ry="16" fill="var(--b2)"/><path d="M24 41 Q22 52 28 62 M42 44 Q44 54 36 62" stroke="var(--muted)" stroke-width="1.5" fill="none"/></svg>
+      <h3>Ballons platzen lassen</h3>
+      <p class="level" id="balloonInfo">Kostet 5 Sterne · 25 Sekunden</p>
+      <span class="badge" id="balloonBadge">Rekord: 0</span>
+    </button>
+  </div>
+  <button class="parents-link" id="toParents">Für Eltern</button>
+</section>
+
+<!-- ERKLÄRUNG -->
+<section id="v-learn" hidden>
+  <button class="back" data-go="home">← Zurück</button>
+  <div><span class="badge" id="learnBadge"></span></div>
+  <h2 id="learnTitle"></h2>
+  <div class="sheet" id="learnBody"></div>
+  <div class="row"><button class="btn" id="startQuiz">Los geht’s: 10 Aufgaben</button></div>
+</section>
+
+<!-- AUFGABEN -->
+<section id="v-quiz" hidden>
+  <div class="row" style="justify-content:space-between">
+    <button class="back" id="quitQuiz">← Abbrechen</button>
+    <div class="stars"><b>★</b><span id="quizStars">0</span></div>
+  </div>
+  <div class="progress" id="progress"></div>
+  <div class="sheet" id="quizBody"></div>
+</section>
+
+<!-- ERGEBNIS -->
+<section id="v-result" hidden>
+  <div class="sheet" style="align-items:center;text-align:center">
+    <h2 id="resTitle"></h2>
+    <div class="result-big" id="resScore"></div>
+    <div class="starrow" id="resStars"></div>
+    <p class="earned" id="resEarned"></p>
+    <p id="resLevel"></p>
+  </div>
+  <div class="row" style="justify-content:center">
+    <button class="btn" id="resAgain">Nochmal üben</button>
+    <button class="btn ghost" data-go="home">Zur Startseite</button>
+  </div>
+</section>
+
+<!-- SPIEL -->
+<section id="v-game" hidden>
+  <div class="hud"><span>Treffer: <span id="gScore">0</span></span><span><span id="gTime">25</span> s</span></div>
+  <div class="arena" id="arena"></div>
+  <div class="sheet" id="gameEnd" hidden style="align-items:center;text-align:center">
+    <h2 id="gEndTitle"></h2>
+    <p id="gEndText"></p>
+    <div class="row"><button class="btn" data-go="home">Zur Startseite</button></div>
+  </div>
+</section>
+
+<!-- ELTERN-SPERRE -->
+<section id="v-gate" hidden>
+  <button class="back" data-go="home">← Zurück</button>
+  <h2>Für Eltern</h2>
+  <div class="sheet">
+    <p>Bitte lösen: <strong id="gateQ"></strong></p>
+    <div class="row"><input type="number" id="gateIn" inputmode="numeric" style="width:120px"><button class="btn" id="gateOk">Weiter</button></div>
+    <p class="danger" id="gateMsg" hidden>Das stimmt leider nicht.</p>
+  </div>
+</section>
+
+<!-- ELTERN -->
+<section id="v-parents" hidden>
+  <button class="back" data-go="home">← Zurück</button>
+  <h2>Lernstand</h2>
+  <p class="muted">Alle Daten bleiben auf diesem Gerät im Browser gespeichert. Nichts wird verschickt.</p>
+  <div id="parentBody" style="display:flex;flex-direction:column;gap:16px"></div>
+  <div class="sheet">
+    <h3>Einstellungen</h3>
+    <div class="row"><label for="nameIn">Name des Kindes</label><input type="text" id="nameIn" maxlength="20"><button class="btn ghost" id="nameSave">Speichern</button></div>
+    <div class="row"><button class="btn ghost" id="resetAsk">Alles zurücksetzen</button>
+      <span id="resetConfirm" hidden class="row"><span class="danger">Wirklich alles löschen?</span><button class="btn" id="resetYes">Ja, löschen</button><button class="btn ghost" id="resetNo">Nein</button></span></div>
+  </div>
+</section>
+
+</div>
+
+<script>
+(function () {
+'use strict';
+var KEY = 'philian-rechenheft-v1';
+var COST = 5, GAME_SECONDS = 25, PASS = 8, ROUND = 10;
+
+function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, uhr: 1 }, mastered: {}, history: [], best: { balloon: 0 } }; }
+var S = fresh();
+try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = Object.assign(fresh(), p); S.levels = Object.assign({ plus: 1, uhr: 1 }, p.levels || {}); S.best = Object.assign({ balloon: 0 }, p.best || {}); } } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+function $(id) { return document.getElementById(id); }
+function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+/* ---------- Veranschaulichungen ---------- */
+function tensHTML(n, alt) { var t = Math.floor(n / 10), o = n % 10, h = ''; for (var i = 0; i < t; i++) h += '<div class="ten' + (alt ? ' alt' : '') + '"></div>'; if (o) { h += '<div class="ones">'; for (var k = 0; k < o; k++) h += '<div class="one"></div>'; h += '</div>'; } return h; }
+function blocks(a, b, sign) { return '<div class="tens">' + tensHTML(a) + '<span class="plus-sign">' + sign + '</span>' + tensHTML(b, true) + '</div>'; }
+
+var HW = ['zwölf', 'eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn', 'elf', 'zwölf'];
+function clockWords(h, m) {
+  var n = h % 12 + 1, hw = HW[h], nw = HW[n];
+  switch (m) {
+    case 0: return (h === 1 ? 'ein' : hw) + ' Uhr';
+    case 5: return 'fünf nach ' + hw; case 10: return 'zehn nach ' + hw;
+    case 15: return 'Viertel nach ' + hw; case 20: return 'zwanzig nach ' + hw;
+    case 25: return 'fünf vor halb ' + nw; case 30: return 'halb ' + nw;
+    case 35: return 'fünf nach halb ' + nw; case 40: return 'zwanzig vor ' + nw;
+    case 45: return 'Viertel vor ' + nw; case 50: return 'zehn vor ' + nw;
+    case 55: return 'fünf vor ' + nw;
+  }
+}
+function digital(h, m) { return h + ':' + (m < 10 ? '0' : '') + m; }
+function clockSVG(h, m, size) {
+  var s = '<svg viewBox="0 0 200 200" role="img" aria-label="Uhr"' + (size ? ' style="width:' + size + 'px"' : '') + '>';
+  s += '<circle cx="100" cy="100" r="94" fill="var(--card)" stroke="var(--ink)" stroke-width="5"/>';
+  for (var i = 0; i < 60; i++) { var a = i * 6 * Math.PI / 180, big = i % 5 === 0, r1 = big ? 80 : 86; s += '<line x1="' + (100 + r1 * Math.sin(a)).toFixed(1) + '" y1="' + (100 - r1 * Math.cos(a)).toFixed(1) + '" x2="' + (100 + 90 * Math.sin(a)).toFixed(1) + '" y2="' + (100 - 90 * Math.cos(a)).toFixed(1) + '" stroke="var(--ink)" stroke-width="' + (big ? 3 : 1) + '"/>'; }
+  for (var k = 1; k <= 12; k++) { var b = k * 30 * Math.PI / 180; s += '<text x="' + (100 + 65 * Math.sin(b)).toFixed(1) + '" y="' + (100 - 65 * Math.cos(b) + 7).toFixed(1) + '" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="20" fill="var(--ink)">' + k + '</text>'; }
+  var ha = ((h % 12) + m / 60) * 30, ma = m * 6;
+  s += '<line x1="100" y1="100" x2="100" y2="52" stroke="var(--hour)" stroke-width="9" stroke-linecap="round" transform="rotate(' + ha + ' 100 100)"/>';
+  s += '<line x1="100" y1="100" x2="100" y2="24" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" transform="rotate(' + ma + ' 100 100)"/>';
+  s += '<circle cx="100" cy="100" r="7" fill="var(--ink)"/></svg>';
+  return s;
+}
+
+/* ---------- Aufgaben-Generatoren ---------- */
+function numTask(a, op, b, hint) { return { type: 'num', a: a, b: b, op: op, q: a + ' ' + op + ' ' + b + ' =', answer: op === '+' ? a + b : a - b, hint: hint }; }
+var PLUS = [
+  { title: 'Rechnen mit Zehnern',
+    explain: '<p>Zehner rechnest du genauso wie Einer. Statt „3 + 2“ sagst du „3 Zehner + 2 Zehner“.</p>' + blocks(30, 20, '+') + '<p class="example">3 + 2 = 5<br>also <em>30 + 20 = 50</em></p><p class="example">7 − 4 = 3<br>also <em>70 − 40 = 30</em></p>',
+    gen: function () { if (Math.random() < .5) { var a = rnd(1, 8) * 10; return numTask(a, '+', rnd(1, 10 - a / 10) * 10, 'Denk an ' + a / 10 + ' + … Zehner.'); } var c = rnd(2, 10) * 10; return numTask(c, '−', rnd(1, c / 10 - 1) * 10, 'Denk an ' + c / 10 + ' − … Zehner.'); } },
+  { title: 'Einer dazu und weg',
+    explain: '<p>Die Zehner bleiben gleich. Du rechnest nur mit den Einern.</p>' + blocks(34, 5, '+') + '<p class="example">34 + 5: 4 + 5 = 9<br>also <em>34 + 5 = 39</em></p><p class="example">38 − 6: 8 − 6 = 2<br>also <em>38 − 6 = 32</em></p>',
+    gen: function () { var t = rnd(1, 9), e, b; if (Math.random() < .5) { e = rnd(0, 8); b = rnd(1, 9 - e); return numTask(t * 10 + e, '+', b, 'Die Zehner bleiben ' + t * 10 + '. Rechne ' + e + ' + ' + b + '.'); } e = rnd(1, 9); b = rnd(1, e); return numTask(t * 10 + e, '−', b, 'Die Zehner bleiben ' + t * 10 + '. Rechne ' + e + ' − ' + b + '.'); } },
+  { title: 'Über den Zehner',
+    explain: '<p>Rechne erst bis zum nächsten Zehner, dann den Rest.</p>' + blocks(38, 7, '+') + '<p class="example">38 + 7<br>= 38 <span class="hl">+ 2</span> + 5<br>= 40 + 5 = <em>45</em></p><p class="example">42 − 5<br>= 42 <span class="hl">− 2</span> − 3<br>= 40 − 3 = <em>37</em></p>',
+    gen: function () { var t, e, b, a; if (Math.random() < .5) { t = rnd(1, 8); e = rnd(2, 9); b = rnd(10 - e + 1 > 9 ? 9 : 10 - e + 1, 9); if (e + b < 10) b = 10 - e; a = t * 10 + e; var u = 10 - e; return numTask(a, '+', b, a + ' + ' + u + ' = ' + (a + u) + ', dann + ' + (b - u) + ' = ' + (a + b) + '.'); } t = rnd(2, 9); e = rnd(0, 8); b = rnd(e + 1, 9); a = t * 10 + e; return numTask(a, '−', b, e ? (a + ' − ' + e + ' = ' + (a - e) + ', dann − ' + (b - e) + ' = ' + (a - b) + '.') : (a + ' − ' + b + ': vom Zehner ' + b + ' zurück = ' + (a - b) + '.')); } },
+  { title: 'Zwei Zahlen mit Zehnern',
+    explain: '<p>Zerlege die zweite Zahl: erst die Zehner, dann die Einer.</p>' + blocks(34, 28, '+') + '<p class="example">34 + 28<br>= 34 <span class="hl">+ 20</span> = 54<br>54 <span class="hl">+ 8</span> = <em>62</em></p><p class="example">71 − 36<br>= 71 <span class="hl">− 30</span> = 41<br>41 <span class="hl">− 6</span> = <em>35</em></p>',
+    gen: function () { var a, b, z, e; if (Math.random() < .5) { a = rnd(11, 78); b = rnd(11, 99 - a); z = b - b % 10; e = b % 10; return numTask(a, '+', b, a + ' + ' + z + ' = ' + (a + z) + (e ? ', dann + ' + e + ' = ' + (a + b) : '') + '.'); } a = rnd(30, 99); b = rnd(11, a - 10); z = b - b % 10; e = b % 10; return numTask(a, '−', b, a + ' − ' + z + ' = ' + (a - z) + (e ? ', dann − ' + e + ' = ' + (a - b) : '') + '.'); } }
+];
+
+function clockTask(mins) {
+  var h = rnd(1, 12), m = pick(mins), key = function (x, y) { return x + ':' + y; };
+  var norm = function (x) { return ((x - 1 + 12) % 12) + 1; };
+  var cands = [[norm(h + 1), m], [norm(h - 1), m], [h, (m + 30) % 60], [norm(h + 1), (m + 30) % 60]];
+  if (m % 5 === 0 && h * 5 % 60 !== m) cands.push([norm(m / 5 || 12), (h * 5) % 60]);
+  cands.push([rnd(1, 12), pick(mins)], [rnd(1, 12), pick(mins)], [rnd(1, 12), pick(mins)]);
+  var seen = {}, opts = [{ h: h, m: m, ok: true }]; seen[key(h, m)] = 1;
+  shuffle(cands.slice(0, 4)).concat(cands.slice(4)).forEach(function (c) { if (opts.length < 4 && mins.indexOf(c[1]) > -1 && !seen[key(c[0], c[1])]) { seen[key(c[0], c[1])] = 1; opts.push({ h: c[0], m: c[1], ok: false }); } });
+  while (opts.length < 4) { var x = rnd(1, 12), y = pick(mins); if (!seen[key(x, y)]) { seen[key(x, y)] = 1; opts.push({ h: x, m: y, ok: false }); } }
+  var hint = m === 0 ? 'Der lange Zeiger zeigt genau nach oben auf die 12. Dann ist es volle Stunde.'
+    : m === 30 ? 'Der lange Zeiger zeigt auf die 6. Der kurze Zeiger ist schon halb auf dem Weg zur ' + norm(h + 1) + '. Darum sagt man „halb ' + HW[norm(h + 1)] + '“.'
+    : 'Der kurze Zeiger zeigt die Stunde. Der lange Zeiger zeigt die Minuten: jede Zahl sind 5 Minuten.';
+  return { type: 'clock', h: h, m: m, opts: shuffle(opts), hint: hint, answerText: digital(h, m) + ' (' + clockWords(h, m) + ')' };
+}
+var UHR = [
+  { title: 'Volle Stunden',
+    explain: '<p>Die Uhr hat zwei Zeiger. Der <strong style="color:var(--hour)">kurze Zeiger</strong> zeigt die Stunde. Der <strong style="color:var(--accent)">lange Zeiger</strong> zeigt die Minuten.</p><div class="row">' + clockSVG(3, 0, 150) + '<p class="example">Der lange Zeiger steht oben auf der 12,<br>der kurze auf der 3:<br><em>3 Uhr</em></p></div>',
+    gen: function () { return clockTask([0]); } },
+  { title: 'Halbe Stunden',
+    explain: '<p>Zeigt der lange Zeiger nach unten auf die 6, ist eine halbe Stunde vorbei. Der kurze Zeiger steht dann zwischen zwei Zahlen.</p><div class="row">' + clockSVG(3, 30, 150) + '<p class="example">Es ist 3:30.<br>Man sagt: <em>halb vier</em>.<br>Bis 4 Uhr fehlt noch eine halbe Stunde.</p></div>',
+    gen: function () { return clockTask([0, 30]); } },
+  { title: 'Viertelstunden',
+    explain: '<p>Die Uhr kann man wie eine Torte in vier Viertel teilen.</p><div class="row">' + clockSVG(3, 15, 130) + '<p class="example">Langer Zeiger auf der 3:<br><em>Viertel nach drei</em> (3:15)</p></div><div class="row">' + clockSVG(3, 45, 130) + '<p class="example">Langer Zeiger auf der 9:<br><em>Viertel vor vier</em> (3:45)</p></div>',
+    gen: function () { return clockTask([0, 15, 30, 45]); } },
+  { title: 'Fünf-Minuten-Schritte',
+    explain: '<p>Von einer Zahl zur nächsten sind es 5 Minuten. Zähle in Fünferschritten: 5, 10, 15, 20 …</p><div class="row">' + clockSVG(2, 20, 150) + '<p class="example">Der lange Zeiger steht auf der 4.<br>4 × 5 = 20 Minuten.<br><em>2:20, zwanzig nach zwei</em></p></div>',
+    gen: function () { return clockTask([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]); } }
+];
+
+var THEMES = {
+  plus: { name: 'Plus und Minus', sub: 'Zahlen bis 100', levels: PLUS, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="var(--accent-soft)"/><path d="M14 22h16M22 14v16" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/><path d="M36 22h16" stroke="var(--margin)" stroke-width="5" stroke-linecap="round"/><text x="14" y="52" font-family="Baloo 2,sans-serif" font-weight="800" font-size="16" fill="var(--ink)">100</text></svg>' },
+  uhr: { name: 'Uhr lesen', sub: 'Stunden und Minuten', levels: UHR, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="var(--card)" stroke="var(--ink)" stroke-width="4"/><path d="M32 32V16" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/><path d="M32 32l10 6" stroke="var(--hour)" stroke-width="5" stroke-linecap="round"/></svg>' }
+};
+
+/* ---------- Navigation ---------- */
+var VIEWS = ['home', 'learn', 'quiz', 'result', 'game', 'gate', 'parents'];
+function go(v) { VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
+document.addEventListener('click', function (e) { var t = e.target.closest('[data-go]'); if (t) { stopGame(); go(t.getAttribute('data-go')); } });
+
+function renderHome() {
+  $('hello').textContent = 'Hallo ' + S.name + '!';
+  $('starCount').textContent = S.stars;
+  var h = '';
+  Object.keys(THEMES).forEach(function (k) {
+    var T = THEMES[k], lv = S.levels[k], done = S.mastered[k];
+    var st = ''; for (var i = 1; i <= T.levels.length; i++) st += '<i class="' + (i < lv || (done && i === lv) ? 'on' : '') + '"></i>';
+    h += '<button class="topic" data-topic="' + k + '">' + T.icon + '<h3>' + T.name + '</h3><p class="level">' + T.sub + ' · Stufe ' + lv + ' von ' + T.levels.length + ': ' + T.levels[lv - 1].title + '</p><div class="steps">' + st + '</div>' + (done ? '<span class="badge">Alles geschafft! Weiter üben?</span>' : '') + '</button>';
+  });
+  $('topicCards').innerHTML = h;
+  $('balloonBadge').textContent = 'Rekord: ' + S.best.balloon;
+  var can = S.stars >= COST;
+  $('balloonInfo').textContent = can ? 'Kostet ' + COST + ' Sterne · ' + GAME_SECONDS + ' Sekunden' : 'Du brauchst ' + COST + ' Sterne. Noch ' + (COST - S.stars) + ' sammeln!';
+  $('playBalloons').disabled = !can; $('playBalloons').style.opacity = can ? 1 : .6;
+}
+$('topicCards').addEventListener('click', function (e) { var b = e.target.closest('[data-topic]'); if (b) openLearn(b.getAttribute('data-topic')); });
+
+/* ---------- Lernen & Üben ---------- */
+var Q = null;
+function openLearn(k) {
+  var T = THEMES[k], lv = S.levels[k], L = T.levels[lv - 1];
+  Q = { theme: k, level: lv };
+  $('learnBadge').textContent = T.name + ' · Stufe ' + lv;
+  $('learnTitle').textContent = L.title;
+  $('learnBody').innerHTML = L.explain;
+  go('learn');
+}
+$('startQuiz').addEventListener('click', function () {
+  var L = THEMES[Q.theme].levels[Q.level - 1], tasks = [], seen = {};
+  for (var guard = 0; tasks.length < ROUND && guard < 200; guard++) { var t = L.gen(), id = t.type === 'num' ? t.q : t.h + ':' + t.m; if (!seen[id] || guard > 150) { seen[id] = 1; tasks.push(t); } }
+  Q.tasks = tasks; Q.i = 0; Q.results = []; Q.wrong = []; Q.input = '';
+  go('quiz'); renderTask();
+});
+$('quitQuiz').addEventListener('click', function () { go('home'); });
+
+function renderProgress() {
+  var h = ''; for (var i = 0; i < ROUND; i++) h += '<i class="' + (Q.results[i] === true ? 'ok' : Q.results[i] === false ? 'no' : i === Q.i ? 'now' : '') + '"></i>';
+  $('progress').innerHTML = h; $('quizStars').textContent = S.stars;
+}
+function renderTask() {
+  renderProgress();
+  var t = Q.tasks[Q.i], h = '<p class="muted">Aufgabe ' + (Q.i + 1) + ' von ' + ROUND + '</p>';
+  Q.locked = false;
+  if (t.type === 'num') {
+    Q.input = '';
+    h += '<div class="task">' + esc(t.q) + ' <span class="answer" id="ans">&nbsp;</span></div><div id="fb"></div><div class="pad" id="pad">';
+    [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(function (n) { h += '<button data-k="' + n + '">' + n + '</button>'; });
+    h += '<button class="del" data-k="del" aria-label="Löschen">⌫</button><button data-k="0">0</button><button class="ok" data-k="ok" aria-label="Fertig">✓</button></div>';
+  } else {
+    h += '<h3 style="text-align:center">Wie spät ist es?</h3><div class="clockbox">' + clockSVG(t.h, t.m) + '</div><div id="fb"></div><div class="choices" id="choices">';
+    t.opts.forEach(function (o, i) { h += '<button data-o="' + i + '"><span class="dig">' + digital(o.h, o.m) + '</span><span class="wrd">' + clockWords(o.h, o.m) + '</span></button>'; });
+    h += '</div>';
+  }
+  $('quizBody').innerHTML = h;
+}
+$('quizBody').addEventListener('click', function (e) {
+  var t = Q && Q.tasks[Q.i]; if (!t) return;
+  var nx = e.target.closest('#nextBtn'); if (nx) { nextTask(); return; }
+  if (Q.locked) return;
+  var k = e.target.closest('[data-k]');
+  if (k && t.type === 'num') {
+    var v = k.getAttribute('data-k');
+    if (v === 'del') Q.input = Q.input.slice(0, -1);
+    else if (v === 'ok') { if (Q.input !== '') check(parseInt(Q.input, 10) === t.answer, Q.input); return; }
+    else if (Q.input.length < 3) Q.input += v;
+    $('ans').innerHTML = Q.input || '&nbsp;';
+  }
+  var o = e.target.closest('[data-o]');
+  if (o && t.type === 'clock') {
+    var opt = t.opts[+o.getAttribute('data-o')];
+    o.classList.add(opt.ok ? 'right' : 'wrong');
+    if (!opt.ok) { var btns = $('choices').children; for (var i = 0; i < btns.length; i++) if (t.opts[i].ok) btns[i].classList.add('right'); }
+    check(opt.ok, digital(opt.h, opt.m));
+  }
+});
+document.addEventListener('keydown', function (e) {
+  if ($('v-quiz').hidden || !Q || Q.locked) return;
+  var t = Q.tasks[Q.i]; if (t.type !== 'num') return;
+  var b = null;
+  if (/^[0-9]$/.test(e.key)) b = document.querySelector('#pad [data-k="' + e.key + '"]');
+  else if (e.key === 'Backspace') b = document.querySelector('#pad [data-k="del"]');
+  else if (e.key === 'Enter') b = document.querySelector('#pad [data-k="ok"]');
+  if (b) { e.preventDefault(); b.click(); }
+});
+var PRAISE = ['Richtig!', 'Super!', 'Toll gemacht!', 'Genau!', 'Klasse!', 'Prima!'];
+function check(ok, given) {
+  var t = Q.tasks[Q.i]; Q.locked = true; Q.results[Q.i] = ok;
+  if (ok) { S.stars += 1; save(); $('fb').innerHTML = '<div class="feedback good"><strong>' + pick(PRAISE) + ' +1 ★</strong></div>'; renderProgress(); setTimeout(nextTask, 900); }
+  else {
+    var right = t.type === 'num' ? t.answer : t.answerText;
+    Q.wrong.push({ q: t.type === 'num' ? t.q + ' ?' : 'Uhr ' + digital(t.h, t.m), given: given, answer: t.type === 'num' ? t.answer : digital(t.h, t.m) });
+    $('fb').innerHTML = '<div class="feedback bad"><strong>Fast! Richtig ist ' + esc(right) + '.</strong><span>' + esc(t.hint) + '</span><div><button class="btn" id="nextBtn">Weiter</button></div></div>';
+    renderProgress();
+    if ($('pad')) $('pad').hidden = true;
+  }
+}
+function nextTask() { if (!Q || $('v-quiz').hidden) return; Q.i++; if (Q.i >= ROUND) finish(); else renderTask(); }
+
+function finish() {
+  var correct = Q.results.filter(Boolean).length, bonus = correct === ROUND ? 3 : 0, T = THEMES[Q.theme];
+  S.stars += bonus;
+  var msg = '';
+  if (correct >= PASS) {
+    if (Q.level < T.levels.length && S.levels[Q.theme] === Q.level) { S.levels[Q.theme] = Q.level + 1; msg = 'Neue Stufe freigeschaltet: <strong>' + T.levels[Q.level].title + '</strong>!'; }
+    else if (Q.level === T.levels.length) { S.mastered[Q.theme] = true; msg = 'Du hast alle Stufen bei „' + T.name + '“ geschafft!'; }
+  } else msg = 'Für die nächste Stufe brauchst du ' + PASS + ' richtige Aufgaben. Du schaffst das!';
+  S.history.push({ d: new Date().toISOString(), theme: Q.theme, level: Q.level, score: correct, wrong: Q.wrong });
+  if (S.history.length > 200) S.history = S.history.slice(-200);
+  save();
+  $('resTitle').textContent = correct === ROUND ? 'Alles richtig!' : correct >= PASS ? 'Sehr gut!' : correct >= 5 ? 'Gut gemacht!' : 'Weiter üben!';
+  $('resScore').textContent = correct + ' / ' + ROUND;
+  var st = ''; for (var i = 0; i < correct + bonus; i++) st += '<span style="animation-delay:' + i * 70 + 'ms">★</span>';
+  $('resStars').innerHTML = st;
+  $('resEarned').innerHTML = 'Du hast <b>' + (correct + bonus) + ' Sterne</b> gesammelt' + (bonus ? ' (mit 3 Bonus-Sternen)' : '') + '. Jetzt hast du <b>' + S.stars + '</b>.';
+  $('resLevel').innerHTML = msg;
+  go('result');
+}
+$('resAgain').addEventListener('click', function () { openLearn(Q.theme); });
+
+/* ---------- Minispiel ---------- */
+var G = null;
+var COLORS = ['var(--b1)', 'var(--b2)', 'var(--b3)', 'var(--b4)', 'var(--b5)'];
+$('playBalloons').addEventListener('click', function () {
+  if (S.stars < COST) return;
+  S.stars -= COST; save();
+  go('game'); $('gameEnd').hidden = true; $('arena').hidden = false; $('arena').innerHTML = '';
+  G = { score: 0, end: performance.now() + GAME_SECONDS * 1000, list: [], last: 0, nextSpawn: 0, raf: 0 };
+  $('gScore').textContent = 0; $('gTime').textContent = GAME_SECONDS;
+  G.raf = requestAnimationFrame(tick);
+});
+function spawn(now) {
+  var ar = $('arena'), w = ar.clientWidth, el = document.createElement('div');
+  var size = rnd(54, 76), b = { el: el, x: rnd(4, Math.max(5, w - size - 4)), y: ar.clientHeight + 10, v: (60 + Math.random() * 70) * (1 + (now - (G.end - GAME_SECONDS * 1000)) / (GAME_SECONDS * 1000)), wob: Math.random() * 6 };
+  el.className = 'balloon'; el.style.width = size + 'px'; el.style.height = Math.round(size * 1.2) + 'px'; el.style.background = pick(COLORS);
+  el.addEventListener('pointerdown', function (e) { e.preventDefault(); popBalloon(b); });
+  ar.appendChild(el); G.list.push(b);
+}
+function popBalloon(b) {
+  if (!G || b.dead) return; b.dead = true; G.score++; $('gScore').textContent = G.score;
+  var p = document.createElement('div'); p.className = 'burst'; p.textContent = '+1'; p.style.left = (b.x + 14) + 'px'; p.style.top = b.y + 'px';
+  $('arena').appendChild(p); setTimeout(function () { p.remove(); }, 650); b.el.remove();
+}
+function tick(now) {
+  if (!G) return;
+  var dt = G.last ? Math.min(0.05, (now - G.last) / 1000) : 0; G.last = now;
+  if (now >= G.nextSpawn) { spawn(now); G.nextSpawn = now + rnd(380, 720); }
+  G.list = G.list.filter(function (b) {
+    if (b.dead) return false;
+    b.y -= b.v * dt; b.wob += dt * 3;
+    if (b.y < -120) { b.el.remove(); return false; }
+    b.el.style.transform = 'translate(' + (b.x + Math.sin(b.wob) * 8).toFixed(1) + 'px,' + b.y.toFixed(1) + 'px)';
+    return true;
+  });
+  var left = Math.max(0, Math.ceil((G.end - now) / 1000)); $('gTime').textContent = left;
+  if (now >= G.end) { endGame(); return; }
+  G.raf = requestAnimationFrame(tick);
+}
+function endGame() {
+  var sc = G.score, rec = sc > S.best.balloon; if (rec) S.best.balloon = sc; save();
+  stopGame();
+  $('arena').hidden = true; $('gameEnd').hidden = false;
+  $('gEndTitle').textContent = rec ? 'Neuer Rekord: ' + sc + '!' : sc + ' Ballons!';
+  $('gEndText').textContent = rec ? 'So viele hast du noch nie geschafft.' : 'Dein Rekord sind ' + S.best.balloon + ' Ballons. Sammle Sterne für die nächste Runde.';
+}
+function stopGame() { if (G) { cancelAnimationFrame(G.raf); G = null; } }
+
+/* ---------- Eltern ---------- */
+var gateAns = 0;
+$('toParents').addEventListener('click', function () { var a = rnd(12, 19), b = rnd(6, 9); gateAns = a * b; $('gateQ').textContent = a + ' × ' + b; $('gateIn').value = ''; $('gateMsg').hidden = true; go('gate'); });
+$('gateOk').addEventListener('click', function () { if (parseInt($('gateIn').value, 10) === gateAns) go('parents'); else $('gateMsg').hidden = false; });
+$('gateIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('gateOk').click(); });
+
+function fmtDate(iso) { var d = new Date(iso); return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); }
+function renderParents() {
+  $('nameIn').value = S.name;
+  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + S.stars + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Ballon-Rekord</span><strong>' + S.best.balloon + '</strong></div></div></div>';
+  Object.keys(THEMES).forEach(function (k) {
+    var T = THEMES[k], hist = S.history.filter(function (x) { return x.theme === k; }), last5 = hist.slice(-5);
+    var rate = last5.length ? Math.round(last5.reduce(function (s, x) { return s + x.score; }, 0) / (last5.length * ROUND) * 100) + ' %' : '–';
+    var opts = T.levels.map(function (L, i) { return '<option value="' + (i + 1) + '"' + (S.levels[k] === i + 1 ? ' selected' : '') + '>Stufe ' + (i + 1) + ': ' + L.title + '</option>'; }).join('');
+    h += '<div class="sheet"><h3>' + T.name + '</h3><div class="kv"><div><span>Aktuelle Stufe</span><strong>' + S.levels[k] + ' / ' + T.levels.length + (S.mastered[k] ? ' ✓' : '') + '</strong></div><div><span>Runden</span><strong>' + hist.length + '</strong></div><div><span>Trefferquote (letzte 5)</span><strong>' + rate + '</strong></div></div>';
+    h += '<div class="row"><label for="lv-' + k + '">Stufe ändern</label><select id="lv-' + k + '" data-lv="' + k + '">' + opts + '</select></div>';
+    if (hist.length) {
+      h += '<div class="table-wrap"><table><thead><tr><th>Wann</th><th>Stufe</th><th>Richtig</th></tr></thead><tbody>';
+      hist.slice(-8).reverse().forEach(function (x) { h += '<tr><td>' + fmtDate(x.d) + '</td><td>' + x.level + '</td><td>' + x.score + ' / ' + ROUND + '</td></tr>'; });
+      h += '</tbody></table></div>';
+      var wr = []; hist.slice().reverse().forEach(function (x) { (x.wrong || []).forEach(function (w) { if (wr.length < 8) wr.push(w); }); });
+      if (wr.length) { h += '<p class="muted">Zuletzt falsch:</p><div class="table-wrap"><table><thead><tr><th>Aufgabe</th><th>Antwort</th><th>Richtig</th></tr></thead><tbody>'; wr.forEach(function (w) { h += '<tr><td>' + esc(w.q) + '</td><td class="danger">' + esc(w.given) + '</td><td>' + esc(w.answer) + '</td></tr>'; }); h += '</tbody></table></div>'; }
+    } else h += '<p class="muted">Noch keine Runde gespielt.</p>';
+    h += '</div>';
+  });
+  $('parentBody').innerHTML = h;
+}
+$('parentBody').addEventListener('change', function (e) { var k = e.target.getAttribute('data-lv'); if (k) { S.levels[k] = +e.target.value; S.mastered[k] = false; save(); renderParents(); } });
+$('nameSave').addEventListener('click', function () { var n = $('nameIn').value.trim(); if (n) { S.name = n; save(); $('nameSave').textContent = 'Gespeichert'; setTimeout(function () { $('nameSave').textContent = 'Speichern'; }, 1200); } });
+$('resetAsk').addEventListener('click', function () { $('resetConfirm').hidden = false; });
+$('resetNo').addEventListener('click', function () { $('resetConfirm').hidden = true; });
+$('resetYes').addEventListener('click', function () { var n = S.name; S = fresh(); S.name = n; save(); $('resetConfirm').hidden = true; renderParents(); });
+
+go('home');
+})();
+</script>
+
+</body>
+</html>
