@@ -111,6 +111,12 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .progress i.now { border: 2px solid var(--accent); }
 .task { text-align: center; font-family: var(--f-display); font-weight: 800; font-size: clamp(2.6rem, 11vw, 4.6rem); font-variant-numeric: tabular-nums; letter-spacing: .02em; line-height: 1.1; }
 .answer { display: inline-block; min-width: 2.2em; border-bottom: 5px solid var(--accent); color: var(--accent); }
+.task.small { font-size: clamp(2rem, 8vw, 3.2rem); }
+.unit { font-size: .7em; color: var(--muted); }
+.story { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; font-size: clamp(1.25rem, 3.6vw, 1.6rem); line-height: 1.5; background: var(--accent-soft); border-radius: 14px; padding: 16px 18px; }
+.speak { font-size: 1.05rem; padding: 8px 16px; }
+.money { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+.money svg { flex: none; }
 .pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 420px; width: 100%; margin: 0 auto; }
 .pad button { font-family: var(--f-display); font-weight: 800; font-size: 2rem; padding: 12px 0; border-radius: 14px; background: var(--card); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
 .pad button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
@@ -289,9 +295,9 @@ var COST = 5, GAME_SECONDS = 25, PASS = 8, LOW = 4, ROUND = 10;
 function lastScore(theme, level) { for (var i = S.history.length - 1; i >= 0; i--) { var x = S.history[i]; if (x.theme === theme) return x.level === level ? x.score : null; } return null; }
 
 function merge(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call(b, k)) a[k] = b[k]; return a; }
-function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, uhr: 1 }, mastered: {}, history: [], best: { balloon: 0, memory: 0 } }; }
+function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, uhr: 1, geld: 1, sach: 1 }, mastered: {}, history: [], best: { balloon: 0, memory: 0 } }; }
 var S = fresh();
-try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, uhr: 1 }, p.levels || {}); S.best = merge({ balloon: 0, memory: 0 }, p.best || {}); } } catch (e) {}
+try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, uhr: 1, geld: 1, sach: 1 }, p.levels || {}); S.best = merge({ balloon: 0, memory: 0 }, p.best || {}); } } catch (e) {}
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
 
 function $(id) { return document.getElementById(id); }
@@ -376,9 +382,103 @@ var UHR = [
     gen: function () { return clockTask([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]); } }
 ];
 
+/* ---------- Geld ---------- */
+function coinSVG(v, euro) {
+  var r = euro ? (v === 2 ? 30 : 28) : ({ 1: 19, 2: 22, 5: 24, 10: 23, 20: 25, 50: 28 })[v], d = r * 2 + 4;
+  var copper = !euro && v <= 5, inner = euro ? (v === 1 ? '#c9c9c9' : '#e4b84a') : copper ? '#c47a43' : '#e4b84a', ring = euro ? (v === 1 ? '#e4b84a' : '#c9c9c9') : inner;
+  var s = '<svg width="' + d + '" height="' + d + '" viewBox="0 0 ' + d + ' ' + d + '" role="img" aria-label="' + v + (euro ? ' Euro' : ' Cent') + '">';
+  s += '<circle cx="' + d / 2 + '" cy="' + d / 2 + '" r="' + r + '" fill="' + ring + '" stroke="#6b5420" stroke-width="1.5"/>';
+  if (euro) s += '<circle cx="' + d / 2 + '" cy="' + d / 2 + '" r="' + (r - 7) + '" fill="' + inner + '"/>';
+  s += '<text x="' + d / 2 + '" y="' + (d / 2 + 2) + '" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="' + Math.round(r * .75) + '" fill="#2b2110">' + v + '</text>';
+  s += '<text x="' + d / 2 + '" y="' + (d / 2 + r * .62) + '" text-anchor="middle" font-family="Andika,sans-serif" font-size="' + Math.max(8, Math.round(r * .32)) + '" fill="#2b2110">' + (euro ? 'Euro' : 'Cent') + '</text></svg>';
+  return s;
+}
+function noteSVG(v) {
+  var col = { 5: '#9aa7a6', 10: '#d9837a', 20: '#7aa0d9', 50: '#e0a35a' }[v];
+  return '<svg width="104" height="56" viewBox="0 0 104 56" role="img" aria-label="' + v + ' Euro Schein"><rect x="1" y="1" width="102" height="54" rx="6" fill="' + col + '" stroke="#3b3b3b" stroke-width="1.5"/><rect x="8" y="8" width="30" height="40" rx="4" fill="rgba(255,255,255,.35)"/><text x="70" y="36" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="24" fill="#1f1f1f">' + v + ' €</text></svg>';
+}
+function moneyRow(items) { return items.map(function (x) { return x[1] === 'n' ? noteSVG(x[0]) : coinSVG(x[0], x[1] === 'e'); }).join(''); }
+function pickMoney(max, kinds) {
+  var items = [], sum = 0, n = rnd(2, 5);
+  for (var i = 0; i < n; i++) { var opts = kinds.filter(function (k) { return sum + k[0] <= max; }); if (!opts.length) break; var k = pick(opts); items.push(k); sum += k[0]; }
+  items.sort(function (a, b) { return (b[1] === 'n') - (a[1] === 'n') || b[0] - a[0]; });
+  return { items: items, sum: sum };
+}
+var CENTS = [[1, 'c'], [2, 'c'], [5, 'c'], [10, 'c'], [20, 'c'], [50, 'c']];
+var EUROS = [[1, 'e'], [2, 'e'], [5, 'n'], [10, 'n'], [20, 'n'], [50, 'n']];
+var THINGS = [['Ball', 'einen'], ['Buch', 'ein'], ['Puzzle', 'ein'], ['Malkasten', 'einen'], ['Rucksack', 'einen'], ['Kuscheltier', 'ein'], ['Spielauto', 'ein'], ['Federmäppchen', 'ein']];
+function moneyTask(items, sum, unit, hintStart) {
+  return { type: 'num', q: (unit === 'ct' ? 'Cent' : 'Euro') + ' zählen: ' + items.map(function (x) { return x[0]; }).join(' + '), prompt: 'Zusammen:', visual: moneyRow(items), answer: sum, unit: unit === 'ct' ? 'ct' : '€',
+    hint: hintStart + items.map(function (x) { return x[0]; }).join(' + ') + ' = ' + sum + (unit === 'ct' ? ' ct' : ' €') + '.' };
+}
+var GELD = [
+  { title: 'Cent zählen',
+    explain: '<p>Es gibt Münzen mit 1, 2, 5, 10, 20 und 50 Cent. Zähle immer mit der größten Münze zuerst.</p><div class="money">' + moneyRow([[20, 'c'], [10, 'c'], [5, 'c'], [2, 'c']]) + '</div><p class="example">20 + 10 = 30<br>30 + 5 = 35<br>35 + 2 = <em>37 ct</em></p><p>100 Cent sind genau 1 Euro.</p>',
+    gen: function () { var m = pickMoney(99, CENTS); return moneyTask(m.items, m.sum, 'ct', 'Große Münzen zuerst: '); } },
+  { title: 'Euro zählen',
+    explain: '<p>Euro gibt es als Münzen (1 € und 2 €) und als Scheine (5 €, 10 €, 20 €, 50 €). Fang mit dem größten Schein an.</p><div class="money">' + moneyRow([[20, 'n'], [5, 'n'], [2, 'e'], [1, 'e']]) + '</div><p class="example">20 + 5 = 25<br>25 + 2 = 27<br>27 + 1 = <em>28 €</em></p>',
+    gen: function () { var m = pickMoney(100, EUROS); return moneyTask(m.items, m.sum, 'e', 'Großes Geld zuerst: '); } },
+  { title: 'Preise zusammenrechnen',
+    explain: '<p>Wenn du zwei Sachen kaufst, rechnest du die Preise zusammen.</p><p class="example">Ein Ball kostet 14 €.<br>Ein Buch kostet 9 €.<br>14 + 9 = <em>23 €</em></p>',
+    gen: function () { var a = pick(THINGS), b = pick(THINGS.filter(function (x) { return x !== a; })), x = rnd(3, 45), y = rnd(3, 50 - Math.min(x, 47) + 0); if (x + y > 100) y = 100 - x;
+      return { type: 'num', q: a[0] + ' ' + x + ' € + ' + b[0] + ' ' + y + ' €', story: 'Ein ' + a[0] + ' kostet ' + x + ' €. Ein ' + b[0] + ' kostet ' + y + ' €. Wie viel kostet beides zusammen?', prompt: x + ' + ' + y + ' =', answer: x + y, unit: '€', hint: 'Rechnung: ' + x + ' + ' + y + ' = ' + (x + y) + ' €.' }; } },
+  { title: 'Wechselgeld',
+    explain: '<p>Wenn du mit einem großen Schein bezahlst, bekommst du Geld zurück. Rechne: <strong>bezahlt minus Preis</strong>. Du kannst auch vom Preis bis zum Schein weiterzählen.</p><div class="money">' + moneyRow([[50, 'n']]) + '</div><p class="example">Das Spiel kostet 37 €.<br>Du bezahlst mit 50 €.<br>37 <span class="hl">+ 3</span> = 40, 40 <span class="hl">+ 10</span> = 50<br>Du bekommst <em>13 €</em> zurück.</p>',
+    gen: function () { var paid = pick([10, 20, 50, 50, 100]), price = rnd(Math.max(1, Math.round(paid * .3)), paid - 1), th = pick(THINGS);
+      return { type: 'num', q: 'Wechselgeld: ' + paid + ' € − ' + price + ' €', story: 'Ein ' + th[0] + ' kostet ' + price + ' €. Du bezahlst mit ' + paid + ' €. Wie viel Geld bekommst du zurück?', visual: moneyRow([[paid, paid === 100 ? 'n' : 'n']].map(function (x) { return x[0] === 100 ? [50, 'n'] : x; }).concat(paid === 100 ? [[50, 'n']] : [])), prompt: paid + ' − ' + price + ' =', answer: paid - price, unit: '€', hint: 'Zähle von ' + price + ' bis ' + paid + ': Das sind ' + (paid - price) + ' €.' }; } }
+];
+
+/* ---------- Sachaufgaben ---------- */
+var NAMES = ['Lea', 'Ben', 'Mia', 'Tom', 'Emma', 'Paul', 'Ida', 'Noah'];
+function who() { return Math.random() < .35 ? S.name : pick(NAMES); }
+function story(text, prompt, answer, unit, calc) { return { type: 'num', q: text.length > 60 ? text.slice(0, 57) + '…' : text, story: text, prompt: prompt, answer: answer, unit: unit, hint: 'Rechnung: ' + calc + '.' }; }
+var SACH1 = [
+  function () { var n = who(), a = rnd(4, 12), b = rnd(3, 8); return story(n + ' hat ' + a + ' Murmeln. Zum Geburtstag bekommt ' + n + ' noch ' + b + ' Murmeln dazu. Wie viele Murmeln sind es jetzt?', 'Murmeln:', a + b, '', a + ' + ' + b + ' = ' + (a + b)); },
+  function () { var a = rnd(8, 15), b = rnd(2, 7); return story('Auf dem Baum sitzen ' + a + ' Vögel. ' + b + ' Vögel fliegen weg. Wie viele Vögel sitzen noch auf dem Baum?', 'Vögel:', a - b, '', a + ' − ' + b + ' = ' + (a - b)); },
+  function () { var n = who(), a = rnd(5, 12), b = rnd(3, 8); return story(n + ' malt ' + a + ' Bilder. Danach malt ' + n + ' noch ' + b + ' Bilder. Wie viele Bilder sind es zusammen?', 'Bilder:', a + b, '', a + ' + ' + b + ' = ' + (a + b)); },
+  function () { var a = rnd(10, 18), b = rnd(3, 9); return story('In der Dose liegen ' + a + ' Kekse. Die Kinder essen ' + b + ' Kekse auf. Wie viele Kekse sind noch in der Dose?', 'Kekse:', a - b, '', a + ' − ' + b + ' = ' + (a - b)); }
+];
+var SACH2 = [
+  function () { var a = rnd(20, 45), b = rnd(5, 19); return story('Im Bus sitzen ' + a + ' Kinder. An der Haltestelle steigen ' + b + ' Kinder aus. Wie viele Kinder sitzen noch im Bus?', 'Kinder:', a - b, '', a + ' − ' + b + ' = ' + (a - b)); },
+  function () { var a = rnd(20, 50), b = rnd(12, 40); return story('Klasse 2a sammelt ' + a + ' Kastanien. Klasse 2b sammelt ' + b + ' Kastanien. Wie viele Kastanien sind das zusammen?', 'Kastanien:', a + b, '', a + ' + ' + b + ' = ' + (a + b)); },
+  function () { var n = who(), a = rnd(40, 90), b = rnd(12, a - 10); return story(n + ' liest ein Buch mit ' + a + ' Seiten. ' + b + ' Seiten hat ' + n + ' schon gelesen. Wie viele Seiten fehlen noch?', 'Seiten:', a - b, '', a + ' − ' + b + ' = ' + (a - b)); },
+  function () { var a = rnd(25, 60), b = rnd(10, 35); return story('Auf dem Spielplatz spielen ' + a + ' Kinder. Dann kommen noch ' + b + ' Kinder dazu. Wie viele Kinder spielen jetzt dort?', 'Kinder:', a + b, '', a + ' + ' + b + ' = ' + (a + b)); }
+];
+var SACH3 = [
+  function () { var n = who(), a = pick([20, 30, 40, 50]), b = rnd(4, 12), c = rnd(3, 10); return story(n + ' hat ' + a + ' €. ' + n + ' kauft ein Buch für ' + b + ' € und einen Stift für ' + c + ' €. Wie viel Geld bleibt übrig?', 'Übrig:', a - b - c, '€', a + ' − ' + b + ' − ' + c + ' = ' + (a - b - c)); },
+  function () { var a = rnd(20, 40), b = rnd(5, 15), c = rnd(4, 12); return story('Im Zug sitzen ' + a + ' Leute. Am ersten Bahnhof steigen ' + b + ' ein. Am zweiten Bahnhof steigen ' + c + ' aus. Wie viele Leute sitzen jetzt im Zug?', 'Leute:', a + b - c, '', a + ' + ' + b + ' − ' + c + ' = ' + (a + b - c)); },
+  function () { var n = who(), a = rnd(10, 30), b = rnd(10, 30), c = rnd(5, 20); return story(n + ' sammelt Sticker. Am Montag bekommt ' + n + ' ' + a + ', am Dienstag ' + b + ' und am Mittwoch ' + c + ' Sticker. Wie viele Sticker sind es zusammen?', 'Sticker:', a + b + c, '', a + ' + ' + b + ' + ' + c + ' = ' + (a + b + c)); }
+];
+var SACH4 = [
+  function () { var k = pick([2, 5, 10]), n = rnd(2, 10); return story('In einer Packung sind ' + k + ' Eier. Mama kauft ' + n + ' Packungen. Wie viele Eier sind das?', 'Eier:', k * n, '', n + ' · ' + k + ' = ' + (k * n)); },
+  function () { var k = pick([2, 5, 10]), n = rnd(2, 10); return story('Ein Fahrrad hat 2 Räder. Vor der Schule stehen ' + n + ' Fahrräder. Wie viele Räder sind das?'.replace('2 Räder', k === 2 ? '2 Räder' : '2 Räder'), 'Räder:', n * 2, '', n + ' · 2 = ' + n * 2); },
+  function () { var n = rnd(2, 10); return story('Eine Hand hat 5 Finger. Wie viele Finger haben ' + n + ' Hände?', 'Finger:', n * 5, '', n + ' · 5 = ' + n * 5); },
+  function () { var n = rnd(2, 10); return story('Ein Zehn-Euro-Schein ist 10 € wert. ' + who() + ' hat ' + n + ' Zehn-Euro-Scheine. Wie viel Geld ist das?', 'Geld:', n * 10, '€', n + ' · 10 = ' + n * 10); },
+  function () { var k = pick([2, 5, 10]), n = rnd(2, 10); return story('Die Lehrerin verteilt Stifte. Jedes Kind bekommt ' + k + ' Stifte. Es sind ' + n + ' Kinder. Wie viele Stifte braucht sie?', 'Stifte:', k * n, '', n + ' · ' + k + ' = ' + (k * n)); }
+];
+var SACH = [
+  { title: 'Kleine Geschichten',
+    explain: '<p>In einer Sachaufgabe steckt eine Rechnung. Lies die Geschichte genau. Frag dich: <strong>Kommt etwas dazu</strong> (plus) oder <strong>geht etwas weg</strong> (minus)?</p><p class="example">Ben hat 8 Murmeln.<br>Er bekommt 5 dazu.<br>„dazu“ heißt plus: 8 + 5 = <em>13</em></p>',
+    gen: function () { return pick(SACH1)(); } },
+  { title: 'Geschichten bis 100',
+    explain: '<p>Achte auf Wörter wie <strong>dazu, zusammen</strong> (plus) oder <strong>weg, aussteigen, fehlen noch</strong> (minus).</p><p class="example">Im Bus sitzen 34 Kinder.<br>9 Kinder steigen aus.<br>34 − 9 = <em>25</em></p>',
+    gen: function () { return pick(SACH2)(); } },
+  { title: 'Zwei Schritte',
+    explain: '<p>Manchmal musst du zweimal rechnen. Rechne Schritt für Schritt.</p><p class="example">Lea hat 20 €.<br>Sie kauft ein Buch für 8 € <span class="hl">und</span> einen Stift für 3 €.<br>20 − 8 = 12<br>12 − 3 = <em>9 €</em></p>',
+    gen: function () { return pick(SACH3)(); } },
+  { title: 'Mal-Geschichten',
+    explain: '<p>Wenn mehrere Gruppen <strong>gleich groß</strong> sind, kannst du mal rechnen.</p><p class="example">3 Packungen mit je 5 Eiern.<br>5 + 5 + 5 = 15<br>oder kurz: 3 · 5 = <em>15</em></p>',
+    gen: function () { return pick(SACH4)(); } }
+];
+
+var canSpeak = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+function speak(text) { try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; u.rate = .9; speechSynthesis.speak(u); } catch (e) {} }
+
 var THEMES = {
   plus: { name: 'Plus und Minus', sub: 'Zahlen bis 100', levels: PLUS, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="var(--accent-soft)"/><path d="M14 22h16M22 14v16" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/><path d="M36 22h16" stroke="var(--margin)" stroke-width="5" stroke-linecap="round"/><text x="14" y="52" font-family="Baloo 2,sans-serif" font-weight="800" font-size="16" fill="var(--ink)">100</text></svg>' },
-  uhr: { name: 'Uhr lesen', sub: 'Stunden und Minuten', levels: UHR, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="var(--card)" stroke="var(--ink)" stroke-width="4"/><path d="M32 32V16" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/><path d="M32 32l10 6" stroke="var(--hour)" stroke-width="5" stroke-linecap="round"/></svg>' }
+  uhr: { name: 'Uhr lesen', sub: 'Stunden und Minuten', levels: UHR, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="var(--card)" stroke="var(--ink)" stroke-width="4"/><path d="M32 32V16" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/><path d="M32 32l10 6" stroke="var(--hour)" stroke-width="5" stroke-linecap="round"/></svg>' },
+  geld: { name: 'Geld', sub: 'Euro und Cent', levels: GELD, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="14" width="44" height="26" rx="4" fill="#7aa0d9"/><text x="26" y="32" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="12" fill="#1f1f1f">20 €</text><circle cx="44" cy="44" r="14" fill="#c9c9c9" stroke="#6b5420"/><circle cx="44" cy="44" r="9" fill="#e4b84a"/><text x="44" y="48" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="11" fill="#2b2110">2</text></svg>' },
+  sach: { name: 'Sachaufgaben', sub: 'Rechengeschichten', levels: SACH, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 12h20c3 0 4 2 4 4v38c0-2-1-4-4-4H8Z" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5"/><path d="M56 12H36c-3 0-4 2-4 4v38c0-2 1-4 4-4h20Z" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5"/><path d="M13 22h12M13 29h12M39 22h12M39 29h8" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="45" y="45" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="13" fill="var(--margin)">?</text></svg>' }
 };
 
 /* ---------- Navigation ---------- */
@@ -442,7 +542,9 @@ function renderTask() {
   Q.locked = false;
   if (t.type === 'num') {
     Q.input = '';
-    h += '<div class="task">' + esc(t.q) + ' <span class="answer" id="ans">&nbsp;</span></div><div id="fb"></div><div class="pad" id="pad">';
+    if (t.story) h += '<div class="story"><p id="storyText">' + esc(t.story) + '</p>' + (canSpeak ? '<button class="btn ghost speak" id="speakBtn">🔊 Vorlesen</button>' : '') + '</div>';
+    if (t.visual) h += '<div class="money">' + t.visual + '</div>';
+    h += '<div class="task' + (t.story || t.visual ? ' small' : '') + '">' + esc(t.prompt || t.q) + ' <span class="answer" id="ans">&nbsp;</span>' + (t.unit ? ' <span class="unit">' + t.unit + '</span>' : '') + '</div><div id="fb"></div><div class="pad" id="pad">';
     [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(function (n) { h += '<button data-k="' + n + '">' + n + '</button>'; });
     h += '<button class="del" data-k="del" aria-label="Löschen">⌫</button><button data-k="0">0</button><button class="ok" data-k="ok" aria-label="Fertig">✓</button></div>';
   } else {
@@ -455,6 +557,7 @@ function renderTask() {
 $('quizBody').addEventListener('click', function (e) {
   var t = Q && Q.tasks[Q.i]; if (!t) return;
   var nx = e.target.closest('#nextBtn'); if (nx) { nextTask(); return; }
+  if (e.target.closest('#speakBtn')) { speak(t.story); return; }
   if (Q.locked) return;
   var k = e.target.closest('[data-k]');
   if (k && t.type === 'num') {
@@ -489,8 +592,8 @@ function check(ok, given) {
   else { Q.miss++; Q.streak = 0; if (Q.miss >= 2 && Q.dyn > 1) { Q.dyn--; Q.miss = 0; } }
   if (ok) { S.stars += 1; save(); $('fb').innerHTML = '<div class="feedback good"><strong>' + pick(PRAISE) + ' +1 ★</strong></div>'; renderProgress(); setTimeout(nextTask, 900); }
   else {
-    var right = t.type === 'num' ? t.answer : t.answerText;
-    Q.wrong.push({ q: t.type === 'num' ? t.q + ' ?' : 'Uhr ' + digital(t.h, t.m), given: given, answer: t.type === 'num' ? t.answer : digital(t.h, t.m) });
+    var right = t.type === 'num' ? t.answer + (t.unit ? ' ' + t.unit : '') : t.answerText;
+    Q.wrong.push({ q: t.type === 'num' ? (t.story ? t.q : t.q + ' ?') : 'Uhr ' + digital(t.h, t.m), given: given, answer: t.type === 'num' ? t.answer : digital(t.h, t.m) });
     $('fb').innerHTML = '<div class="feedback bad"><strong>Fast! Richtig ist ' + esc(right) + '.</strong><span>' + esc(t.hint) + '</span><div><button class="btn" id="nextBtn">Weiter</button></div></div>';
     renderProgress();
     if ($('pad')) $('pad').hidden = true;
