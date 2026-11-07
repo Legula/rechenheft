@@ -34,7 +34,7 @@ Auf der Synology läuft die App zusammen mit `sync.php`. Dann können alle Gerä
 
 Die App funktioniert auch ohne Verbindung zur Synology. Sie speichert dann auf dem Gerät und gleicht ab, sobald die Synology wieder erreichbar ist (zu Hause oder per VPN).
 
-Der Lernstand liegt im Docker-Volume `rechenheft-daten`. **Updates kommen automatisch:** `index.php` holt sich höchstens einmal pro Stunde die neueste `index.html` von GitHub und speichert sie im Volume. Ohne Internet läuft die zuletzt geladene Version weiter. Nur wenn sich `sync.php`, `index.php` oder `docker-compose.yml` ändern, das ZIP neu einspielen und das Projekt neu erstellen.
+Der Lernstand liegt im Docker-Volume `rechenheft-daten`. **Updates kommen automatisch:** `index.php` holt sich höchstens einmal pro Stunde die neueste `index.html` von GitHub und speichert sie im Volume. Ohne Internet läuft die zuletzt geladene Version weiter. Sofort aktualisieren: im Elternbereich auf „Jetzt aktualisieren“ tippen (oder `http://<IP>:8088/?update=1` aufrufen). Nur wenn sich `sync.php`, `index.php` oder `docker-compose.yml` ändern, das ZIP neu einspielen und das Projekt neu erstellen.
 
 ## Aufbau
 
