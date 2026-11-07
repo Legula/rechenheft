@@ -9,11 +9,13 @@ Mathe-Übungsheft für die 2. Klasse als einzelne Web-Seite. Läuft in jedem Bro
 - Kurze Erklärung vor jeder Runde, 10 Aufgaben, Lösungsweg bei Fehlern
 - Schwierigkeit passt sich in jeder Runde an: nach 3 richtigen Antworten in Folge kommt eine Profi-Aufgabe aus der nächsten Stufe, nach 2 Fehlern in Folge eine leichtere Übungsaufgabe
 - Ab 8 von 10 richtig wird die nächste Stufe freigeschaltet; nach zwei Runden mit höchstens 4 richtigen geht es eine Stufe zurück
-- Sterne für richtige Aufgaben; für 5 Sterne gibt es ein Minispiel (Ballons platzen lassen oder Memory); auf der Baustelle wird pro Stern ein Klemmbaustein gesetzt, bis Haus, Leuchtturm, Burg und Baumhaus stehen
+- Geschaffte Stufen lassen sich jederzeit wiederholen (ändert den Lernstand nicht); nach Stufe 4 gibt es den Meister-Mix mit Aufgaben aus allen Stufen
+- Sterne für richtige Aufgaben: Stufe 1–2 einen, Stufe 3–4 zwei, Profi-Aufgaben einen extra, 10/10 drei Bonus-Sterne
+- Für 5 Sterne gibt es die Keks-Jagd: mit dem Polizeiauto Krümel sammeln und Waschbär Rudi einholen, der die Kekse vom Schulfest stibitzt hat (er gibt sie zurück und hilft beim Fest mit); auf der Baustelle wird pro Stern ein Klemmbaustein gesetzt, bis Haus, Leuchtturm, Burg und Baumhaus stehen
 - Eule Olaf (das Schulmaskottchen) begrüßt und lobt
 - Olafs Insel: kreativ bauen mit Holz, Stein, Ziegel, Stroh, Dach, Fenster, Tür, Lampe, Blumen und Bäumen; Tiere ziehen in Häuser mit Tür und Dach ein; Tag/Nacht und Fotoalbum
 - Testmodus für Erwachsene im Elternbereich (999 Sterne, eigener Speicher, kein Abgleich)
-- 18 Abzeichen für Meilensteine, mit Sammelseite
+- 19 Abzeichen für Meilensteine, mit Sammelseite
 - Elternbereich mit Lernstand (hinter einer kleinen Rechenaufgabe) und einer echten Belohnung mit Sterne-Ziel
 
 Der Lernstand wird im Browser des Geräts gespeichert (`localStorage`). Mit Familien-Code wird er zusätzlich nur mit der eigenen Synology abgeglichen. Sonst werden keine Daten verschickt; nur die Schriften kommen von Google Fonts.
