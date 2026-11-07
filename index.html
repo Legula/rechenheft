@@ -142,6 +142,13 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .balloon::after { content: ""; position: absolute; left: 50%; top: 100%; width: 2px; height: 34px; background: var(--muted); opacity: .6; }
 .burst { position: absolute; font-family: var(--f-display); font-weight: 800; font-size: 1.6rem; color: var(--star); pointer-events: none; animation: rise .6s forwards; }
 @keyframes rise { to { transform: translateY(-40px); opacity: 0; } }
+.memgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 560px; width: 100%; margin: 0 auto; }
+.mcard { aspect-ratio: 3 / 4; max-width: 100%; border-radius: 14px; border: 2px solid var(--line); background: var(--accent); box-shadow: 0 4px 0 var(--accent-dark); display: flex; align-items: center; justify-content: center; padding: 0; transition: transform .2s; }
+.mcard svg { width: 70%; height: auto; display: none; }
+.mcard.open, .mcard.done { background: var(--card); box-shadow: 0 4px 0 var(--line); }
+.mcard.open svg, .mcard.done svg { display: block; }
+.mcard.done { opacity: .55; }
+.mcard:not(.open):not(.done)::after { content: "?"; font-family: var(--f-display); font-weight: 800; font-size: 2rem; color: var(--accent-ink); }
 .hud { display: flex; justify-content: space-between; font-family: var(--f-display); font-weight: 800; font-size: 1.4rem; font-variant-numeric: tabular-nums; }
 
 .table-wrap { overflow-x: auto; }
@@ -180,6 +187,12 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
       <h3>Ballons platzen lassen</h3>
       <p class="level" id="balloonInfo">Kostet 5 Sterne · 25 Sekunden</p>
       <span class="badge" id="balloonBadge">Rekord: 0</span>
+    </button>
+    <button class="topic play" id="playMemory">
+      <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="10" width="24" height="32" rx="5" fill="var(--b4)"/><rect x="34" y="22" width="24" height="32" rx="5" fill="var(--accent)"/><circle cx="18" cy="26" r="6" fill="var(--card)"/></svg>
+      <h3>Memory</h3>
+      <p class="level" id="memoryInfo">Kostet 5 Sterne · finde alle Paare</p>
+      <span class="badge" id="memoryBadge">Rekord: –</span>
     </button>
   </div>
   <button class="parents-link" id="toParents">Für Eltern</button>
@@ -230,6 +243,17 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   </div>
 </section>
 
+<!-- MEMORY -->
+<section id="v-memory" hidden>
+  <div class="hud"><span>Paare: <span id="mPairs">0</span> / 8</span><span>Züge: <span id="mMoves">0</span></span></div>
+  <div class="memgrid" id="memGrid"></div>
+  <div class="sheet" id="memEnd" hidden style="align-items:center;text-align:center">
+    <h2 id="mEndTitle"></h2>
+    <p id="mEndText"></p>
+    <div class="row"><button class="btn" data-go="home">Zur Startseite</button></div>
+  </div>
+</section>
+
 <!-- ELTERN-SPERRE -->
 <section id="v-gate" hidden>
   <button class="back" data-go="home">← Zurück</button>
@@ -261,12 +285,13 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
 (function () {
 'use strict';
 var KEY = 'philian-rechenheft-v1';
-var COST = 5, GAME_SECONDS = 25, PASS = 8, ROUND = 10;
+var COST = 5, GAME_SECONDS = 25, PASS = 8, LOW = 4, ROUND = 10;
+function lastScore(theme, level) { for (var i = S.history.length - 1; i >= 0; i--) { var x = S.history[i]; if (x.theme === theme) return x.level === level ? x.score : null; } return null; }
 
 function merge(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call(b, k)) a[k] = b[k]; return a; }
-function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, uhr: 1 }, mastered: {}, history: [], best: { balloon: 0 } }; }
+function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, uhr: 1 }, mastered: {}, history: [], best: { balloon: 0, memory: 0 } }; }
 var S = fresh();
-try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, uhr: 1 }, p.levels || {}); S.best = merge({ balloon: 0 }, p.best || {}); } } catch (e) {}
+try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, uhr: 1 }, p.levels || {}); S.best = merge({ balloon: 0, memory: 0 }, p.best || {}); } } catch (e) {}
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
 
 function $(id) { return document.getElementById(id); }
@@ -357,7 +382,7 @@ var THEMES = {
 };
 
 /* ---------- Navigation ---------- */
-var VIEWS = ['home', 'learn', 'quiz', 'result', 'game', 'gate', 'parents'];
+var VIEWS = ['home', 'learn', 'quiz', 'result', 'game', 'memory', 'gate', 'parents'];
 function go(v) { VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
 document.addEventListener('click', function (e) { var t = e.target.closest('[data-go]'); if (t) { stopGame(); go(t.getAttribute('data-go')); } });
 
@@ -375,6 +400,9 @@ function renderHome() {
   var can = S.stars >= COST;
   $('balloonInfo').textContent = can ? 'Kostet ' + COST + ' Sterne · ' + GAME_SECONDS + ' Sekunden' : 'Du brauchst ' + COST + ' Sterne. Noch ' + (COST - S.stars) + ' sammeln!';
   $('playBalloons').disabled = !can; $('playBalloons').style.opacity = can ? 1 : .6;
+  $('playMemory').disabled = !can; $('playMemory').style.opacity = can ? 1 : .6;
+  $('memoryInfo').textContent = can ? 'Kostet ' + COST + ' Sterne · finde alle Paare' : 'Du brauchst ' + COST + ' Sterne. Noch ' + (COST - S.stars) + ' sammeln!';
+  $('memoryBadge').textContent = 'Rekord: ' + (S.best.memory ? S.best.memory + ' Züge' : '–');
 }
 $('topicCards').addEventListener('click', function (e) { var b = e.target.closest('[data-topic]'); if (b) openLearn(b.getAttribute('data-topic')); });
 
@@ -389,9 +417,8 @@ function openLearn(k) {
   go('learn');
 }
 $('startQuiz').addEventListener('click', function () {
-  var L = THEMES[Q.theme].levels[Q.level - 1], tasks = [], seen = {};
-  for (var guard = 0; tasks.length < ROUND && guard < 200; guard++) { var t = L.gen(), id = t.type === 'num' ? t.q : t.h + ':' + t.m; if (!seen[id] || guard > 150) { seen[id] = 1; tasks.push(t); } }
-  Q.tasks = tasks; Q.i = 0; Q.results = []; Q.wrong = []; Q.input = '';
+  Q.tasks = []; Q.seen = {}; Q.i = 0; Q.results = []; Q.wrong = []; Q.input = '';
+  Q.dyn = Q.level; Q.streak = 0; Q.miss = 0;
   go('quiz'); renderTask();
 });
 $('quitQuiz').addEventListener('click', function () { go('home'); });
@@ -400,9 +427,18 @@ function renderProgress() {
   var h = ''; for (var i = 0; i < ROUND; i++) h += '<i class="' + (Q.results[i] === true ? 'ok' : Q.results[i] === false ? 'no' : i === Q.i ? 'now' : '') + '"></i>';
   $('progress').innerHTML = h; $('quizStars').textContent = S.stars;
 }
+/* Schwierigkeit passt sich an: 3 richtige in Folge -> eine Stufe schwerer (höchstens eine über der aktuellen),
+   2 falsche in Folge -> eine Stufe leichter. */
+function makeTask() {
+  var L = THEMES[Q.theme].levels[Q.dyn - 1], t;
+  for (var g = 0; g < 60; g++) { t = L.gen(); var id = t.type === 'num' ? t.q : t.h + ':' + t.m; if (!Q.seen[id]) { Q.seen[id] = 1; break; } }
+  t.lv = Q.dyn; return t;
+}
 function renderTask() {
+  if (!Q.tasks[Q.i]) Q.tasks[Q.i] = makeTask();
   renderProgress();
-  var t = Q.tasks[Q.i], h = '<p class="muted">Aufgabe ' + (Q.i + 1) + ' von ' + ROUND + '</p>';
+  var t = Q.tasks[Q.i], tag = t.lv > Q.level ? ' · <span class="badge">Profi-Aufgabe</span>' : t.lv < Q.level ? ' · <span class="badge">Übungsaufgabe</span>' : '';
+  var h = '<p class="muted">Aufgabe ' + (Q.i + 1) + ' von ' + ROUND + tag + '</p>';
   Q.locked = false;
   if (t.type === 'num') {
     Q.input = '';
@@ -448,6 +484,9 @@ document.addEventListener('keydown', function (e) {
 var PRAISE = ['Richtig!', 'Super!', 'Toll gemacht!', 'Genau!', 'Klasse!', 'Prima!'];
 function check(ok, given) {
   var t = Q.tasks[Q.i]; Q.locked = true; Q.results[Q.i] = ok;
+  var maxLv = Math.min(THEMES[Q.theme].levels.length, Q.level + 1);
+  if (ok) { Q.streak++; Q.miss = 0; if (Q.streak >= 3 && Q.dyn < maxLv) { Q.dyn++; Q.streak = 0; } }
+  else { Q.miss++; Q.streak = 0; if (Q.miss >= 2 && Q.dyn > 1) { Q.dyn--; Q.miss = 0; } }
   if (ok) { S.stars += 1; save(); $('fb').innerHTML = '<div class="feedback good"><strong>' + pick(PRAISE) + ' +1 ★</strong></div>'; renderProgress(); setTimeout(nextTask, 900); }
   else {
     var right = t.type === 'num' ? t.answer : t.answerText;
@@ -466,6 +505,9 @@ function finish() {
   if (correct >= PASS) {
     if (Q.level < T.levels.length && S.levels[Q.theme] === Q.level) { S.levels[Q.theme] = Q.level + 1; msg = 'Neue Stufe freigeschaltet: <strong>' + T.levels[Q.level].title + '</strong>!'; }
     else if (Q.level === T.levels.length) { S.mastered[Q.theme] = true; msg = 'Du hast alle Stufen bei „' + T.name + '“ geschafft!'; }
+  } else if (correct <= LOW && Q.level > 1 && S.levels[Q.theme] === Q.level && lastScore(Q.theme, Q.level) !== null && lastScore(Q.theme, Q.level) <= LOW) {
+    S.levels[Q.theme] = Q.level - 1; S.mastered[Q.theme] = false;
+    msg = 'Wir üben noch einmal <strong>' + T.levels[Q.level - 2].title + '</strong>. Dann klappt die nächste Stufe bestimmt!';
   } else msg = 'Für die nächste Stufe brauchst du ' + PASS + ' richtige Aufgaben. Du schaffst das!';
   S.history.push({ d: new Date().toISOString(), theme: Q.theme, level: Q.level, score: correct, wrong: Q.wrong });
   if (S.history.length > 200) S.history = S.history.slice(-200);
@@ -527,6 +569,52 @@ function endGame() {
 }
 function stopGame() { if (G) { cancelAnimationFrame(G.raf); G = null; } }
 
+/* ---------- Memory ---------- */
+var SHAPES = [
+  '<circle cx="50" cy="50" r="38" fill="var(--b1)"/>',
+  '<rect x="14" y="14" width="72" height="72" rx="8" fill="var(--b2)"/>',
+  '<path d="M50 10 L90 86 L10 86 Z" fill="var(--b3)"/>',
+  '<path d="M50 8 L61 38 L94 38 L67 58 L78 90 L50 70 L22 90 L33 58 L6 38 L39 38 Z" fill="var(--star)"/>',
+  '<path d="M50 88 C10 60 6 30 28 18 C40 12 50 22 50 30 C50 22 60 12 72 18 C94 30 90 60 50 88 Z" fill="var(--b1)"/>',
+  '<path d="M62 10 A40 40 0 1 0 90 66 A32 32 0 1 1 62 10 Z" fill="var(--b5)"/>',
+  '<path d="M50 6 L90 50 L50 94 L10 50 Z" fill="var(--b4)"/>',
+  '<path d="M38 10h24v28h28v24H62v28H38V62H10V38h28Z" fill="var(--b2)"/>'
+];
+var M = null;
+$('playMemory').addEventListener('click', function () {
+  if (S.stars < COST) return;
+  S.stars -= COST; save();
+  var deck = shuffle(SHAPES.map(function (x, i) { return i; }).concat(SHAPES.map(function (x, i) { return i; })));
+  M = { deck: deck, open: [], pairs: 0, moves: 0, busy: false };
+  var h = ''; deck.forEach(function (k, i) { h += '<button class="mcard" data-c="' + i + '" aria-label="Karte ' + (i + 1) + '"><svg viewBox="0 0 100 100" aria-hidden="true">' + SHAPES[k] + '</svg></button>'; });
+  $('memGrid').innerHTML = h; $('memGrid').hidden = false; $('memEnd').hidden = true;
+  $('mPairs').textContent = 0; $('mMoves').textContent = 0;
+  go('memory');
+});
+$('memGrid').addEventListener('click', function (e) {
+  var c = e.target.closest('[data-c]'); if (!c || !M || M.busy) return;
+  if (c.classList.contains('open') || c.classList.contains('done')) return;
+  c.classList.add('open'); M.open.push(c);
+  if (M.open.length < 2) return;
+  M.moves++; $('mMoves').textContent = M.moves;
+  var a = M.open[0], b = M.open[1];
+  if (M.deck[+a.getAttribute('data-c')] === M.deck[+b.getAttribute('data-c')]) {
+    a.classList.add('done'); b.classList.add('done'); a.classList.remove('open'); b.classList.remove('open'); M.open = [];
+    M.pairs++; $('mPairs').textContent = M.pairs;
+    if (M.pairs === SHAPES.length) setTimeout(endMemory, 500);
+  } else {
+    M.busy = true;
+    setTimeout(function () { a.classList.remove('open'); b.classList.remove('open'); M.open = []; M.busy = false; }, 900);
+  }
+});
+function endMemory() {
+  var mv = M.moves, rec = !S.best.memory || mv < S.best.memory; if (rec) S.best.memory = mv; save();
+  $('memGrid').hidden = true; $('memEnd').hidden = false;
+  $('mEndTitle').textContent = rec ? 'Neuer Rekord: ' + mv + ' Züge!' : 'Geschafft in ' + mv + ' Zügen!';
+  $('mEndText').textContent = rec ? 'So schnell hast du noch nie alle Paare gefunden.' : 'Dein Rekord sind ' + S.best.memory + ' Züge. Sammle Sterne für die nächste Runde.';
+  M = null;
+}
+
 /* ---------- Eltern ---------- */
 var gateAns = 0;
 $('toParents').addEventListener('click', function () { var a = rnd(12, 19), b = rnd(6, 9); gateAns = a * b; $('gateQ').textContent = a + ' × ' + b; $('gateIn').value = ''; $('gateMsg').hidden = true; go('gate'); });
@@ -536,7 +624,7 @@ $('gateIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') $(
 function fmtDate(iso) { var d = new Date(iso); return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); }
 function renderParents() {
   $('nameIn').value = S.name;
-  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + S.stars + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Ballon-Rekord</span><strong>' + S.best.balloon + '</strong></div></div></div>';
+  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + S.stars + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Ballon-Rekord</span><strong>' + S.best.balloon + '</strong></div><div><span>Memory-Rekord</span><strong>' + (S.best.memory ? S.best.memory + ' Züge' : '–') + '</strong></div></div></div>';
   Object.keys(THEMES).forEach(function (k) {
     var T = THEMES[k], hist = S.history.filter(function (x) { return x.theme === k; }), last5 = hist.slice(-5);
     var rate = last5.length ? Math.round(last5.reduce(function (s, x) { return s + x.score; }, 0) / (last5.length * ROUND) * 100) + ' %' : '–';
