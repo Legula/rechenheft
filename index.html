@@ -280,6 +280,8 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   <div class="sheet">
     <h3>Einstellungen</h3>
     <div class="row"><label for="nameIn">Name des Kindes</label><input type="text" id="nameIn" maxlength="20"><button class="btn ghost" id="nameSave">Speichern</button></div>
+    <div class="row"><label for="codeIn">Familien-Code</label><input type="text" id="codeIn" maxlength="40" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="z. B. sonnenblume-42"><button class="btn ghost" id="codeSave">Speichern</button><button class="btn ghost" id="syncBtn">Jetzt abgleichen</button></div>
+    <p id="syncStatus" class="muted"></p>
     <div class="row"><button class="btn ghost" id="resetAsk">Alles zurücksetzen</button>
       <span id="resetConfirm" hidden class="row"><span class="danger">Wirklich alles löschen?</span><button class="btn" id="resetYes">Ja, löschen</button><button class="btn ghost" id="resetNo">Nein</button></span></div>
   </div>
@@ -298,7 +300,76 @@ function merge(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call
 function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, uhr: 1, geld: 1, sach: 1 }, mastered: {}, history: [], best: { balloon: 0, memory: 0 } }; }
 var S = fresh();
 try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, uhr: 1, geld: 1, sach: 1 }, p.levels || {}); S.best = merge({ balloon: 0, memory: 0 }, p.best || {}); } } catch (e) {}
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function save(noSync) { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} if (!noSync) scheduleSync(); }
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+/* Sterne werden pro Gerät gezählt (verdient / ausgegeben). So lassen sich mehrere Geräte ohne Verluste zusammenführen. */
+var DEV = lsGet(KEY + '-dev');
+if (!DEV) { DEV = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); lsSet(KEY + '-dev', DEV); }
+function ensure() {
+  if (!S.dev) S.dev = {};
+  if (!S.dev[DEV]) S.dev[DEV] = { e: 0, s: 0 };
+  if (!S.migrated) { S.dev[DEV].e += S.stars || 0; S.stars = 0; S.migrated = true; }
+  if (!S.at) S.at = {};
+  if (!S.epoch) S.epoch = 0;
+  S.levels = merge({ plus: 1, uhr: 1, geld: 1, sach: 1 }, S.levels || {});
+  S.best = merge({ balloon: 0, memory: 0 }, S.best || {});
+  if (!S.mastered) S.mastered = {};
+  if (!S.history) S.history = [];
+}
+function stars() { var t = 0; for (var k in S.dev) t += (S.dev[k].e || 0) - (S.dev[k].s || 0); return Math.max(0, t); }
+function addStars(n) { S.dev[DEV].e += n; }
+function spendStars(n) { S.dev[DEV].s += n; }
+function touch(k) { S.at['lv-' + k] = Date.now(); }
+
+function mergeState(L, R) {
+  if (!R || typeof R !== 'object' || !R.dev) return L;
+  if ((R.epoch || 0) > (L.epoch || 0)) { var o2 = merge(fresh(), R); o2.migrated = true; return o2; }
+  if ((L.epoch || 0) > (R.epoch || 0)) return L;
+  var o = L, Ra = R.at || {}, d;
+  for (d in R.dev) { var a = o.dev[d] || { e: 0, s: 0 }, b = R.dev[d] || {}; o.dev[d] = { e: Math.max(a.e || 0, b.e || 0), s: Math.max(a.s || 0, b.s || 0) }; }
+  for (var k in (R.levels || {})) { var la = o.at['lv-' + k] || 0, ra = Ra['lv-' + k] || 0; if (ra > la) { o.levels[k] = R.levels[k]; o.mastered[k] = !!(R.mastered || {})[k]; o.at['lv-' + k] = ra; } }
+  if ((Ra.name || 0) > (o.at.name || 0)) { o.name = R.name; o.at.name = Ra.name; }
+  var seen = {}, all = [];
+  o.history.concat(R.history || []).forEach(function (h) { var id = h.d + h.theme; if (!seen[id]) { seen[id] = 1; all.push(h); } });
+  all.sort(function (x, y) { return x.d < y.d ? -1 : x.d > y.d ? 1 : 0; });
+  o.history = all.slice(-200);
+  var rb = R.best || {};
+  o.best.balloon = Math.max(o.best.balloon || 0, rb.balloon || 0);
+  var m1 = o.best.memory || 0, m2 = rb.memory || 0; o.best.memory = m1 && m2 ? Math.min(m1, m2) : (m1 || m2);
+  return o;
+}
+
+/* Abgleich mit der Synology: sync.php liegt neben dieser Seite. Ohne Verbindung wird nur lokal gespeichert. */
+var SYNC = { code: lsGet(KEY + '-code') || '', state: 'off', last: 0, timer: 0, busy: false };
+function syncNow() {
+  if (!SYNC.code) { SYNC.state = 'off'; return; }
+  if (!window.fetch) { SYNC.state = 'error'; SYNC.err = 'Browser zu alt'; return; }
+  if (SYNC.busy) { scheduleSync(); return; }
+  SYNC.busy = true; SYNC.state = 'busy'; showSync();
+  fetch('sync.php?code=' + encodeURIComponent(SYNC.code), { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); return r.json(); })
+    .then(function (res) {
+      S = mergeState(S, res && res.state); ensure(); save(true);
+      return fetch('sync.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: SYNC.code, state: S }) });
+    })
+    .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); SYNC.state = 'ok'; SYNC.last = Date.now(); })
+    .catch(function (e) { SYNC.state = 'error'; SYNC.err = String((e && e.message) || e); })
+    .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); });
+}
+function scheduleSync() { if (!SYNC.code) return; clearTimeout(SYNC.timer); SYNC.timer = setTimeout(syncNow, 1200); }
+function showSync() {
+  var el = $('syncStatus'); if (!el) return;
+  var t = SYNC.state === 'off' ? 'Abgleich ist aus. Trage auf jedem Gerät denselben Familien-Code ein.'
+    : SYNC.state === 'busy' ? 'Gleiche ab …'
+    : SYNC.state === 'ok' ? 'Abgeglichen um ' + new Date(SYNC.last).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + '.'
+    : 'Synology gerade nicht erreichbar (' + SYNC.err + '). Der Lernstand bleibt auf diesem Gerät und wird später abgeglichen.';
+  el.textContent = t; el.className = SYNC.state === 'error' ? 'danger' : 'muted';
+}
+window.addEventListener('online', syncNow);
+document.addEventListener('visibilitychange', function () { if (!document.hidden) syncNow(); });
+setInterval(function () { if (!document.hidden) syncNow(); }, 120000);
 
 function $(id) { return document.getElementById(id); }
 function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
@@ -488,7 +559,7 @@ document.addEventListener('click', function (e) { var t = e.target.closest('[dat
 
 function renderHome() {
   $('hello').textContent = 'Hallo ' + S.name + '!';
-  $('starCount').textContent = S.stars;
+  $('starCount').textContent = stars();
   var h = '';
   Object.keys(THEMES).forEach(function (k) {
     var T = THEMES[k], lv = S.levels[k], done = S.mastered[k];
@@ -497,11 +568,11 @@ function renderHome() {
   });
   $('topicCards').innerHTML = h;
   $('balloonBadge').textContent = 'Rekord: ' + S.best.balloon;
-  var can = S.stars >= COST;
-  $('balloonInfo').textContent = can ? 'Kostet ' + COST + ' Sterne · ' + GAME_SECONDS + ' Sekunden' : 'Du brauchst ' + COST + ' Sterne. Noch ' + (COST - S.stars) + ' sammeln!';
+  var can = stars() >= COST;
+  $('balloonInfo').textContent = can ? 'Kostet ' + COST + ' Sterne · ' + GAME_SECONDS + ' Sekunden' : 'Du brauchst ' + COST + ' Sterne. Noch ' + (COST - stars()) + ' sammeln!';
   $('playBalloons').disabled = !can; $('playBalloons').style.opacity = can ? 1 : .6;
   $('playMemory').disabled = !can; $('playMemory').style.opacity = can ? 1 : .6;
-  $('memoryInfo').textContent = can ? 'Kostet ' + COST + ' Sterne · finde alle Paare' : 'Du brauchst ' + COST + ' Sterne. Noch ' + (COST - S.stars) + ' sammeln!';
+  $('memoryInfo').textContent = can ? 'Kostet ' + COST + ' Sterne · finde alle Paare' : 'Du brauchst ' + COST + ' Sterne. Noch ' + (COST - stars()) + ' sammeln!';
   $('memoryBadge').textContent = 'Rekord: ' + (S.best.memory ? S.best.memory + ' Züge' : '–');
 }
 $('topicCards').addEventListener('click', function (e) { var b = e.target.closest('[data-topic]'); if (b) openLearn(b.getAttribute('data-topic')); });
@@ -525,7 +596,7 @@ $('quitQuiz').addEventListener('click', function () { go('home'); });
 
 function renderProgress() {
   var h = ''; for (var i = 0; i < ROUND; i++) h += '<i class="' + (Q.results[i] === true ? 'ok' : Q.results[i] === false ? 'no' : i === Q.i ? 'now' : '') + '"></i>';
-  $('progress').innerHTML = h; $('quizStars').textContent = S.stars;
+  $('progress').innerHTML = h; $('quizStars').textContent = stars();
 }
 /* Schwierigkeit passt sich an: 3 richtige in Folge -> eine Stufe schwerer (höchstens eine über der aktuellen),
    2 falsche in Folge -> eine Stufe leichter. */
@@ -590,7 +661,7 @@ function check(ok, given) {
   var maxLv = Math.min(THEMES[Q.theme].levels.length, Q.level + 1);
   if (ok) { Q.streak++; Q.miss = 0; if (Q.streak >= 3 && Q.dyn < maxLv) { Q.dyn++; Q.streak = 0; } }
   else { Q.miss++; Q.streak = 0; if (Q.miss >= 2 && Q.dyn > 1) { Q.dyn--; Q.miss = 0; } }
-  if (ok) { S.stars += 1; save(); $('fb').innerHTML = '<div class="feedback good"><strong>' + pick(PRAISE) + ' +1 ★</strong></div>'; renderProgress(); setTimeout(nextTask, 900); }
+  if (ok) { addStars(1); save(); $('fb').innerHTML = '<div class="feedback good"><strong>' + pick(PRAISE) + ' +1 ★</strong></div>'; renderProgress(); setTimeout(nextTask, 900); }
   else {
     var right = t.type === 'num' ? t.answer + (t.unit ? ' ' + t.unit : '') : t.answerText;
     Q.wrong.push({ q: t.type === 'num' ? (t.story ? t.q : t.q + ' ?') : 'Uhr ' + digital(t.h, t.m), given: given, answer: t.type === 'num' ? t.answer : digital(t.h, t.m) });
@@ -603,13 +674,13 @@ function nextTask() { if (!Q || $('v-quiz').hidden) return; Q.i++; if (Q.i >= RO
 
 function finish() {
   var correct = Q.results.filter(Boolean).length, bonus = correct === ROUND ? 3 : 0, T = THEMES[Q.theme];
-  S.stars += bonus;
+  addStars(bonus);
   var msg = '';
   if (correct >= PASS) {
-    if (Q.level < T.levels.length && S.levels[Q.theme] === Q.level) { S.levels[Q.theme] = Q.level + 1; msg = 'Neue Stufe freigeschaltet: <strong>' + T.levels[Q.level].title + '</strong>!'; }
-    else if (Q.level === T.levels.length) { S.mastered[Q.theme] = true; msg = 'Du hast alle Stufen bei „' + T.name + '“ geschafft!'; }
+    if (Q.level < T.levels.length && S.levels[Q.theme] === Q.level) { S.levels[Q.theme] = Q.level + 1; touch(Q.theme); msg = 'Neue Stufe freigeschaltet: <strong>' + T.levels[Q.level].title + '</strong>!'; }
+    else if (Q.level === T.levels.length) { S.mastered[Q.theme] = true; touch(Q.theme); msg = 'Du hast alle Stufen bei „' + T.name + '“ geschafft!'; }
   } else if (correct <= LOW && Q.level > 1 && S.levels[Q.theme] === Q.level && lastScore(Q.theme, Q.level) !== null && lastScore(Q.theme, Q.level) <= LOW) {
-    S.levels[Q.theme] = Q.level - 1; S.mastered[Q.theme] = false;
+    S.levels[Q.theme] = Q.level - 1; S.mastered[Q.theme] = false; touch(Q.theme);
     msg = 'Wir üben noch einmal <strong>' + T.levels[Q.level - 2].title + '</strong>. Dann klappt die nächste Stufe bestimmt!';
   } else msg = 'Für die nächste Stufe brauchst du ' + PASS + ' richtige Aufgaben. Du schaffst das!';
   S.history.push({ d: new Date().toISOString(), theme: Q.theme, level: Q.level, score: correct, wrong: Q.wrong });
@@ -619,7 +690,7 @@ function finish() {
   $('resScore').textContent = correct + ' / ' + ROUND;
   var st = ''; for (var i = 0; i < correct + bonus; i++) st += '<span style="animation-delay:' + i * 70 + 'ms">★</span>';
   $('resStars').innerHTML = st;
-  $('resEarned').innerHTML = 'Du hast <b>' + (correct + bonus) + ' Sterne</b> gesammelt' + (bonus ? ' (mit 3 Bonus-Sternen)' : '') + '. Jetzt hast du <b>' + S.stars + '</b>.';
+  $('resEarned').innerHTML = 'Du hast <b>' + (correct + bonus) + ' Sterne</b> gesammelt' + (bonus ? ' (mit 3 Bonus-Sternen)' : '') + '. Jetzt hast du <b>' + stars() + '</b>.';
   $('resLevel').innerHTML = msg;
   go('result');
 }
@@ -629,8 +700,8 @@ $('resAgain').addEventListener('click', function () { openLearn(Q.theme); });
 var G = null;
 var COLORS = ['var(--b1)', 'var(--b2)', 'var(--b3)', 'var(--b4)', 'var(--b5)'];
 $('playBalloons').addEventListener('click', function () {
-  if (S.stars < COST) return;
-  S.stars -= COST; save();
+  if (stars() < COST) return;
+  spendStars(COST); save();
   go('game'); $('gameEnd').hidden = true; $('arena').hidden = false; $('arena').innerHTML = '';
   G = { score: 0, end: performance.now() + GAME_SECONDS * 1000, list: [], last: 0, nextSpawn: 0, raf: 0 };
   $('gScore').textContent = 0; $('gTime').textContent = GAME_SECONDS;
@@ -685,8 +756,8 @@ var SHAPES = [
 ];
 var M = null;
 $('playMemory').addEventListener('click', function () {
-  if (S.stars < COST) return;
-  S.stars -= COST; save();
+  if (stars() < COST) return;
+  spendStars(COST); save();
   var deck = shuffle(SHAPES.map(function (x, i) { return i; }).concat(SHAPES.map(function (x, i) { return i; })));
   M = { deck: deck, open: [], pairs: 0, moves: 0, busy: false };
   var h = ''; deck.forEach(function (k, i) { h += '<button class="mcard" data-c="' + i + '" aria-label="Karte ' + (i + 1) + '"><svg viewBox="0 0 100 100" aria-hidden="true">' + SHAPES[k] + '</svg></button>'; });
@@ -726,8 +797,8 @@ $('gateIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') $(
 
 function fmtDate(iso) { var d = new Date(iso); return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); }
 function renderParents() {
-  $('nameIn').value = S.name;
-  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + S.stars + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Ballon-Rekord</span><strong>' + S.best.balloon + '</strong></div><div><span>Memory-Rekord</span><strong>' + (S.best.memory ? S.best.memory + ' Züge' : '–') + '</strong></div></div></div>';
+  $('nameIn').value = S.name; $('codeIn').value = SYNC.code; showSync();
+  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Ballon-Rekord</span><strong>' + S.best.balloon + '</strong></div><div><span>Memory-Rekord</span><strong>' + (S.best.memory ? S.best.memory + ' Züge' : '–') + '</strong></div></div></div>';
   Object.keys(THEMES).forEach(function (k) {
     var T = THEMES[k], hist = S.history.filter(function (x) { return x.theme === k; }), last5 = hist.slice(-5);
     var rate = last5.length ? Math.round(last5.reduce(function (s, x) { return s + x.score; }, 0) / (last5.length * ROUND) * 100) + ' %' : '–';
@@ -745,13 +816,22 @@ function renderParents() {
   });
   $('parentBody').innerHTML = h;
 }
-$('parentBody').addEventListener('change', function (e) { var k = e.target.getAttribute('data-lv'); if (k) { S.levels[k] = +e.target.value; S.mastered[k] = false; save(); renderParents(); } });
-$('nameSave').addEventListener('click', function () { var n = $('nameIn').value.trim(); if (n) { S.name = n; save(); $('nameSave').textContent = 'Gespeichert'; setTimeout(function () { $('nameSave').textContent = 'Speichern'; }, 1200); } });
+$('parentBody').addEventListener('change', function (e) { var k = e.target.getAttribute('data-lv'); if (k) { S.levels[k] = +e.target.value; S.mastered[k] = false; touch(k); save(); renderParents(); } });
+$('nameSave').addEventListener('click', function () { var n = $('nameIn').value.trim(); if (n) { S.name = n; S.at.name = Date.now(); save(); $('nameSave').textContent = 'Gespeichert'; setTimeout(function () { $('nameSave').textContent = 'Speichern'; }, 1200); } });
 $('resetAsk').addEventListener('click', function () { $('resetConfirm').hidden = false; });
 $('resetNo').addEventListener('click', function () { $('resetConfirm').hidden = true; });
-$('resetYes').addEventListener('click', function () { var n = S.name; S = fresh(); S.name = n; save(); $('resetConfirm').hidden = true; renderParents(); });
+$('resetYes').addEventListener('click', function () { var n = S.name, ep = (S.epoch || 0) + 1; S = fresh(); S.name = n; S.epoch = ep; ensure(); save(); $('resetConfirm').hidden = true; renderParents(); });
 
+$('codeSave').addEventListener('click', function () {
+  var c = $('codeIn').value.trim();
+  if (c && !/^[A-Za-z0-9-]{4,40}$/.test(c)) { $('syncStatus').textContent = 'Der Code braucht 4 bis 40 Zeichen: Buchstaben ohne Umlaute, Ziffern oder Bindestriche.'; $('syncStatus').className = 'danger'; return; }
+  SYNC.code = c; lsSet(KEY + '-code', c); SYNC.state = c ? 'busy' : 'off'; showSync(); if (c) syncNow();
+});
+$('syncBtn').addEventListener('click', syncNow);
+
+ensure(); save(true);
 go('home');
+syncNow();
 })();
 </script>
 

@@ -1,0 +1,19 @@
+# Philians Rechenheft für die Synology (Container Manager → Projekt)
+# Die App ist danach unter http://<IP-der-Synology>:8088/ erreichbar.
+# Der Lernstand liegt im Docker-Volume "rechenheft-daten", nicht im Webordner.
+services:
+  rechenheft:
+    image: php:8.3-apache
+    container_name: rechenheft
+    restart: unless-stopped
+    ports:
+      - "8088:80"
+    environment:
+      RECHENHEFT_DATA: /data
+    volumes:
+      - ./:/var/www/html:ro
+      - rechenheft-daten:/data
+    command: sh -c "chown -R www-data:www-data /data && exec apache2-foreground"
+
+volumes:
+  rechenheft-daten:

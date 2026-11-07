@@ -12,13 +12,28 @@ Mathe-Übungsheft für die 2. Klasse als einzelne Web-Seite. Läuft in jedem Bro
 - Sterne für richtige Aufgaben; für 5 Sterne gibt es ein Minispiel: Ballons platzen lassen oder Memory
 - Elternbereich mit Lernstand (hinter einer kleinen Rechenaufgabe)
 
-Der Lernstand wird nur im Browser des Geräts gespeichert (`localStorage`). Es werden keine Daten verschickt; nur die Schriften kommen von Google Fonts.
+Der Lernstand wird im Browser des Geräts gespeichert (`localStorage`). Mit Familien-Code wird er zusätzlich nur mit der eigenen Synology abgeglichen. Sonst werden keine Daten verschickt; nur die Schriften kommen von Google Fonts.
 
 ## Aufs Tablet
 
 Seite im Silk-Browser öffnen: https://legula.github.io/rechenheft/  
 Menü → „Zum Startbildschirm hinzufügen“.
 
+## Auf der Synology betreiben (mit Abgleich zwischen Geräten)
+
+Auf der Synology läuft die App zusammen mit `sync.php`. Dann können alle Geräte denselben Lernstand nutzen. Die Daten bleiben im Heimnetz.
+
+1. **Container Manager** im Paket-Zentrum installieren (falls noch nicht da).
+2. Dieses Repository als ZIP herunterladen: https://github.com/Legula/rechenheft/archive/refs/heads/main.zip
+3. In der **File Station** im Freigabeordner `docker` einen Ordner `rechenheft` anlegen und den *Inhalt* des ZIPs dort hineinlegen (so dass `docker/rechenheft/index.html` und `docker/rechenheft/docker-compose.yml` direkt darin liegen).
+4. **Container Manager → Projekt → Erstellen**: Name `rechenheft`, Pfad `/docker/rechenheft`, Quelle „Vorhandene docker-compose.yml verwenden“. Weiter, fertigstellen. Das Abbild `php:8.3-apache` wird einmal geladen.
+5. Im Browser öffnen: `http://<IP-der-Synology>:8088/`
+6. Auf jedem Gerät: **Für Eltern → Familien-Code** eintragen (überall derselbe, z. B. `sonnenblume-42`) und speichern.
+
+Die App funktioniert auch ohne Verbindung zur Synology. Sie speichert dann auf dem Gerät und gleicht ab, sobald die Synology wieder erreichbar ist (zu Hause oder per VPN).
+
+Der Lernstand liegt im Docker-Volume `rechenheft-daten`. **Update:** neues ZIP in den Ordner legen und im Container Manager das Projekt neu starten.
+
 ## Aufbau
 
-Alles steckt in `index.html` (HTML, CSS und JavaScript). Gehostet über GitHub Pages vom Branch `main`.
+Die App steckt komplett in `index.html` (HTML, CSS und JavaScript). `sync.php` speichert den Lernstand pro Familien-Code als JSON-Datei. `docker-compose.yml` startet beides auf der Synology. Zusätzlich gehostet über GitHub Pages vom Branch `main` (dort ohne Abgleich).
