@@ -194,7 +194,12 @@ body.testing .wrap { padding-bottom: 90px; }
 .isl::after { content: ""; position: absolute; right: 6%; top: 6%; width: 9%; aspect-ratio: 1; border-radius: 50%; background: #ffd23f; box-shadow: 0 0 24px 6px rgba(255,210,63,.6); pointer-events: none; transition: all .6s; }
 .isl.night::after { background: #f4f1d0; box-shadow: inset -8px -4px 0 0 #d9d4a8, 0 0 18px 4px rgba(244,241,208,.35); }
 .c { aspect-ratio: 1 / 1; position: relative; min-width: 0; }
-.m-t, .m-l, .m-b, .m-a { background-size: 100% 100%; background-repeat: no-repeat; }
+.m-t, .m-l, .m-b, .m-a, .m-f, .m-p { background-size: 100% 100%; background-repeat: no-repeat; }
+.m-n { background: linear-gradient(#d9b98a 0 0) 0 38% / 100% 12% no-repeat, linear-gradient(#d9b98a 0 0) 0 72% / 100% 12% no-repeat, linear-gradient(90deg, transparent 0 12%, #f1dcb2 12% 34%, transparent 34% 62%, #f1dcb2 62% 84%, transparent 84%) 0 15% / 100% 85% no-repeat; }
+.m-q { background: repeating-linear-gradient(90deg, transparent 0 20%, rgba(255,255,255,.4) 20% 40%) 0 22% / 100% 7% no-repeat, linear-gradient(#5ab8ec, #2a86c6); box-shadow: inset 0 0 0 1px #1f6fa3; }
+.m-f { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='10' y='3' width='3' height='37' fill='%235e3c26'/%3E%3Cpath d='M13 4h22l-6 7 6 7H13z' fill='%23d64541'/%3E%3Ccircle cx='21' cy='11' r='3' fill='%23ffd23f'/%3E%3C/svg%3E"); }
+.m-p { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='15' y='22' width='10' height='18' rx='4' fill='%23f4ead8'/%3E%3Cpath d='M4 24q0-18 16-18t16 18z' fill='%23d64541'/%3E%3Ccircle cx='13' cy='15' r='3' fill='%23fff'/%3E%3Ccircle cx='24' cy='11' r='2.5' fill='%23fff'/%3E%3Ccircle cx='28' cy='19' r='2.5' fill='%23fff'/%3E%3C/svg%3E"); }
+.isl.night .m-q { filter: brightness(.7); }
 .c.free { cursor: pointer; }
 .c.free:hover { outline: 2px dashed rgba(255,255,255,.8); outline-offset: -3px; }
 .c.fresh { animation: place .35s cubic-bezier(.3, 1.5, .5, 1); }
@@ -254,7 +259,7 @@ th { color: var(--muted); font-weight: 700; font-size: .85rem; text-transform: u
 .kv div { display: flex; flex-direction: column; }
 .kv span { font-size: .85rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
 .kv strong { font-family: var(--f-display); font-size: 1.6rem; }
-select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); }
+select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); max-width: 100%; min-width: 0; }
 .danger { color: var(--bad); }
 @media (prefers-reduced-motion: reduce) { .animal, .c.fresh, .flash { animation: none; } .starrow span, .burst, .drop, .trophy svg, .result-big.perfect, .mascot.bob svg, .popcard { animation: none; } .topic, .btn { transition: none; } }
 </style>
@@ -339,17 +344,18 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
 
 <!-- SPIEL -->
 <section id="v-chase" hidden>
-  <div class="row" style="justify-content:space-between"><button class="back" data-go="home">← Zurück</button><span class="badge">Die Keks-Jagd</span></div>
+  <div class="row" style="justify-content:space-between"><button class="back" data-go="home">← Zurück</button><span class="badge" id="chCase">Die Keks-Jagd</span></div>
   <div class="sheet chase-intro" id="chIntro">
     <div class="rudi" id="chIntroPic"></div>
     <h2>Haltet den Keks-Dieb!</h2>
-    <p>Waschbär <b>Rudi</b> hat die Kekse vom Schulfest stibitzt und düst auf seinem Roller davon. Fahr mit dem Polizeiauto hinterher!</p>
-    <p>Sammle <b>20 Krümel</b> auf seiner Spur, dann holst du ihn ein. Weich Hütchen, Pfützen und Kisten aus.</p>
+    <p>Waschbär <b>Rudi</b> hat die Kekse vom Schulfest stibitzt und düst <span id="chPlace">durch die Stadt</span> davon. Fahr mit dem Polizeiauto hinterher!</p>
+    <p id="chGoal"></p>
+    <p class="muted">Goldene Kekse zählen dreifach. Mit dem <b style="color:#2f6fd6">Blaulicht</b> fährst du kurz durch alles hindurch und sammelst Krümel auf allen Spuren.</p>
     <p class="muted">Lenken: Finger auf die Straße legen und nach links oder rechts schieben.</p>
     <div class="row" style="justify-content:center"><button class="btn" id="chGo">Los geht's!</button></div>
   </div>
   <div id="chWrap" hidden>
-    <div class="hud"><span>Krümel: <span id="chCrumbs">0</span> / 20</span><span><span id="chTime">60</span> s</span></div>
+    <div class="hud"><span>Krümel: <span id="chCrumbs">0</span> / <span id="chNeed">20</span></span><span><span id="chTime">60</span> s</span></div>
     <div class="chbar"><i id="chBar"></i></div>
     <canvas id="chCanvas" class="chase-cv"></canvas>
   </div>
@@ -416,7 +422,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
 <section id="v-parents" hidden>
   <button class="back" data-go="home">← Zurück</button>
   <h2>Lernstand</h2>
-  <p class="muted">Alle Daten bleiben auf diesem Gerät im Browser gespeichert. Nichts wird verschickt.</p>
+  <p class="muted">Alles wird auf diesem Gerät gespeichert. Mit Familien-Code zusätzlich nur auf eurer Synology, sonst wird nichts verschickt.</p>
   <div id="parentBody" style="display:flex;flex-direction:column;gap:16px"></div>
   <div class="sheet">
     <h3>Belohnung</h3>
@@ -946,7 +952,10 @@ $('resAgain').addEventListener('click', function () { openLearn(Q.theme, Q.mix ?
 
 /* ---------- Die Keks-Jagd ---------- */
 /* Waschbär Rudi hat die Kekse vom Schulfest stibitzt. Krümel sammeln, Hindernissen ausweichen, Rudi einholen. Keine Gewalt: Rudi gibt die Kekse zurück und hilft beim Fest. */
-var CH = null, CHASE_SECONDS = 60, CHASE_NEED = 20;
+var CH = null, CHASE_SECONDS = 60;
+var CH_PLACES = [{ name: 'Stadt', where: 'durch die Stadt' }, { name: 'Park', where: 'durch den Park' }, { name: 'Abend', where: 'durch die Straßen, es wird schon dunkel' }];
+var CH_HELP = ['hilft er beim Schulfest am Kuchenstand mit', 'hängt er beim Schulfest die bunten Girlanden auf', 'spült er nach dem Fest das ganze Geschirr', 'verteilt er beim Schulfest Luftballons an alle Kinder', 'fegt er nach dem Fest den ganzen Schulhof', 'backt er mit Olaf neue Kekse für alle'];
+function chCase() { var n = (S.best.caught || 0) + 1; return { n: n, need: 20 + Math.min(10, (n - 1) * 2), fast: 1 + Math.min(0.45, (n - 1) * 0.06), scene: (n - 1) % 3 }; }
 function rudiSVG(mood) {
   var mouth = mood === 'sorry' ? '<path d="M52 74 q8 -5 16 0" stroke="#2a2a2a" stroke-width="3" fill="none" stroke-linecap="round"/>' : '<path d="M50 72 q10 9 20 0" stroke="#2a2a2a" stroke-width="3" fill="none" stroke-linecap="round"/>';
   var hold = mood === 'sorry'
@@ -965,6 +974,8 @@ $('playChase').addEventListener('click', function () {
   if (stars() < COST) return;
   spendStars(COST); save();
   $('chIntroPic').innerHTML = rudiSVG('cheeky');
+  var cs = chCase(); $('chCase').textContent = 'Keks-Jagd · Fall ' + cs.n; $('chPlace').textContent = CH_PLACES[cs.scene].where;
+  $('chGoal').innerHTML = 'Sammle <b>' + cs.need + ' Krümel</b> auf seiner Spur, dann holst du ihn ein. Weich Hütchen, Pfützen und Kisten aus.' + (cs.n > 1 ? ' Rudi ist diesmal etwas schneller!' : '');
   $('chIntro').hidden = false; $('chWrap').hidden = true; $('chEnd').hidden = true;
   go('chase');
 });
@@ -975,11 +986,12 @@ function startChase() {
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
   var ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   var road = Math.min(w * 0.76, 480), lw = road / 3, rx = (w - road) / 2;
-  CH = { ctx: ctx, w: w, h: h, rx: rx, lw: lw, road: road, cw: Math.min(lw * 0.56, 56), carX: rx + lw * 1.5, tx: rx + lw * 1.5,
+  var cs = chCase();
+  CH = { cs: cs, need: cs.need, scene: cs.scene, boost: 0, sirenT: 9 + Math.random() * 4, ctx: ctx, w: w, h: h, rx: rx, lw: lw, road: road, cw: Math.min(lw * 0.56, 56), carX: rx + lw * 1.5, tx: rx + lw * 1.5,
     items: [], scroll: 0, t: 0, last: 0, crumbs: 0, trail: 1, trailT: 0, obsT: 1.6, slow: 0, wobble: 0, phase: 'run',
     rudiX: rx + lw * 1.5, rudiLane: 1, rudiY: -70, hopT: 2, msg: 'Folge der Krümelspur!', msgT: 2, pops: [], raf: 0 };
   CH.ch = CH.cw * 1.75; CH.carY = h - CH.ch - 18;
-  $('chCrumbs').textContent = 0; $('chBar').style.width = '0%'; $('chTime').textContent = CHASE_SECONDS;
+  $('chNeed').textContent = cs.need; $('chCrumbs').textContent = 0; $('chBar').style.width = '0%'; $('chTime').textContent = CHASE_SECONDS;
   CH.raf = requestAnimationFrame(chTick);
 }
 function chSteer(e) {
@@ -1011,8 +1023,8 @@ function chTick(now) {
   if (!CH) return;
   var c = CH, dt = c.last ? Math.min(0.05, (now - c.last) / 1000) : 0; c.last = now;
   if (c.phase !== 'caught') c.t += dt;
-  var sp = c.phase === 'caught' ? 0 : c.h * 0.5 * (1 + Math.min(c.t, 60) / 80) * (c.slow > 0 ? 0.5 : 1);
-  c.slow = Math.max(0, c.slow - dt); c.wobble = Math.max(0, c.wobble - dt); c.msgT = Math.max(0, c.msgT - dt);
+  var sp = c.phase === 'caught' ? 0 : c.h * 0.5 * c.cs.fast * (1 + Math.min(c.t, 60) / 80) * (c.slow > 0 ? 0.5 : 1) * (c.boost > 0 ? 1.15 : 1);
+  c.slow = Math.max(0, c.slow - dt); c.boost = Math.max(0, c.boost - dt); c.wobble = Math.max(0, c.wobble - dt); c.msgT = Math.max(0, c.msgT - dt);
   c.scroll += sp * dt;
   var mv = c.lw * 6 * dt; c.carX += Math.max(-mv, Math.min(mv, c.tx - c.carX));
   if (c.phase === 'run') {
@@ -1021,7 +1033,7 @@ function chTick(now) {
       c.trailT = 0.3;
       if (Math.random() < 0.14) c.trail = Math.max(0, Math.min(2, c.trail + (Math.random() < 0.5 ? -1 : 1)));
       var blocked = c.items.some(function (it) { return it.k !== 'c' && it.lane === c.trail && it.y < 40; });
-      if (!blocked) c.items.push({ k: 'c', lane: c.trail, y: -30 });
+      if (!blocked) c.items.push({ k: Math.random() < 0.06 ? 'gold' : 'c', lane: c.trail, y: -30 });
     }
     c.obsT -= dt;
     if (c.obsT <= 0) {
@@ -1029,21 +1041,26 @@ function chTick(now) {
       var ln = Math.random() < 0.3 ? c.trail : rnd(0, 2);
       c.items.push({ k: pick(['cone', 'puddle', 'box', 'cone']), lane: ln, y: -50 });
     }
+    c.sirenT -= dt;
+    if (c.sirenT <= 0) { c.sirenT = 13 + Math.random() * 6; c.items.push({ k: 'siren', lane: rnd(0, 2), y: -40 }); }
     if (c.t >= CHASE_SECONDS) { chEnd(false); return; }
   }
   var cx0 = c.carX - c.cw / 2, cx1 = c.carX + c.cw / 2, cy0 = c.carY, cy1 = c.carY + c.ch;
   c.items = c.items.filter(function (it) {
     it.y += sp * dt;
     if (it.y > c.h + 60) return false;
-    var x = laneX(it.lane), r = c.lw * (it.k === 'c' ? 0.16 : 0.24);
-    if (!it.hit && x + r > cx0 && x - r < cx1 && it.y + r > cy0 && it.y - r < cy1) {
-      if (it.k === 'c') {
+    var x = laneX(it.lane), food = it.k === 'c' || it.k === 'gold', r = c.lw * (food ? 0.16 : 0.24), mag = food && c.boost > 0 ? c.lw * 1.5 : 0;
+    if (!it.hit && x + r + mag > cx0 && x - r - mag < cx1 && it.y + r > cy0 && it.y - r < cy1) {
+      if (it.k === 'siren') { c.boost = 5; c.slow = 0; c.msg = 'Blaulicht an! Tatütata!'; c.msgT = 1.8; chPop('★', x, it.y, '#9cc3ff'); return false; }
+      if (food) {
         if (c.phase === 'run') {
-          c.crumbs = Math.min(CHASE_NEED, c.crumbs + 1); chPop('+1', x, it.y);
-          if (c.crumbs >= CHASE_NEED) { c.phase = 'near'; c.msg = 'Da vorne ist Rudi! Fahr hinter ihn!'; c.msgT = 3; c.items = c.items.filter(function (o) { return o.k === 'c' || o.y > c.h * 0.4; }); }
+          var add = it.k === 'gold' ? 3 : 1;
+          c.crumbs = Math.min(c.need, c.crumbs + add); chPop('+' + add, x, it.y);
+          if (c.crumbs >= c.need) { c.phase = 'near'; c.msg = 'Da vorne ist Rudi! Fahr hinter ihn!'; c.msgT = 3; c.items = c.items.filter(function (o) { return o.k === 'c' || o.y > c.h * 0.4; }); }
         }
         return false;
       }
+      if (c.boost > 0) return true;
       if (c.wobble <= 0) {
         it.hit = true; c.wobble = 1; c.slow = 1.2;
         var lost = Math.min(2, c.crumbs); if (c.phase === 'run') c.crumbs -= lost;
@@ -1054,7 +1071,7 @@ function chTick(now) {
     return true;
   });
   // Rudi: kommt mit jedem Krümel näher, am Ende bleibt er vor dem Polizeiauto
-  var target = c.phase === 'run' ? -60 + (c.crumbs / CHASE_NEED) * c.h * 0.32 : c.carY - c.ch * 0.95;
+  var target = c.phase === 'run' ? -60 + (c.crumbs / c.need) * c.h * 0.32 : c.carY - c.ch * 0.95;
   c.rudiY += (target - c.rudiY) * Math.min(1, dt * (c.phase === 'run' ? 2 : 0.9));
   c.hopT -= dt;
   if (c.hopT <= 0 && c.phase !== 'caught') { c.hopT = c.phase === 'near' ? 1.7 : 2.4; var nl = c.rudiLane + (Math.random() < 0.5 ? -1 : 1); if (nl < 0 || nl > 2) nl = 1; c.rudiLane = nl; }
@@ -1064,37 +1081,27 @@ function chTick(now) {
     setTimeout(function () { if (CH === c) chEnd(true); }, 1300);
   }
   c.pops.forEach(function (p) { p.t -= dt; p.y -= 40 * dt; }); c.pops = c.pops.filter(function (p) { return p.t > 0; });
-  $('chCrumbs').textContent = c.crumbs; $('chBar').style.width = (c.crumbs / CHASE_NEED * 100) + '%';
+  $('chCrumbs').textContent = c.crumbs; $('chBar').style.width = (c.crumbs / c.need * 100) + '%';
   $('chTime').textContent = c.phase === 'run' ? Math.max(0, Math.ceil(CHASE_SECONDS - c.t)) : '–';
   chDraw(now);
   c.raf = requestAnimationFrame(chTick);
 }
 function chDraw(now) {
   var c = CH, g = c.ctx, w = c.w, h = c.h, lw = c.lw, i, y;
-  g.fillStyle = '#7cc46a'; g.fillRect(0, 0, w, h);
-  // Häuser und Bäume am Rand
-  var side = c.rx;
-  for (i = 0; i < 8; i++) {
-    y = ((i * 150 + c.scroll * 0.999) % (h + 150)) - 75;
-    if (side > 24) {
-      var s = Math.min(side * 0.36, 34);
-      if (i % 2) { g.fillStyle = '#5a3a22'; g.fillRect(side / 2 - s * 0.15, y + s * 0.3, s * 0.3, s * 0.6); g.fillStyle = '#2f8a46'; g.beginPath(); g.arc(side / 2, y, s * 0.7, 0, 7); g.fill(); }
-      else { g.fillStyle = '#f2e3c6'; g.fillRect(side / 2 - s * 0.7, y - s * 0.4, s * 1.4, s * 1.1); g.fillStyle = '#c4302b'; g.beginPath(); g.moveTo(side / 2 - s * 0.85, y - s * 0.35); g.lineTo(side / 2, y - s * 1.05); g.lineTo(side / 2 + s * 0.85, y - s * 0.35); g.fill(); g.fillStyle = '#7fc4ef'; g.fillRect(side / 2 - s * 0.4, y, s * 0.3, s * 0.3); }
-      var y2 = ((i * 150 + 75 + c.scroll) % (h + 150)) - 75, sx = w - side / 2;
-      if (i % 2) { g.fillStyle = '#f7d36b'; g.fillRect(sx - s * 0.7, y2 - s * 0.4, s * 1.4, s * 1.1); g.fillStyle = '#2f6fd6'; g.beginPath(); g.moveTo(sx - s * 0.85, y2 - s * 0.35); g.lineTo(sx, y2 - s * 1.05); g.lineTo(sx + s * 0.85, y2 - s * 0.35); g.fill(); g.fillStyle = '#7fc4ef'; g.fillRect(sx + s * 0.1, y2, s * 0.3, s * 0.3); }
-      else { g.fillStyle = '#5a3a22'; g.fillRect(sx - s * 0.15, y2 + s * 0.3, s * 0.3, s * 0.6); g.fillStyle = '#3aa257'; g.beginPath(); g.arc(sx, y2, s * 0.7, 0, 7); g.fill(); }
-    }
-  }
-  // Straße
-  g.fillStyle = '#6b6f76'; g.fillRect(c.rx, 0, c.road, h);
-  g.fillStyle = '#f4f4f4'; g.fillRect(c.rx + 3, 0, 4, h); g.fillRect(c.rx + c.road - 7, 0, 4, h);
-  g.fillStyle = 'rgba(255,255,255,.75)';
-  var off = c.scroll % 60;
-  for (i = 1; i < 3; i++) for (y = -60 + off; y < h; y += 60) g.fillRect(c.rx + lw * i - 2, y, 4, 30);
+  chDrawScene(g, c, w, h, lw);
   // Sachen auf der Straße
   c.items.forEach(function (it) {
     var x = laneX(it.lane), yy = it.y, r = lw * 0.16;
-    if (it.k === 'c') {
+    if (it.k === 'gold') {
+      g.fillStyle = '#ffd23f'; g.beginPath(); g.arc(x, yy, r * 0.95, 0, 7); g.fill(); g.strokeStyle = '#c99a0a'; g.lineWidth = 2; g.stroke();
+      g.fillStyle = '#a8740f'; g.beginPath(); g.arc(x - r * 0.3, yy - r * 0.2, r * 0.14, 0, 7); g.arc(x + r * 0.3, yy + r * 0.1, r * 0.14, 0, 7); g.fill();
+      var tw = (Math.sin(now / 120) + 1) / 2; g.fillStyle = 'rgba(255,255,255,' + (0.4 + tw * 0.6) + ')'; g.fillRect(x + r * 0.6, yy - r * 1.1, 3, 9); g.fillRect(x + r * 0.6 - 3, yy - r * 1.1 + 3, 9, 3);
+    } else if (it.k === 'siren') {
+      var on2 = Math.floor(now / 160) % 2, sr = lw * 0.2;
+      g.fillStyle = 'rgba(61,139,255,.25)'; g.beginPath(); g.arc(x, yy, sr * 1.8, 0, 7); g.fill();
+      g.fillStyle = '#333'; g.fillRect(x - sr, yy + sr * 0.3, sr * 2, sr * 0.5);
+      g.fillStyle = on2 ? '#3d8bff' : '#9cc3ff'; g.beginPath(); g.arc(x, yy + sr * 0.3, sr * 0.85, Math.PI, 0); g.fill();
+    } else if (it.k === 'c') {
       g.fillStyle = '#c98b4a'; g.beginPath(); g.arc(x, yy, r * 0.75, 0, 7); g.fill();
       g.fillStyle = '#5a3418'; g.beginPath(); g.arc(x - r * 0.25, yy - r * 0.2, r * 0.13, 0, 7); g.arc(x + r * 0.3, yy + r * 0.05, r * 0.13, 0, 7); g.arc(x - r * 0.05, yy + r * 0.35, r * 0.11, 0, 7); g.fill();
     } else if (it.k === 'cone') {
@@ -1112,6 +1119,8 @@ function chDraw(now) {
     }
   });
   chDrawRudi(g, c.rudiX, c.rudiY, lw * 0.34);
+  if (c.scene === 2) { g.fillStyle = 'rgba(255,240,170,.22)'; g.beginPath(); g.moveTo(c.carX - c.cw * 0.4, c.carY); g.lineTo(c.carX - c.cw * 1.3, c.carY - c.ch * 1.8); g.lineTo(c.carX + c.cw * 1.3, c.carY - c.ch * 1.8); g.lineTo(c.carX + c.cw * 0.4, c.carY); g.fill(); }
+  if (c.boost > 0) { g.fillStyle = 'rgba(61,139,255,' + (0.18 + 0.12 * Math.sin(now / 90)) + ')'; g.beginPath(); g.arc(c.carX, c.carY + c.ch / 2, c.ch * 0.85, 0, 7); g.fill(); }
   chDrawCar(g, c.carX + (c.wobble > 0 ? Math.sin(now / 40) * 4 : 0), c.carY, c.cw, c.ch, now);
   c.pops.forEach(function (p) { g.globalAlpha = Math.min(1, p.t * 2); g.fillStyle = p.col; g.font = '800 22px "Baloo 2", sans-serif'; g.textAlign = 'center'; g.fillText(p.text, p.x, p.y); g.globalAlpha = 1; });
   if (c.msgT > 0) {
@@ -1119,6 +1128,44 @@ function chDraw(now) {
     var tw = g.measureText(c.msg).width + 28, ty = c.phase === 'caught' ? h * 0.42 : 46;
     g.fillStyle = 'rgba(20,30,50,.72)'; g.fillRect(w / 2 - tw / 2, ty - (c.phase === 'caught' ? 44 : 28), tw, c.phase === 'caught' ? 60 : 40);
     g.fillStyle = c.phase === 'caught' ? '#ffd23f' : '#fff'; g.fillText(c.msg, w / 2, ty);
+  }
+}
+function chHouse(g, x, y, s, wall, roof, lit) {
+  g.fillStyle = wall; g.fillRect(x - s * 0.7, y - s * 0.4, s * 1.4, s * 1.1); g.fillStyle = roof; g.beginPath(); g.moveTo(x - s * 0.85, y - s * 0.35); g.lineTo(x, y - s * 1.05); g.lineTo(x + s * 0.85, y - s * 0.35); g.fill();
+  g.fillStyle = lit ? '#ffd96b' : '#7fc4ef'; g.fillRect(x - s * 0.4, y, s * 0.3, s * 0.3); g.fillRect(x + s * 0.12, y, s * 0.3, s * 0.3);
+}
+function chTree(g, x, y, s, col) { g.fillStyle = '#5a3a22'; g.fillRect(x - s * 0.15, y + s * 0.3, s * 0.3, s * 0.6); g.fillStyle = col; g.beginPath(); g.arc(x, y, s * 0.7, 0, 7); g.fill(); }
+function chDrawScene(g, c, w, h, lw) {
+  var sc = c.scene, night = sc === 2, i, y, side = c.rx, s = Math.min(side * 0.36, 34);
+  g.fillStyle = sc === 1 ? '#8fd16f' : night ? '#2c5238' : '#7cc46a'; g.fillRect(0, 0, w, h);
+  var nn = Math.ceil((h + 150) / 150), per = nn * 150;
+  for (i = 0; i < nn && side > 24; i++) {
+    y = ((i * 150 + c.scroll) % per) - 75;
+    var y2 = ((i * 150 + 75 + c.scroll) % per) - 75, lx = side / 2, sx = w - side / 2;
+    if (sc === 1) {
+      chTree(g, lx, y, s * (i % 3 ? 1 : 1.25), i % 2 ? '#2f8a46' : '#3aa257');
+      if (i % 3 === 1) { g.fillStyle = '#5aa6e6'; g.beginPath(); g.ellipse ? g.ellipse(sx, y2, s * 0.9, s * 0.5, 0, 0, 7) : g.arc(sx, y2, s * 0.6, 0, 7); g.fill(); }
+      else chTree(g, sx, y2, s, '#2f8a46');
+      g.fillStyle = ['#ef5b8a', '#ffd23f', '#fff'][i % 3]; g.beginPath(); g.arc(lx + s * 0.9, y + s, 3, 0, 7); g.arc(sx - s * 0.9, y2 + s * 0.8, 3, 0, 7); g.fill();
+    } else {
+      if (i % 2) chTree(g, lx, y, s, night ? '#1f5a33' : '#2f8a46'); else chHouse(g, lx, y, s, night ? '#b9a98a' : '#f2e3c6', '#c4302b', night);
+      if (i % 2) chHouse(g, sx, y2, s, night ? '#b8a356' : '#f7d36b', '#2f6fd6', night); else chTree(g, sx, y2, s, night ? '#1f5a33' : '#3aa257');
+    }
+  }
+  g.fillStyle = sc === 1 ? '#8a8378' : night ? '#3e434b' : '#6b6f76'; g.fillRect(c.rx, 0, c.road, h);
+  g.fillStyle = night ? '#c9c9c9' : '#f4f4f4'; g.fillRect(c.rx + 3, 0, 4, h); g.fillRect(c.rx + c.road - 7, 0, 4, h);
+  g.fillStyle = night ? 'rgba(255,255,255,.45)' : 'rgba(255,255,255,.75)';
+  var off = c.scroll % 60;
+  for (i = 1; i < 3; i++) for (y = -60 + off; y < h; y += 60) g.fillRect(c.rx + lw * i - 2, y, 4, 30);
+  if (night) {
+    var nl = Math.ceil((h + 220) / 220);
+    for (i = 0; i < nl; i++) {
+      y = ((i * 220 + c.scroll) % (nl * 220)) - 110;
+      [c.rx - 8, c.rx + c.road + 8].forEach(function (lx) {
+        var gr = g.createRadialGradient(lx, y, 2, lx, y, 60); gr.addColorStop(0, 'rgba(255,220,120,.55)'); gr.addColorStop(1, 'rgba(255,220,120,0)');
+        g.fillStyle = gr; g.beginPath(); g.arc(lx, y, 60, 0, 7); g.fill(); g.fillStyle = '#ffe9a8'; g.beginPath(); g.arc(lx, y, 5, 0, 7); g.fill();
+      });
+    }
   }
 }
 function chDrawCar(g, x, y, cw, ch, now) {
@@ -1165,14 +1212,14 @@ function chEnd(won) {
     save();
     $('chEndPic').innerHTML = rudiSVG('sorry');
     $('chEndTitle').textContent = 'Erwischt!';
-    $('chEndText').innerHTML = 'Rudi gibt alle Kekse zurück: <em>„Entschuldigung! Die haben so lecker gerochen.“</em> Zur Wiedergutmachung hilft er beim Schulfest am Kuchenstand mit.' +
+    $('chEndText').innerHTML = 'Rudi gibt alle Kekse zurück: <em>„Entschuldigung! Die haben so lecker gerochen.“</em> Zur Wiedergutmachung ' + CH_HELP[(S.best.caught - 1) % CH_HELP.length] + '.' +
       '<br><br>Du hast ihn nach <b>' + secs + ' Sekunden</b> eingeholt' + (rec && S.best.caught > 1 ? ', so schnell wie noch nie!' : '.') + ' Rudi wurde schon <b>' + S.best.caught + '-mal</b> erwischt.';
     celebrate();
   } else {
     save();
     $('chEndPic').innerHTML = rudiSVG('cheeky');
     $('chEndTitle').textContent = 'Rudi ist entwischt!';
-    $('chEndText').innerHTML = 'Er war schnell, aber er hat Krümel verloren. Sammle beim nächsten Mal ' + CHASE_NEED + ' Krümel, dann holst du ihn ein!';
+    $('chEndText').innerHTML = 'Er war schnell, aber er hat Krümel verloren. Sammle beim nächsten Mal ' + c.need + ' Krümel, dann holst du ihn ein!';
   }
   setTimeout(function () { checkBadges(); }, 400);
 }
@@ -1199,7 +1246,7 @@ function hello() {
   var n = S.name, st = stars(), r = rewardState(), opts = [
     'Hallo ' + n + '! Schön, dass du da bist. Was möchtest du heute üben?',
     'Hallo ' + n + '! Ich bin Olaf. Rechnen wir zusammen?',
-    'Na, ' + n + '? Jede richtige Aufgabe bringt dir einen Stern.',
+    'Na, ' + n + '? Jede richtige Aufgabe bringt dir Sterne. Schwere Aufgaben sogar zwei!',
     'Hallo ' + n + '! Fehler sind nicht schlimm. Daraus lernt man!'
   ];
   if (r && !r.done && r.goal - r.have <= 30) return 'Hallo ' + n + '! Nur noch ' + (r.goal - r.have) + ' Sterne bis zu deiner Belohnung!';
@@ -1250,7 +1297,8 @@ var BADGES = [
   { id: 'meister', name: 'Meister', desc: 'Einen Meister-Mix mit 8 richtig', col: '#6b3fb0', sym: 'M', test: function () { return S.history.some(function (h) { return h.level === 'Mix' && h.score >= PASS; }); } },
   { id: 'lesefuchs', name: 'Lesefuchs', desc: '5 gute Runden Sachaufgaben', col: '#f08a24', sym: 'Aa', test: function () { return goodSach() >= 5; } },
   { id: 'baumeister', name: 'Baumeister', desc: 'Erstes Bauwerk fertig', col: '#d64541', sym: '⌂', test: function () { return buildPos().idx >= 1; } },
-  { id: 'architekt', name: 'Architekt', desc: 'Alle vier Bauwerke gebaut', col: '#5e3c26', sym: '♜', test: function () { return buildPos().idx >= 4; } },
+  { id: 'architekt', name: 'Architekt', desc: 'Vier Bauwerke gebaut', col: '#5e3c26', sym: '♜', test: function () { return buildPos().idx >= 4; } },
+  { id: 'stadtplaner', name: 'Stadtplaner', desc: 'Alle acht Bauwerke gebaut', col: '#d68a1e', sym: '8', test: function () { return buildPos().idx >= 8; } },
   { id: 'polizei', name: 'Polizeiabzeichen', desc: 'Waschbär Rudi bei der Keks-Jagd eingeholt', col: '#1d4f9c', sym: '★', test: function () { return (S.best.caught || 0) >= 1; } },
   { id: 'spuernase', name: 'Spürnase', desc: 'Rudi 5-mal erwischt', col: '#2f8f8f', sym: '5', test: function () { return (S.best.caught || 0) >= 5; } }
 ];
@@ -1294,14 +1342,17 @@ $('toBadges').addEventListener('click', function () { go('badges'); renderBadges
 var IW = 16, IROWS = 8;
 var MATS = [
   { k: 'w', name: 'Holz' }, { k: 's', name: 'Stein' }, { k: 'z', name: 'Ziegel' }, { k: 'h', name: 'Stroh' }, { k: 'd', name: 'Dach' },
-  { k: 'g', name: 'Fenster' }, { k: 't', name: 'Tür' }, { k: 'l', name: 'Lampe' }, { k: 'b', name: 'Blume' }, { k: 'a', name: 'Baum' }
+  { k: 'g', name: 'Fenster' }, { k: 't', name: 'Tür' }, { k: 'l', name: 'Lampe' }, { k: 'b', name: 'Blume' }, { k: 'a', name: 'Baum' },
+  { k: 'n', name: 'Zaun' }, { k: 'q', name: 'Wasser' }, { k: 'f', name: 'Fahne' }, { k: 'p', name: 'Pilz' }
 ];
 var TERRAIN = ['WWSGGGGGGGGGGSWW', 'WWWEEEEEEEEEEWWW'];
 var ANIMALS = [
   { name: 'Ein Hase', svg: '<svg viewBox="0 0 40 40"><ellipse cx="20" cy="30" rx="11" ry="9" fill="#d9d2c5"/><circle cx="20" cy="19" r="7" fill="#e8e2d6"/><ellipse cx="16" cy="8" rx="2.5" ry="7" fill="#e8e2d6"/><ellipse cx="24" cy="8" rx="2.5" ry="7" fill="#e8e2d6"/><ellipse cx="16" cy="8" rx="1.2" ry="5" fill="#f2b8c6"/><ellipse cx="24" cy="8" rx="1.2" ry="5" fill="#f2b8c6"/><circle cx="17.5" cy="18" r="1.3" fill="#1f2a44"/><circle cx="22.5" cy="18" r="1.3" fill="#1f2a44"/><circle cx="20" cy="21" r="1.2" fill="#e57a95"/></svg>' },
   { name: 'Eine Katze', svg: '<svg viewBox="0 0 40 40"><path d="M30 30q8-2 6-12" stroke="#f08a24" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="20" cy="31" rx="10" ry="8" fill="#f08a24"/><circle cx="20" cy="19" r="8" fill="#f5a04a"/><path d="M13 15l1-8 5 5zM27 15l-1-8-5 5z" fill="#f5a04a"/><circle cx="17" cy="18" r="1.4" fill="#1f2a44"/><circle cx="23" cy="18" r="1.4" fill="#1f2a44"/><path d="M18.5 21.5l1.5 1 1.5-1" stroke="#1f2a44" stroke-width="1" fill="none"/></svg>' },
   { name: 'Ein Igel', svg: '<svg viewBox="0 0 40 40"><path d="M6 34q0-16 14-18q12 0 14 10l-4 8z" fill="#6b4329"/><path d="M8 26l-4-4M11 21l-3-6M16 18l-1-7M22 17l2-7M27 19l4-5M31 23l5-2" stroke="#4d2f1c" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="31" cy="30" rx="6" ry="5" fill="#d9b48a"/><circle cx="32" cy="28" r="1.2" fill="#1f2a44"/><circle cx="37" cy="31" r="1.5" fill="#1f2a44"/></svg>' },
-  { name: 'Eine Ente', svg: '<svg viewBox="0 0 40 40"><ellipse cx="18" cy="29" rx="12" ry="8" fill="#ffd23f"/><circle cx="26" cy="17" r="7" fill="#ffd23f"/><path d="M32 17l6 1-6 3z" fill="#f08a24"/><circle cx="27" cy="15" r="1.4" fill="#1f2a44"/><path d="M10 27q6-4 12 0" stroke="#e0b21f" stroke-width="2" fill="none"/></svg>' }
+  { name: 'Eine Ente', svg: '<svg viewBox="0 0 40 40"><ellipse cx="18" cy="29" rx="12" ry="8" fill="#ffd23f"/><circle cx="26" cy="17" r="7" fill="#ffd23f"/><path d="M32 17l6 1-6 3z" fill="#f08a24"/><circle cx="27" cy="15" r="1.4" fill="#1f2a44"/><path d="M10 27q6-4 12 0" stroke="#e0b21f" stroke-width="2" fill="none"/></svg>' },
+  { name: 'Waschbär Rudi', svg: '<svg viewBox="0 0 40 40"><path d="M8 34q-6-4-3-12" stroke="#6f6f6f" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M5 28l4-1M4 24l4 0" stroke="#2f2f2f" stroke-width="2"/><ellipse cx="20" cy="31" rx="9" ry="8" fill="#8a8a8a"/><path d="M11 13l2-7 5 5zM29 13l-2-7-5 5z" fill="#6f6f6f"/><circle cx="20" cy="18" r="9" fill="#9a9a9a"/><rect x="11.5" y="15" width="17" height="5" rx="2.5" fill="#2f2f2f"/><circle cx="16" cy="17.5" r="1.6" fill="#fff"/><circle cx="24" cy="17.5" r="1.6" fill="#fff"/><ellipse cx="20" cy="22.5" rx="4" ry="3" fill="#e7e2da"/><circle cx="20" cy="21.5" r="1.3" fill="#1a1a1a"/><circle cx="29" cy="30" r="3.5" fill="#c98b4a"/></svg>' },
+  { name: 'Ein Eichhörnchen', svg: '<svg viewBox="0 0 40 40"><path d="M26 36q12-4 8-18q-2-8-8-6q4 6-2 14z" fill="#c4632b"/><ellipse cx="18" cy="30" rx="8" ry="8" fill="#d9733a"/><circle cx="17" cy="18" r="6.5" fill="#d9733a"/><path d="M13 13l0-6 4 4zM20 12l2-6 1 6z" fill="#c4632b"/><circle cx="15" cy="17" r="1.4" fill="#1f2a44"/><ellipse cx="18" cy="31" rx="4" ry="5" fill="#f1c9a0"/><circle cx="12" cy="26" r="2.6" fill="#8a5a3b"/></svg>' }
 ];
 var IV = { tool: 'build', sel: 'w', night: false, fresh: -1, residents: -1 };
 function islandEnsure() {
@@ -1327,10 +1378,10 @@ function islandResidents(g) {
   return out;
 }
 function islandHTML(g, night, interactive, freshIdx) {
-  var res = islandResidents(g), h = '<div class="isl' + (night ? ' night' : '') + '"' + (interactive ? ' id="isl"' : '') + '>';
+  var res = islandResidents(g), duck = g.indexOf('q'), h = '<div class="isl' + (night ? ' night' : '') + '"' + (interactive ? ' id="isl"' : '') + '>';
   for (var i = 0; i < g.length; i++) {
     var ch = g[i], ri = res.indexOf(i);
-    h += '<div class="c' + (ch === '.' ? (interactive ? ' free' : '') : ' m-' + ch) + (i === freshIdx ? ' fresh' : '') + '" data-i="' + i + '">' + (ri >= 0 ? '<div class="animal" style="animation-delay:' + (ri * .37) + 's">' + ANIMALS[ri % ANIMALS.length].svg + '</div>' : '') + '</div>';
+    h += '<div class="c' + (ch === '.' ? (interactive ? ' free' : '') : ' m-' + ch) + (i === freshIdx ? ' fresh' : '') + '" data-i="' + i + '">' + (ri >= 0 ? '<div class="animal" style="animation-delay:' + (ri * .37) + 's">' + ANIMALS[ri % ANIMALS.length].svg + '</div>' : i === duck ? '<div class="animal">' + ANIMALS[3].svg + '</div>' : '') + '</div>';
   }
   TERRAIN.forEach(function (row) { for (var c = 0; c < IW; c++) h += '<div class="c t-' + row[c] + '"></div>'; });
   return h + '</div>';
@@ -1359,7 +1410,8 @@ function islandSet(i, ch) { var g = S.island.g; S.island.g = g.slice(0, i) + ch 
 $('playIsland').addEventListener('click', function () {
   islandEnsure(); IV.residents = -1; go('island');
   $('iMascot').innerHTML = owlSVG('happy');
-  islandSay('Willkommen auf meiner Insel, ' + S.name + '! Wähle unten ein Material und tippe auf einen freien Platz. Tipp: Ein Haus mit Tür und Dach lockt Tiere an.');
+  var tips = ['Ein Haus mit Tür und Dach lockt Tiere an.', 'Bau einen Teich aus Wasser, dann kommt eine Ente zum Schwimmen.', 'Ein Zaun macht deinen Garten schön ordentlich.', 'Stell eine Fahne aufs Dach, dann sieht man dein Haus von weitem.', 'Schalte auf Nacht: Lampen und Fenster leuchten.', 'Mach ein Foto, wenn dir dein Bau gefällt.'];
+  islandSay('Willkommen auf meiner Insel, ' + S.name + '! Wähle unten ein Material und tippe auf einen freien Platz. Tipp: ' + pick(tips));
   renderIsland();
 });
 document.addEventListener('click', function (e) {
@@ -1370,7 +1422,9 @@ document.addEventListener('click', function (e) {
     if (IV.tool === 'build') {
       if (ch !== '.') { islandSay('Da ist schon etwas. Mit „Abreißen“ kannst du Platz machen.'); return; }
       if (!(inv[IV.sel] > 0)) { islandSay('Du hast kein Material mehr davon. Kauf neues für einen Stern!'); return; }
+      var firstWater = IV.sel === 'q' && S.island.g.indexOf('q') < 0;
       inv[IV.sel]--; islandSet(i, IV.sel); IV.fresh = i; save(); renderIsland();
+      if (firstWater) islandSay('Platsch! Eine Ente schwimmt jetzt in deinem Wasser.');
     } else if (ch !== '.') {
       inv[ch] = (inv[ch] || 0) + 1; islandSet(i, '.'); save(); renderIsland();
     }
@@ -1443,7 +1497,11 @@ var PLANS = [
   { name: 'Das rote Haus', rows: ['.rrrddrrrrr.', '.rwwddrwwrr.', '.rwwddrwwrr.', '.rrrrrrrrrr.', 'yyyyyyyyyyyy', '.yyyyyyyyyy.', '..yyyyyyyy..', '...yyyyyy...', '....yyyy....'] },
   { name: 'Der Leuchtturm', rows: ['..ssssssss..', '....rddr....', '....rddr....', '....ffff....', '....rrrr....', '....fwwf....', '....rrrr....', '....ffff....', '...bbbbbb...', '....wllw....', '....rrrr....', '.....rr.....'] },
   { name: 'Die Burg', rows: ['ssssssssssss', 'sswssddsswss', 'sswssddsswss', 'ssssssssssss', 'ssssssssssss', 's.s.ssss.s.s', '....swws....', '....ssss....', '....s..s....', '......bb....', '......k.....'] },
-  { name: 'Das Baumhaus', rows: ['.....dd.....', '.....dd.....', '.....dd.....', '...oooooo...', '..oowwoooo..', '..oowwoooo..', '..oooooooo..', '.kkkkkkkkkk.', '..kkkkkkkk..', '...kkkkkk...', '....kkkk....'] }
+  { name: 'Das Baumhaus', rows: ['.....dd.....', '.....dd.....', '.....dd.....', '...oooooo...', '..oowwoooo..', '..oowwoooo..', '..oooooooo..', '.kkkkkkkkkk.', '..kkkkkkkk..', '...kkkkkk...', '....kkkk....'] },
+  { name: 'Olafs Schule', rows: ['oooooddooooo', 'owwooddoowwo', 'oooooooooooo', 'owwoowwoowwo', 'oooooooooooo', 'yyyyyyyyyyyy', '.yyyyyyyyyy.', '...yyllyy...', '....yyyy....', '.....bb.....', '.....r......'] },
+  { name: 'Die Rakete', rows: ['....oooo....', '...rffffr...', '..rrffffrr..', '..r.ffff.r..', '....ffff....', '....fwwf....', '....fwwf....', '....ffff....', '....bbbb....', '....ffff....', '.....rr.....', '.....rr.....'] },
+  { name: 'Die Windmühle', rows: ['...ssddss...', '...ssddss...', '...sswwss...', '....ssss....', '....ssss....', '..f......f..', '...f.yy.f...', '....fyyf....', '...f.yy.f...', '..f..yy..f..', '.....rr.....'] },
+  { name: 'Das Schiff', rows: ['bbbbbbbbbbbb', '.rrrrrrrrrr.', '..rwrrwrrw..', '...ffffff...', '......d.....', '...fffd.....', '...fffdfff..', '....ffdff...', '.....fdf....', '......d.....', '......dll...'] }
 ];
 function planBricks(pl) {
   if (pl.bricks) return pl.bricks;
