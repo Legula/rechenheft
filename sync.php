@@ -24,9 +24,10 @@ $koerper = null;
 if ($methode === 'POST') {
     $roh = file_get_contents('php://input', false, null, 0, 1000001);
     if ($roh === false || strlen($roh) > 1000000) antwort(413, ['error' => 'zu groß']);
-    $koerper = json_decode($roh, true);
-    if (!is_array($koerper)) antwort(400, ['error' => 'kein JSON']);
-    $code = (string)($koerper['code'] ?? '');
+    // Ohne assoc: so bleiben leere Objekte {} beim Speichern Objekte (mit assoc würden daraus Listen [])
+    $koerper = json_decode($roh);
+    if (!is_object($koerper)) antwort(400, ['error' => 'kein JSON']);
+    $code = (string)($koerper->code ?? '');
 } elseif ($methode === 'GET') {
     $code = (string)($_GET['code'] ?? '');
 } else {
@@ -39,12 +40,12 @@ $datei = $verzeichnis . '/' . hash('sha256', 'rechenheft:' . $code) . '.json';
 if ($methode === 'GET') {
     if (!is_file($datei)) antwort(200, ['state' => null]);
     $inhalt = file_get_contents($datei);
-    $stand = json_decode($inhalt, true);
-    antwort(200, ['state' => is_array($stand) ? $stand : null]);
+    $stand = json_decode($inhalt);
+    antwort(200, ['state' => is_object($stand) ? $stand : null]);
 }
 
-$stand = $koerper['state'] ?? null;
-if (!is_array($stand)) antwort(400, ['error' => 'state fehlt']);
+$stand = $koerper->state ?? null;
+if (!is_object($stand)) antwort(400, ['error' => 'state fehlt']);
 $tmp = $datei . '.' . bin2hex(random_bytes(4)) . '.tmp';
 if (file_put_contents($tmp, json_encode($stand, JSON_UNESCAPED_UNICODE), LOCK_EX) === false || !rename($tmp, $datei)) {
     @unlink($tmp);

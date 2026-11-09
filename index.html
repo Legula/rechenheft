@@ -14,7 +14,8 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<!-- Schriften laden nebenbei: hängt Google Fonts (kein Internet, Filter), erscheint die Seite trotzdem sofort mit Ersatzschrift -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Layout: ein Rechenheft auf Karopapier mit rotem Rand; jede Ansicht ist eine Heftseite, große Tasten für Kinderfinger. */
 :root {
@@ -125,6 +126,23 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .pad .ok { background: var(--good); color: var(--accent-ink); border-color: var(--good); box-shadow: 0 4px 0 var(--good-dark); }
 .pad .del { font-size: 1.3rem; }
 .clockbox { display: flex; justify-content: center; }
+/* Tablet quer (z. B. Fire HD): Ziffernblock neben der Aufgabe, Uhr neben den Antworten, damit nichts unter den Rand rutscht */
+@media (orientation: landscape) and (max-height: 760px) and (min-width: 700px) {
+  #quizBody.q-num { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 36%); grid-auto-rows: min-content; column-gap: 24px; row-gap: 12px; }
+  #quizBody.q-num > * { grid-column: 1; }
+  #quizBody.q-num > .pad { grid-column: 2; grid-row: 1 / span 5; align-self: start; }
+  #quizBody.q-num .pad button { padding: 8px 0; }
+  #quizBody.q-num.miss > #fb { grid-column: 2; grid-row: 1 / span 5; }
+  #quizBody.q-num .story { font-size: 1.2rem; line-height: 1.45; padding: 12px 16px; gap: 8px; }
+  #quizBody.q-num .task.small { font-size: 2.4rem; }
+  #quizBody.q-clock { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 24px; row-gap: 12px; align-items: center; }
+  #quizBody.q-clock > p { grid-column: 1 / -1; }
+  #quizBody.q-clock > .clockbox { grid-column: 1; grid-row: 2 / span 3; }
+  #quizBody.q-clock > h3 { grid-column: 2; grid-row: 2; }
+  #quizBody.q-clock > .choices { grid-column: 2; grid-row: 3; }
+  #quizBody.q-clock > #fb { grid-column: 2; grid-row: 4; }
+  #quizBody.q-clock .clockbox svg { width: min(250px, 44vh); }
+}
 .clockbox svg { width: min(260px, 70vw); height: auto; }
 .choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 560px; width: 100%; margin: 0 auto; }
 .choices button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 8px; border-radius: 14px; background: var(--card); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); min-width: 0; }
@@ -153,6 +171,32 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
 .gallery figure { margin: 0; background: var(--card); border: 2px solid var(--line); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 4px; align-items: center; text-align: center; font-size: .9rem; min-width: 0; }
 .gallery svg { width: 100%; height: auto; }
+.bpane { display: flex; flex-direction: column; gap: 14px; }
+.btabs .btn { padding: 10px 18px; font-size: 1.1rem; }
+.rank { background: var(--accent-soft); border-radius: 999px; padding: 4px 14px; font-family: var(--f-display); font-weight: 800; }
+.bwork { display: grid; grid-template-columns: minmax(0, 1fr) 130px; gap: 12px; align-items: start; }
+.bwork #bScene { cursor: pointer; padding: 10px; }
+.bplan { margin: 0; background: var(--card); border: 2px solid var(--line); border-radius: 12px; padding: 8px; text-align: center; font-family: var(--f-display); font-weight: 800; display: flex; flex-direction: column; gap: 4px; }
+.bplan svg { width: 100%; height: auto; display: block; }
+@media (max-width: 520px) { .bwork { grid-template-columns: 1fr; } .bplan { order: -1; width: 150px; justify-self: center; } }
+.tray { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+.tray button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border-radius: 12px; background: var(--card); color: var(--ink); border: 2px solid var(--line); box-shadow: 0 3px 0 var(--line); font-size: .9rem; min-width: 0; }
+.tray button.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent); transform: translateY(-3px); }
+.tray button:disabled { opacity: .45; }
+.tray svg { width: 52px; height: 28px; }
+.picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.bpick { display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center; padding: 12px; border-radius: 14px; background: var(--card); color: var(--ink); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); min-width: 0; font-size: .95rem; }
+.bpick b { font-family: var(--f-display); font-size: 1.2rem; }
+.bpick svg { width: 100%; max-width: 160px; height: auto; }
+.lux { color: #a77d00; font-family: inherit; }
+.tipglow { animation: tipglow .5s ease-in-out infinite alternate; }
+@keyframes tipglow { from { opacity: .2; } to { opacity: 1; } }
+.shake { animation: shake .45s; }
+@keyframes shake { 0%, 100% { transform: none; } 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
+.kbar { justify-content: space-between; font-family: var(--f-display); font-weight: 800; font-size: 1.2rem; }
+.hearts { color: #d64541; letter-spacing: 2px; }
+#kCanvas { display: block; width: 100%; max-width: 520px; height: min(60vh, 600px); margin: 8px auto 0; border-radius: 16px; border: 2px solid var(--line); touch-action: none; }
+@media (prefers-reduced-motion: reduce) { .tipglow, .shake { animation: none; } }
 #party { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
 .trophy { display: flex; justify-content: center; }
 .trophy svg { width: 140px; height: auto; animation: trophy 1.1s cubic-bezier(.3, 1.5, .5, 1) both; }
@@ -201,7 +245,7 @@ body.testing .wrap { padding-bottom: 90px; }
 .m-p { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='15' y='22' width='10' height='18' rx='4' fill='%23f4ead8'/%3E%3Cpath d='M4 24q0-18 16-18t16 18z' fill='%23d64541'/%3E%3Ccircle cx='13' cy='15' r='3' fill='%23fff'/%3E%3Ccircle cx='24' cy='11' r='2.5' fill='%23fff'/%3E%3Ccircle cx='28' cy='19' r='2.5' fill='%23fff'/%3E%3C/svg%3E"); }
 .isl.night .m-q { filter: brightness(.7); }
 .c.free { cursor: pointer; }
-.c.free:hover { outline: 2px dashed rgba(255,255,255,.8); outline-offset: -3px; }
+@media (hover: hover) { .c.free:hover { outline: 2px dashed rgba(255,255,255,.8); outline-offset: -3px; } }
 .c.fresh { animation: place .35s cubic-bezier(.3, 1.5, .5, 1); }
 @keyframes place { from { transform: scale(.3); } to { transform: none; } }
 .m-w { background: repeating-linear-gradient(#c58b52 0 30%, #9c6a39 30% 34%, #b57d47 34% 64%, #9c6a39 64% 68%, #c58b52 68% 100%); box-shadow: inset 0 0 0 1px #7d5530; }
@@ -265,6 +309,36 @@ body.testing .wrap { padding-bottom: 90px; }
 .zone.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .zone .isl, .photos .isl { border-width: 1px; border-radius: 6px; pointer-events: none; }
 .zone .animal { animation: none; }
+.isl.z-dorf::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath d='M0 100V65q70-35 150-5t130-10t120 15v35z' fill='%239bd394'/%3E%3Cg fill='%23c9b79c'%3E%3Crect x='60' y='52' width='22' height='18'/%3E%3Crect x='250' y='48' width='26' height='20'/%3E%3Crect x='320' y='58' width='18' height='14'/%3E%3C/g%3E%3Cg fill='%23b5735a'%3E%3Cpath d='M56 54l15-14 15 14zM246 50l17-15 17 15zM317 60l12-11 12 11z'/%3E%3C/g%3E%3Crect x='160' y='30' width='12' height='40' fill='%23d8cbb4'/%3E%3Cpath d='M157 32l9-24 9 24z' fill='%238aa4c8'/%3E%3C/svg%3E"); }
+.isl.z-hafen::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath d='M0 100V88h400v12z' fill='%237cc2ea'/%3E%3Cpath d='M40 88V20h6v68zM46 22h60v5H46z' fill='%23c9a24a'/%3E%3Cpath d='M100 27v20' stroke='%238e969f' stroke-width='2'/%3E%3Crect x='94' y='47' width='12' height='10' fill='%23d64541'/%3E%3Cpath d='M230 88l10-14h110l-14 14z' fill='%238e969f'/%3E%3Crect x='260' y='56' width='60' height='18' fill='%23c9ced6'/%3E%3Crect x='300' y='40' width='10' height='16' fill='%23d64541'/%3E%3Cpath d='M150 88l8-8h40l-6 8z' fill='%23b0bac6'/%3E%3Cpath d='M176 80V58l14 18z' fill='%23fff'/%3E%3C/svg%3E"); }
+@media (min-width: 720px) { .zones { grid-template-columns: repeat(4, 1fr); } }
+.c.has-bld { z-index: 1; }
+.bld { position: absolute; left: 0; bottom: 0; }
+.bld svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.isl.night .bld .wl { fill: #ffd96b; }
+.spin { animation: spin 18s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.animal.still { animation: none; }
+.animal.veh { animation: rumble 1.2s ease-in-out infinite; inset: 4% 0 0; }
+@keyframes rumble { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3%); } }
+.zone .bld .spin, .photos .bld .spin, .mat .spin { animation: none; }
+.t-ø { background: linear-gradient(#fff 0 0) 25% 55% / 50% 7% no-repeat, linear-gradient(#4a525e 0 18%, #3b4252 18%); box-shadow: inset 0 3px 0 #8e969f; }
+.t-û { background: linear-gradient(90deg, #c9ced6 0 46%, #a3abb5 46% 50%, #c9ced6 50% 96%, #a3abb5 96%), #c9ced6; box-shadow: inset 0 3px 0 #9aa3ad; }
+.t-ù { background: repeating-linear-gradient(90deg, #fff 0 16%, #4a525e 16% 33%); box-shadow: inset 0 3px 0 #8e969f; }
+.t-ú { background: linear-gradient(#b5bcc4 0 0) 0 14% / 100% 9% no-repeat, repeating-linear-gradient(90deg, #7a4d30 0 18%, transparent 18% 50%) 0 24% / 100% 16% no-repeat, #a89a82; }
+.t-ý { background: linear-gradient(#b5bcc4 0 0) 0 14% / 100% 9% no-repeat, #4a525e; box-shadow: inset 0 -3px 0 #ffd23f; }
+.sw.t-ø, .sw.t-û, .sw.t-ù, .sw.t-ú, .sw.t-ý { border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { .spin, .animal.veh { animation: none; } }
+.m-0, .m-T, .m-U, .m-V { background-size: 100% 100%; background-repeat: no-repeat; }
+.m-0 { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cellipse cx='20' cy='35' rx='17' ry='5' fill='%239aa3ad'/%3E%3Cellipse cx='20' cy='33' rx='15' ry='3.5' fill='%235ab8ec'/%3E%3Crect x='17' y='18' width='6' height='15' fill='%23b5bcc4'/%3E%3Cellipse cx='20' cy='18' rx='9' ry='2.5' fill='%239aa3ad'/%3E%3Cpath d='M20 16q-2-10-10-6q5 1 7 9M20 16q2-10 10-6q-5 1-7 9M20 16v-12' stroke='%238fd3f7' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='20' cy='4' r='2' fill='%23c6ecff'/%3E%3C/svg%3E"); }
+.m-T { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='4' y='18' width='32' height='20' rx='2' fill='%239c6a39'/%3E%3Cpath d='M4 18q0-12 16-12t16 12z' fill='%23b57d47'/%3E%3Cpath d='M4 18h32M4 30h32M12 6v32M28 6v32' stroke='%23ffd23f' stroke-width='2.5'/%3E%3Crect x='17' y='16' width='6' height='7' rx='1' fill='%23ffd23f'/%3E%3Ccircle cx='20' cy='19.5' r='1.3' fill='%235e3c26'/%3E%3Ccircle cx='9' cy='4' r='1.6' fill='%23fff6c2'/%3E%3Ccircle cx='33' cy='8' r='1.3' fill='%23fff6c2'/%3E%3C/svg%3E"); }
+.m-U { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M2 40a18 18 0 0 1 36 0' stroke='%23ef5b5b' stroke-width='4' fill='none'/%3E%3Cpath d='M6 40a14 14 0 0 1 28 0' stroke='%23f7b733' stroke-width='4' fill='none'/%3E%3Cpath d='M10 40a10 10 0 0 1 20 0' stroke='%2359c27a' stroke-width='4' fill='none'/%3E%3Cpath d='M14 40a6 6 0 0 1 12 0' stroke='%233fa7e0' stroke-width='4' fill='none'/%3E%3Ccircle cx='4' cy='37' r='4' fill='%23fff'/%3E%3Ccircle cx='36' cy='37' r='4' fill='%23fff'/%3E%3C/svg%3E"); }
+.m-V { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='8' y='32' width='24' height='8' rx='1' fill='%239aa3ad'/%3E%3Crect x='10' y='29' width='20' height='4' fill='%23b5bcc4'/%3E%3Cellipse cx='20' cy='19' rx='9' ry='11' fill='%23ffd23f'/%3E%3Cpath d='M12 10l-2-6 6 4zM28 10l2-6-6 4z' fill='%23e2a91a'/%3E%3Ccircle cx='16' cy='15' r='3.5' fill='%23fff6c2'/%3E%3Ccircle cx='24' cy='15' r='3.5' fill='%23fff6c2'/%3E%3Ccircle cx='16' cy='15' r='1.6' fill='%235e3c26'/%3E%3Ccircle cx='24' cy='15' r='1.6' fill='%235e3c26'/%3E%3Cpath d='M18.5 19l1.5 2.5 1.5-2.5z' fill='%23f08a24'/%3E%3Cpath d='M14 23q6 6 12 0' stroke='%23e2a91a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); }
+.m-9 { background: linear-gradient(135deg, #fff 0 12%, transparent 12%), linear-gradient(45deg, #7fe3f0 0 50%, #43c4d9 50%), #7fe3f0; box-shadow: inset 0 0 0 2px #2a9db0, inset 6px 6px 0 rgba(255,255,255,.35); }
+.isl.night .m-9 { box-shadow: inset 0 0 0 2px #2a9db0, 0 0 12px 2px rgba(127,227,240,.55); }
+.mat .price { color: var(--star); font-weight: 700; }
+.mat.rare { border-color: #e9a800; background: linear-gradient(160deg, #fff8dc, var(--card) 60%); }
+.mat.rare.on { border-color: var(--accent); }
 .m-i, .m-j, .m-y, .m-m, .m-x, .m-k, .m-v, .m-r, .m-1, .m-2, .m-3, .m-4, .m-5, .m-6, .m-7, .m-8 { background-size: 100% 100%; background-repeat: no-repeat; }
 .m-i { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M0 40L20 2L40 40z' fill='%23c4302b'/%3E%3Cpath d='M13 15h14M7 27h26M3 34h34' stroke='%238f2420' stroke-width='2'/%3E%3C/svg%3E"); }
 .m-j { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M0 40L40 0V40z' fill='%23c4302b'/%3E%3Cpath d='M30 10h10M20 20h20M10 30h30' stroke='%238f2420' stroke-width='2'/%3E%3C/svg%3E"); }
@@ -356,7 +430,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <button class="topic play" id="playIsland">
       <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M0 46L16 22L30 40L42 26L64 50V64H0z" fill="#9aa7b8"/><path d="M12 28L16 22L20 28L16 26zM38 32L42 26L46 31L42 29z" fill="#fff"/><rect x="0" y="48" width="64" height="16" rx="4" fill="#5cc15f"/><path d="M40 64v-6q12-6 24 0v6z" fill="#3fa7e0"/><rect x="14" y="34" width="20" height="16" fill="#b07a45"/><path d="M10 36L24 20L38 36z" fill="#c4302b"/><rect x="21" y="40" width="7" height="10" fill="#6b4329"/><path d="M50 50L56 30L62 50z" fill="#1f7a45"/><rect x="55" y="48" width="2" height="4" fill="#7a4d30"/></svg>
       <h3>Olafs Land</h3>
-      <p class="level">Bau, was du willst: Insel, Bauernhof, Wald, Berge, Wüste und Stadt</p>
+      <p class="level">Bau, was du willst: Häuser, Straßen, Tiere und mehr in acht Gebieten</p>
       <span class="badge" id="islandBadge">Kreativ bauen</span>
     </button>
   </div>
@@ -432,11 +506,32 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <button class="back" data-go="home">← Zurück</button>
     <div class="stars"><b>★</b><span id="bStars">0</span></div>
   </div>
-  <div><h2 id="bTitle"></h2><p class="muted" id="bInfo"></p></div>
-  <div class="sheet buildbox" id="bScene"></div>
-  <div class="row" id="bActions"></div>
-  <p class="muted" id="bHint"></p>
-  <div id="bGalleryWrap" hidden><h3>Deine Bauwerke</h3><div class="gallery" id="bGallery"></div></div>
+  <div class="row btabs"><button class="btn" id="bTabPlan">Bauaufträge</button><button class="btn ghost" id="bTabCrane">Kran-Turm</button></div>
+  <div id="bPlanPane" class="bpane">
+    <div class="mascot-row"><div class="mascot" id="bMascot" style="width:64px"></div><p class="bubble" id="bBubble"></p></div>
+    <div class="row" style="justify-content:space-between"><div><h2 id="bTitle"></h2><p class="muted" id="bInfo"></p></div><span class="rank" id="bRank"></span></div>
+    <div class="picks" id="bPick" hidden></div>
+    <div class="bwork" id="bWork" hidden>
+      <div class="sheet buildbox" id="bScene"></div>
+      <figure class="bplan" id="bPlanFig"><figcaption>Bauplan</figcaption><div id="bPlan"></div></figure>
+    </div>
+    <div class="tray" id="bTray"></div>
+    <div class="row" id="bActions"></div>
+    <p class="muted" id="bHint"></p>
+    <div id="bGalleryWrap" hidden><h3>Deine Bauwerke</h3><div class="gallery" id="bGallery"></div></div>
+  </div>
+  <div id="bCranePane" class="bpane" hidden>
+    <div class="sheet" id="kPanel">
+      <h2>Kran-Turm</h2>
+      <p id="kText"></p>
+      <p class="muted" id="kRec"></p>
+      <div class="row"><button class="btn" id="kGo">Spielen</button><span class="muted" id="kNeed"></span></div>
+    </div>
+    <div id="kGame" hidden>
+      <div class="row kbar"><span>Stockwerke: <b id="kFloors">0</b></span><span class="hearts" id="kHearts"></span><span>Rekord: <b id="kBest">0</b></span></div>
+      <canvas id="kCanvas" aria-label="Kran-Turm: tippen, um den Stein fallen zu lassen"></canvas>
+    </div>
+  </div>
 </section>
 
 <!-- OLAFS LAND -->
@@ -563,6 +658,7 @@ function mergeState(L, R) {
   if ((L.epoch || 0) > (R.epoch || 0)) return L;
   var o = L, Ra = R.at || {}, d;
   for (d in R.dev) { var a = o.dev[d] || { e: 0, s: 0 }, b = R.dev[d] || {}; o.dev[d] = { e: Math.max(a.e || 0, b.e || 0), s: Math.max(a.s || 0, b.s || 0), b: Math.max(a.b || 0, b.b || 0) }; }
+  mergeBuild(o, R); // Baustelle: neuerer Stand gewinnt, Kran-Rekord bleibt der höchste
   for (var k in (R.levels || {})) { var la = o.at['lv-' + k] || 0, ra = Ra['lv-' + k] || 0; if (ra > la) { o.levels[k] = R.levels[k]; o.mastered[k] = !!(R.mastered || {})[k]; o.at['lv-' + k] = ra; } }
   if ((Ra.name || 0) > (o.at.name || 0)) { o.name = R.name; o.at.name = Ra.name; }
   if ((Ra.silben || 0) > (o.at.silben || 0)) { o.silben = R.silben; o.at.silben = Ra.silben; }
@@ -590,7 +686,7 @@ function syncNow() {
   fetch('sync.php?code=' + encodeURIComponent(SYNC.code), { cache: 'no-store' })
     .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); return r.json(); })
     .then(function (res) {
-      S = mergeState(S, res && res.state); ensure(); save(true);
+      S = mergeState(S, fixShapes(res && res.state)); ensure(); save(true);
       return fetch('sync.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: SYNC.code, state: S }) });
     })
     .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); SYNC.state = 'ok'; SYNC.last = Date.now(); })
@@ -755,7 +851,7 @@ var SACH2 = [
   function () { var a = rnd(25, 60), b = rnd(10, 35); return story('Auf dem Spielplatz spielen ' + a + ' Kinder. Dann kommen noch ' + b + ' Kinder dazu. Wie viele Kinder spielen jetzt dort?', 'Kinder:', a + b, '', a + ' + ' + b + ' = ' + (a + b)); }
 ];
 var SACH3 = [
-  function () { var n = who(), a = pick([20, 30, 40, 50]), b = rnd(4, 12), c = rnd(3, 10); return story(n + ' hat ' + a + ' €. ' + n + ' kauft ein Buch für ' + b + ' € und einen Stift für ' + c + ' €. Wie viel Geld bleibt übrig?', 'Übrig:', a - b - c, '€', a + ' − ' + b + ' − ' + c + ' = ' + (a - b - c)); },
+  function () { var n = who(), a = pick([20, 30, 40, 50]), b = rnd(4, 12), c = rnd(3, Math.min(10, a - b - 3)); return story(n + ' hat ' + a + ' €. ' + n + ' kauft ein Buch für ' + b + ' € und einen Stift für ' + c + ' €. Wie viel Geld bleibt übrig?', 'Übrig:', a - b - c, '€', a + ' − ' + b + ' − ' + c + ' = ' + (a - b - c)); },
   function () { var a = rnd(20, 40), b = rnd(5, 15), c = rnd(4, 12); return story('Im Zug sitzen ' + a + ' Leute. Am ersten Bahnhof steigen ' + b + ' ein. Am zweiten Bahnhof steigen ' + c + ' aus. Wie viele Leute sitzen jetzt im Zug?', 'Leute:', a + b - c, '', a + ' + ' + b + ' − ' + c + ' = ' + (a + b - c)); },
   function () { var n = who(), a = rnd(10, 30), b = rnd(10, 30), c = rnd(5, 20); return story(n + ' sammelt Sticker. Am Montag bekommt ' + n + ' ' + a + ', am Dienstag ' + b + ' und am Mittwoch ' + c + ' Sticker. Wie viele Sticker sind es zusammen?', 'Sticker:', a + b + c, '', a + ' + ' + b + ' + ' + c + ' = ' + (a + b + c)); }
 ];
@@ -883,9 +979,9 @@ function openLearn(k, pickLv) {
   if (mix) {
     $('learnBadge').textContent = T.name + ' · Meister-Mix';
     $('learnTitle').textContent = 'Meister-Mix: alles gemischt';
-    $('learnBody').innerHTML = '<p>Du hast alle Stufen geschafft! Im Meister-Mix kommen Aufgaben aus allen ' + n + ' Stufen durcheinander. Zeig, was du kannst!</p><p class="muted">Tippe oben auf eine Stufe, um ihre Erklärung nochmal zu sehen.</p>';
+    $('learnBody').innerHTML = '<p>Du hast alle Stufen geschafft! Im Meister-Mix kommen Aufgaben aus allen ' + n + ' Stufen durcheinander. Zeig, was du kannst! Jede richtige Aufgabe bringt 2 Sterne.</p><p class="muted">Tippe oben auf eine Stufe, um ihre Erklärung nochmal zu sehen.</p>';
   } else {
-    $('learnBadge').textContent = T.name + ' · Stufe ' + lv + (lv < cur ? ' (Wiederholung)' : '');
+    $('learnBadge').textContent = T.name + ' · Stufe ' + lv + (lv < cur || S.mastered[k] ? ' (Wiederholung)' : '');
     $('learnTitle').textContent = L.title;
     $('learnBody').innerHTML = L.explain;
   }
@@ -929,12 +1025,14 @@ function renderTask() {
     t.opts.forEach(function (o, i) { h += '<button data-o="' + i + '"><span class="dig">' + digital(o.h, o.m) + '</span><span class="wrd">' + clockWords(o.h, o.m) + '</span></button>'; });
     h += '</div>';
   }
+  $('quizBody').className = 'sheet ' + (t.type === 'num' ? 'q-num' : 'q-clock');
   $('quizBody').innerHTML = h;
 }
 $('quizBody').addEventListener('click', function (e) {
   var t = Q && Q.tasks[Q.i]; if (!t) return;
   var nx = e.target.closest('#nextBtn'); if (nx) { nextTask(); return; }
   if (e.target.closest('#speakBtn')) { speak(t.story); return; }
+  if (e.target.closest('#speakHint')) { speak(('Richtig ist ' + t.answer + (t.unit ? ' ' + t.unit : '') + '. ' + t.hint).replace(/−/g, ' minus ').replace(/·/g, ' mal ').replace(/€/g, ' Euro').replace(/\bct\b/g, ' Cent')); return; }
   if (Q.locked) return;
   var k = e.target.closest('[data-k]');
   if (k && t.type === 'num') {
@@ -953,7 +1051,8 @@ $('quizBody').addEventListener('click', function (e) {
   }
 });
 document.addEventListener('keydown', function (e) {
-  if ($('v-quiz').hidden || !Q || Q.locked) return;
+  if ($('v-quiz').hidden || !Q) return;
+  if (Q.locked) { if ((e.key === 'Enter' || e.key === ' ') && $('nextBtn')) { e.preventDefault(); $('nextBtn').click(); } return; }
   var t = Q.tasks[Q.i]; if (t.type !== 'num') return;
   var b = null;
   if (/^[0-9]$/.test(e.key)) b = document.querySelector('#pad [data-k="' + e.key + '"]');
@@ -969,28 +1068,29 @@ function check(ok, given) {
     if (ok) { Q.streak++; Q.miss = 0; if (Q.streak >= 3 && Q.dyn < maxLv) { Q.dyn++; Q.streak = 0; } }
     else { Q.miss++; Q.streak = 0; if (Q.miss >= 2 && Q.dyn > 1) { Q.dyn--; Q.miss = 0; } }
   }
-  if (ok) { var gain = taskStars(t); Q.earned = (Q.earned || 0) + gain; addStars(gain); save(); $('fb').innerHTML = '<div class="feedback good"><strong>' + pick(PRAISE) + ' +' + gain + ' ★</strong></div>'; renderProgress(); setTimeout(nextTask, 900); }
+  if (ok) { var gain = taskStars(t); Q.earned = (Q.earned || 0) + gain; addStars(gain); save(); $('fb').innerHTML = '<div class="feedback good"><strong>' + pick(PRAISE) + ' +' + gain + ' ★</strong></div>'; renderProgress(); var q0 = Q, i0 = Q.i; setTimeout(function () { if (Q === q0 && Q.i === i0) nextTask(); }, 900); }
   else {
     var right = t.type === 'num' ? t.answer + (t.unit ? ' ' + t.unit : '') : t.answerText;
     Q.wrong.push({ q: t.type === 'num' ? (t.story ? t.q : t.q + ' ?') : 'Uhr ' + digital(t.h, t.m), given: given, answer: t.type === 'num' ? t.answer : digital(t.h, t.m) });
-    $('fb').innerHTML = '<div class="feedback bad"><strong>Fast! Richtig ist ' + esc(right) + '.</strong><span>' + esc(t.hint) + '</span><div><button class="btn" id="nextBtn">Weiter</button></div></div>';
+    $('fb').innerHTML = '<div class="feedback bad"><strong>Fast! Richtig ist ' + esc(right) + '.</strong><span>' + esc(t.hint) + '</span><div class="row"><button class="btn" id="nextBtn">Weiter</button>' + (canSpeak && t.story ? '<button class="btn ghost" id="speakHint">🔊 Vorlesen</button>' : '') + '</div></div>';
     renderProgress();
-    if ($('pad')) $('pad').hidden = true;
+    if ($('pad')) { $('pad').hidden = true; $('quizBody').classList.add('miss'); }
   }
 }
 /* Sterne pro Aufgabe: Stufe 1-2 = 1, Stufe 3-4 = 2, Profi-Aufgabe (über der eigenen Stufe) +1 */
-function taskStars(t) { return (t.lv >= 3 ? 2 : 1) + (!Q.mix && t.lv > Q.level ? 1 : 0); }
+function taskStars(t) { return Q.mix ? 2 : (t.lv >= 3 ? 2 : 1) + (t.lv > Q.level ? 1 : 0); } // Meister-Mix: jede Aufgabe 2 Sterne
 function nextTask() { if (!Q || $('v-quiz').hidden) return; Q.i++; if (Q.i >= ROUND) finish(); else renderTask(); }
 
 function finish() {
   var correct = Q.results.filter(Boolean).length, bonus = correct === ROUND ? 3 : 0, T = THEMES[Q.theme], got = (Q.earned || 0) + bonus;
   addStars(bonus);
-  var msg = '';
+  var msg = '', next = null;
   if (Q.mix) msg = correct >= PASS ? 'Meister-Mix geschafft! Du kannst alles aus „' + T.name + '“.' : 'Der Meister-Mix ist knifflig. Übe einzelne Stufen und versuch es nochmal!';
-  else if (Q.level < S.levels[Q.theme]) msg = correct >= PASS ? 'Wiederholung geschafft! Stufe ' + Q.level + ' sitzt.' : 'Gut, dass du wiederholst. Übung macht den Meister!';
+  else if (Q.level < S.levels[Q.theme] || S.mastered[Q.theme]) msg = // geschaffte Stufen: Wiederholung ändert den Lernstand nicht
+    correct >= PASS ? 'Wiederholung geschafft! Stufe ' + Q.level + ' sitzt.' : 'Gut, dass du wiederholst. Übung macht den Meister!';
   else if (correct >= PASS) {
-    if (Q.level < T.levels.length && S.levels[Q.theme] === Q.level) { S.levels[Q.theme] = Q.level + 1; touch(Q.theme); msg = 'Neue Stufe freigeschaltet: <strong>' + T.levels[Q.level].title + '</strong>!'; }
-    else if (Q.level === T.levels.length) { S.mastered[Q.theme] = true; touch(Q.theme); msg = 'Du hast alle Stufen bei „' + T.name + '“ geschafft!'; }
+    if (Q.level < T.levels.length && S.levels[Q.theme] === Q.level) { S.levels[Q.theme] = Q.level + 1; touch(Q.theme); next = Q.level + 1; msg = 'Neue Stufe freigeschaltet: <strong>' + T.levels[Q.level].title + '</strong>!'; }
+    else if (Q.level === T.levels.length) { S.mastered[Q.theme] = true; touch(Q.theme); next = 'mix'; msg = 'Du hast alle Stufen bei „' + T.name + '“ geschafft!'; }
   } else if (correct <= LOW && Q.level > 1 && S.levels[Q.theme] === Q.level && lastScore(Q.theme, Q.level) !== null && lastScore(Q.theme, Q.level) <= LOW) {
     S.levels[Q.theme] = Q.level - 1; S.mastered[Q.theme] = false; touch(Q.theme);
     msg = 'Wir üben noch einmal <strong>' + T.levels[Q.level - 2].title + '</strong>. Dann klappt die nächste Stufe bestimmt!';
@@ -1005,6 +1105,7 @@ function finish() {
   $('resStars').innerHTML = st;
   $('resEarned').innerHTML = 'Du hast <b>' + got + ' Sterne</b> gesammelt' + (bonus ? ' (mit 3 Bonus-Sternen)' : '') + '. Jetzt hast du <b>' + stars() + '</b>.';
   $('resLevel').innerHTML = msg;
+  Q.next = next; $('resAgain').textContent = next === 'mix' ? 'Zum Meister-Mix ★' : next ? 'Weiter mit Stufe ' + next : 'Nochmal üben';
   $('resMascot').innerHTML = owlSVG(correct >= PASS ? 'cheer' : correct >= 5 ? 'wink' : 'happy');
   $('resBubble').textContent = resultLine(correct);
   var rw = rewardState(); if (rw && rw.done && rw.have - got < rw.goal) $('resBubble').textContent += ' Und: Du hast deine Belohnung erreicht!';
@@ -1012,7 +1113,7 @@ function finish() {
   checkBadges();
   if (correct === ROUND) celebrate();
 }
-$('resAgain').addEventListener('click', function () { openLearn(Q.theme, Q.mix ? 'mix' : Q.level); });
+$('resAgain').addEventListener('click', function () { openLearn(Q.theme, Q.next || (Q.mix ? 'mix' : Q.level)); });
 
 /* ---------- Die Keks-Jagd ---------- */
 /* Waschbär Rudi hat die Kekse vom Schulfest stibitzt. Krümel sammeln, Hindernissen ausweichen, Rudi einholen. Keine Gewalt: Rudi gibt die Kekse zurück und hilft beim Fest. */
@@ -1588,7 +1689,7 @@ $('toBadges').addEventListener('click', function () { go('badges'); renderBadges
 // Der Speicherstand heißt weiter S.island: g ist das Gebiet „Insel“ (wie früher), z hält die übrigen Gebiete.
 // So laufen alte Spielstände und der Abgleich mit der Synology unverändert weiter.
 var IW = 16, IROWS = 8, ROOFS = 'dijymx';
-var LCATS = [{ k: 'bau', name: 'Bausteine' }, { k: 'dach', name: 'Dächer' }, { k: 'haus', name: 'Haus & Garten' }, { k: 'natur', name: 'Natur' }, { k: 'tier', name: 'Tiere' }];
+var LCATS = [{ k: 'bau', name: 'Bausteine' }, { k: 'dach', name: 'Dächer' }, { k: 'haus', name: 'Haus & Garten' }, { k: 'natur', name: 'Natur' }, { k: 'tier', name: 'Tiere' }, { k: 'gebaeude', name: 'Gebäude' }, { k: 'verkehr', name: 'Straße & Verkehr' }, { k: 'schatz', name: 'Schätze ✨' }];
 var ANIM = {
   M: { name: 'Hase', art: 'Ein Hase', svg: '<svg viewBox="0 0 40 40"><ellipse cx="20" cy="30" rx="11" ry="9" fill="#d9d2c5"/><circle cx="20" cy="19" r="7" fill="#e8e2d6"/><ellipse cx="16" cy="8" rx="2.5" ry="7" fill="#e8e2d6"/><ellipse cx="24" cy="8" rx="2.5" ry="7" fill="#e8e2d6"/><ellipse cx="16" cy="8" rx="1.2" ry="5" fill="#f2b8c6"/><ellipse cx="24" cy="8" rx="1.2" ry="5" fill="#f2b8c6"/><circle cx="17.5" cy="18" r="1.3" fill="#1f2a44"/><circle cx="22.5" cy="18" r="1.3" fill="#1f2a44"/><circle cx="20" cy="21" r="1.2" fill="#e57a95"/></svg>' },
   N: { name: 'Katze', art: 'Eine Katze', laut: 'Miau', svg: '<svg viewBox="0 0 40 40"><path d="M30 30q8-2 6-12" stroke="#f08a24" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="20" cy="31" rx="10" ry="8" fill="#f08a24"/><circle cx="20" cy="19" r="8" fill="#f5a04a"/><path d="M13 15l1-8 5 5zM27 15l-1-8-5 5z" fill="#f5a04a"/><circle cx="17" cy="18" r="1.4" fill="#1f2a44"/><circle cx="23" cy="18" r="1.4" fill="#1f2a44"/><path d="M18.5 21.5l1.5 1 1.5-1" stroke="#1f2a44" stroke-width="1" fill="none"/></svg>' },
@@ -1607,8 +1708,48 @@ var ANIM = {
   I: { name: 'Frosch', art: 'Ein Frosch', laut: 'Quak', svg: '<svg viewBox="0 0 40 40"><ellipse cx="20" cy="30" rx="14" ry="9" fill="#59c27a"/><path d="M6 37q-4 2-5 0M34 37q4 2 5 0" stroke="#3f9d4f" stroke-width="3" stroke-linecap="round"/><circle cx="13" cy="19" r="5.5" fill="#59c27a"/><circle cx="27" cy="19" r="5.5" fill="#59c27a"/><circle cx="13" cy="18.5" r="3.4" fill="#fff"/><circle cx="27" cy="18.5" r="3.4" fill="#fff"/><circle cx="13.6" cy="19" r="1.7" fill="#1f2a44"/><circle cx="27.6" cy="19" r="1.7" fill="#1f2a44"/><path d="M12 28q8 5 16 0" stroke="#2f7a3c" stroke-width="1.6" fill="none"/><circle cx="10" cy="27" r="1.8" fill="#f2a0b4"/><circle cx="30" cy="27" r="1.8" fill="#f2a0b4"/></svg>' },
   J: { name: 'Pinguin', art: 'Ein Pinguin', svg: '<svg viewBox="0 0 40 40"><ellipse cx="15" cy="38" rx="4" ry="2" fill="#f08a24"/><ellipse cx="25" cy="38" rx="4" ry="2" fill="#f08a24"/><ellipse cx="20" cy="23" rx="11" ry="15" fill="#1f2a44"/><path d="M9 20q-5 6-3 12q4-4 5-8zM31 20q5 6 3 12q-4-4-5-8z" fill="#1f2a44"/><ellipse cx="20" cy="27" rx="7" ry="10.5" fill="#fff"/><ellipse cx="20" cy="15" rx="6.5" ry="5" fill="#fff"/><circle cx="17.5" cy="14" r="1.4" fill="#1f2a44"/><circle cx="22.5" cy="14" r="1.4" fill="#1f2a44"/><path d="M17.5 17h5l-2.5 3z" fill="#f08a24"/></svg>' },
   K: { name: 'Kamel', art: 'Ein Kamel', svg: '<svg viewBox="0 0 40 40"><path d="M37 22q2 6 0 10" stroke="#b5864a" stroke-width="1.6" fill="none"/><rect x="16" y="28" width="3" height="12" fill="#c49352"/><rect x="21" y="29" width="3" height="11" fill="#b5864a"/><rect x="31" y="28" width="3" height="12" fill="#c49352"/><path d="M14 30q-1-8 5-8q2-8 6-8q3 0 4 5q2-4 5-2q3 2 2 13z" fill="#d9a85f"/><path d="M14 27q-4-6-4-14l5 1q0 6 3 10z" fill="#d9a85f"/><ellipse cx="9" cy="11" rx="6" ry="3.6" fill="#d9a85f"/><circle cx="10" cy="9.5" r="1.3" fill="#1f2a44"/><path d="M11 6l1-2 1 2.5z" fill="#c49352"/><circle cx="4.5" cy="11.5" r="0.8" fill="#8a5a3b"/></svg>' },
-  L: { name: 'Schmetterling', art: 'Ein Schmetterling', svg: '<svg viewBox="0 0 40 40"><path d="M20 14q-3-8-6-10M20 14q3-8 6-10" stroke="#1f2a44" stroke-width="1.2" fill="none"/><ellipse cx="12" cy="17" rx="8" ry="7" fill="#a77ee8"/><ellipse cx="28" cy="17" rx="8" ry="7" fill="#a77ee8"/><ellipse cx="13" cy="28" rx="6" ry="5.5" fill="#ef5b8a"/><ellipse cx="27" cy="28" rx="6" ry="5.5" fill="#ef5b8a"/><circle cx="11" cy="17" r="2.6" fill="#ffd23f"/><circle cx="29" cy="17" r="2.6" fill="#ffd23f"/><circle cx="13" cy="28" r="1.8" fill="#fff"/><circle cx="27" cy="28" r="1.8" fill="#fff"/><rect x="18.5" y="13" width="3" height="22" rx="1.5" fill="#1f2a44"/></svg>' }
+  L: { name: 'Schmetterling', art: 'Ein Schmetterling', svg: '<svg viewBox="0 0 40 40"><path d="M20 14q-3-8-6-10M20 14q3-8 6-10" stroke="#1f2a44" stroke-width="1.2" fill="none"/><ellipse cx="12" cy="17" rx="8" ry="7" fill="#a77ee8"/><ellipse cx="28" cy="17" rx="8" ry="7" fill="#a77ee8"/><ellipse cx="13" cy="28" rx="6" ry="5.5" fill="#ef5b8a"/><ellipse cx="27" cy="28" rx="6" ry="5.5" fill="#ef5b8a"/><circle cx="11" cy="17" r="2.6" fill="#ffd23f"/><circle cx="29" cy="17" r="2.6" fill="#ffd23f"/><circle cx="13" cy="28" r="1.8" fill="#fff"/><circle cx="27" cy="28" r="1.8" fill="#fff"/><rect x="18.5" y="13" width="3" height="22" rx="1.5" fill="#1f2a44"/></svg>' },
+  S: { name: 'Einhorn', art: 'Ein Einhorn', svg: '<svg viewBox="0 0 40 40"><path d="M34 22q6 4 3 12" stroke="#a77ee8" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="15" y="28" width="3.5" height="12" fill="#f2eef8"/><rect x="20" y="29" width="3.5" height="11" fill="#e4dcf0"/><rect x="28" y="28" width="3.5" height="12" fill="#f2eef8"/><ellipse cx="24" cy="25" rx="11" ry="7" fill="#fff" stroke="#d9d0ea"/><path d="M12 25l3-14 8 5-4 10z" fill="#fff"/><ellipse cx="9" cy="12" rx="4.5" ry="8" fill="#fff" stroke="#d9d0ea" transform="rotate(-35 9 12)"/><path d="M11 6l3-6 1 7z" fill="#ffd23f"/><path d="M15 5q3 2 4 6" stroke="#ef5b8a" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M16 8q4 3 5 8" stroke="#f7b733" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M17 12q4 3 5 8" stroke="#3fa7e0" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="10" cy="10" r="1.3" fill="#1f2a44"/><circle cx="5" cy="16" r="1" fill="#f2a0b4"/></svg>' }
 };
+// Fertige Gebäude: belegen mehrere Felder. Im Raster steht unten links das Gebäude-Zeichen, die übrigen Felder sind '#'.
+var BLD = {
+  'ä': { name: 'Haus', w: 2, h: 2, svg: '<rect x="54" y="8" width="9" height="18" fill="#8f3220"/><rect x="6" y="34" width="68" height="46" fill="#f4e1b8"/><path d="M0 38L40 4L80 38z" fill="#c4302b"/><path d="M14 30h52M24 21h32" stroke="#8f2420" stroke-width="2"/><rect x="33" y="52" width="14" height="28" rx="2" fill="#8a5a3b"/><circle cx="44" cy="67" r="1.5" fill="#ffd23f"/><rect class="wl" x="12" y="45" width="15" height="13" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"/><rect class="wl" x="53" y="45" width="15" height="13" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"/>' },
+  'ç': { name: 'Scheune', w: 3, h: 2, svg: '<rect x="8" y="30" width="104" height="50" fill="#c4302b"/><path d="M0 34L28 6H92L120 34z" fill="#8f2420"/><rect x="42" y="42" width="36" height="38" fill="#f4f4f4"/><path d="M42 42L78 80M78 42L42 80" stroke="#c4302b" stroke-width="3"/><rect x="42" y="42" width="36" height="38" fill="none" stroke="#fff" stroke-width="3"/><rect class="wl" x="52" y="12" width="16" height="13" fill="#f0cf5a" stroke="#fff" stroke-width="2"/><path d="M14 40h20M86 40h20M14 52h20M86 52h20M14 64h20M86 64h20" stroke="#9e2f2c" stroke-width="2"/>' },
+  'è': { name: 'Iglu', w: 2, h: 1, svg: '<path d="M4 40A36 36 0 0 1 76 40z" fill="#fff" stroke="#b8c4d0" stroke-width="1.5"/><path d="M10 28h60M19 16h42M28 40v-12M52 40v-12M40 28v-12M30 16l-3 12M50 16l3 12" stroke="#c9d6e3" stroke-width="1.5"/><path d="M28 40a12 12 0 0 1 24 0z" fill="#5b6782"/>' },
+  'ö': { name: 'Laden', w: 3, h: 2, svg: '<rect x="4" y="24" width="112" height="56" fill="#fff" stroke="#cfd9e6" stroke-width="2"/><rect x="28" y="2" width="64" height="18" rx="4" fill="#2f6fd6"/><text x="60" y="15.5" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="12" fill="#fff">LADEN</text><g fill="#d64541"><rect x="4" y="24" width="16" height="12"/><rect x="36" y="24" width="16" height="12"/><rect x="68" y="24" width="16" height="12"/><rect x="100" y="24" width="16" height="12"/></g><rect class="wl" x="12" y="44" width="42" height="26" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"/><circle cx="24" cy="62" r="5" fill="#d9a066"/><circle cx="38" cy="63" r="4" fill="#f08a24"/><rect x="66" y="44" width="18" height="36" fill="#8a5a3b"/><rect class="wl" x="92" y="44" width="18" height="26" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"/>' },
+  'ã': { name: 'Leuchtturm', w: 1, h: 4, svg: '<path d="M10 160H30L26 40H14z" fill="#fff" stroke="#c9ced6"/><path d="M13.3 60H26.7L27.3 80H12.7zM12 100H28L28.7 120H11.3zM10.7 140H29.3L30 160H10z" fill="#d64541"/><rect x="9" y="38" width="22" height="4" fill="#3b4252"/><rect class="wl" x="12" y="24" width="16" height="14" fill="#fff6c2" stroke="#3b4252" stroke-width="1.5"/><path d="M10 26L20 8L30 26z" fill="#d64541"/><rect x="16" y="146" width="8" height="14" fill="#6b4329"/>' },
+  'é': { name: 'Windmühle', w: 2, h: 4, svg: '<path d="M22 160H58L52 62H28z" fill="#f6f1e7" stroke="#d6cdbb"/><path d="M24 64L40 44L56 64z" fill="#8f3220"/><rect x="34" y="136" width="12" height="24" rx="5" fill="#8a5a3b"/><rect class="wl" x="35" y="92" width="10" height="12" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="1.5"/><g class="spin" style="transform-origin:40px 54px"><rect x="37" y="16" width="6" height="38" fill="#c98b4a"/><rect x="37" y="54" width="6" height="38" fill="#c98b4a"/><rect x="2" y="51" width="38" height="6" fill="#c98b4a"/><rect x="40" y="51" width="38" height="6" fill="#c98b4a"/><rect x="43" y="18" width="9" height="32" fill="#f4ead8" opacity=".85"/><rect x="28" y="58" width="9" height="32" fill="#f4ead8" opacity=".85"/><rect x="6" y="42" width="32" height="9" fill="#f4ead8" opacity=".85"/><rect x="42" y="57" width="32" height="9" fill="#f4ead8" opacity=".85"/></g><circle cx="40" cy="54" r="4" fill="#5e3c26"/>' },
+  'ü': { name: 'Schule', w: 4, h: 3, svg: '<rect x="10" y="42" width="140" height="78" fill="#f0b84a"/><rect x="64" y="14" width="32" height="34" fill="#e0a43a"/><path d="M60 16L80 0L100 16z" fill="#c4302b"/><circle cx="80" cy="30" r="9" fill="#fff" stroke="#3b4252" stroke-width="1.5"/><path d="M80 30V24M80 30h5" stroke="#3b4252" stroke-width="1.6"/><rect x="4" y="38" width="152" height="8" fill="#c4302b"/><g class="wl" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"><rect x="20" y="54" width="18" height="18"/><rect x="46" y="54" width="18" height="18"/><rect x="96" y="54" width="18" height="18"/><rect x="122" y="54" width="18" height="18"/><rect x="20" y="84" width="18" height="18"/><rect x="46" y="84" width="18" height="18"/><rect x="96" y="84" width="18" height="18"/><rect x="122" y="84" width="18" height="18"/></g><rect x="68" y="84" width="24" height="36" rx="3" fill="#8a5a3b"/><rect x="66" y="58" width="28" height="12" rx="2" fill="#fff"/><text x="80" y="67.5" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="8" fill="#1f2a44">SCHULE</text>' },
+  'ß': { name: 'Feuerwehr', w: 3, h: 3, svg: '<rect x="86" y="4" width="26" height="30" fill="#c4302b"/><rect class="wl" x="93" y="10" width="12" height="12" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="1.5"/><rect x="4" y="30" width="112" height="90" fill="#d64541"/><rect x="0" y="24" width="120" height="10" fill="#9e2f2c"/><g class="wl" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"><rect x="16" y="42" width="16" height="14"/><rect x="52" y="42" width="16" height="14"/><rect x="88" y="42" width="16" height="14"/></g><rect x="14" y="60" width="92" height="12" rx="2" fill="#fff"/><text x="60" y="69.5" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="9" fill="#d64541">FEUERWEHR</text><g fill="#f4f4f4" stroke="#b9b9b9"><rect x="12" y="78" width="44" height="42"/><rect x="64" y="78" width="44" height="42"/></g><path d="M12 88h44M12 98h44M12 108h44M64 88h44M64 98h44M64 108h44" stroke="#c9c9c9" stroke-width="1.5"/>' },
+  'à': { name: 'Bahnhof', w: 4, h: 2, svg: '<rect x="8" y="28" width="144" height="52" fill="#e8c67f"/><path d="M0 32L20 10H140L160 32z" fill="#2f6fd6"/><circle cx="80" cy="20" r="8" fill="#fff" stroke="#1d4b99" stroke-width="1.5"/><path d="M80 20V15M80 20h4" stroke="#1f2a44" stroke-width="1.5"/><rect x="50" y="34" width="60" height="12" rx="2" fill="#fff"/><text x="80" y="43.5" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="9" fill="#1d4b99">BAHNHOF</text><g fill="#6b4329"><path d="M20 80V58a9 9 0 0 1 18 0V80z"/><path d="M71 80V58a9 9 0 0 1 18 0V80z"/><path d="M122 80V58a9 9 0 0 1 18 0V80z"/></g><g class="wl" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="1.5"><rect x="46" y="54" width="14" height="14"/><rect x="100" y="54" width="14" height="14"/></g>' },
+  'á': { name: 'Kirche', w: 2, h: 4, svg: '<rect x="30" y="84" width="46" height="76" fill="#f6f1e7" stroke="#d6cdbb"/><path d="M26 86L53 60L80 86z" fill="#8f3220"/><rect x="4" y="44" width="30" height="116" fill="#ece4d4" stroke="#d6cdbb"/><path d="M2 46L19 2L36 46z" fill="#2f6fd6"/><circle cx="19" cy="4" r="2.5" fill="#ffd23f"/><circle cx="19" cy="62" r="7" fill="#fff" stroke="#3b4252" stroke-width="1.2"/><path d="M19 62V58M19 62h3" stroke="#3b4252" stroke-width="1.2"/><path d="M11 160V140a8 8 0 0 1 16 0V160z" fill="#8a5a3b"/><circle class="wl" cx="53" cy="100" r="8" fill="#a77ee8" stroke="#7d8fa0" stroke-width="1.5"/><g class="wl" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="1.5"><path d="M40 146V124a5 5 0 0 1 10 0V146z"/><path d="M57 146V124a5 5 0 0 1 10 0V146z"/><path d="M14 104V90a5 5 0 0 1 10 0V104z"/></g>' },
+  'â': { name: 'Hochhaus', w: 2, h: 5, svg: '<rect x="22" y="2" width="36" height="14" fill="#6b737c"/><rect x="38" y="0" width="3" height="4" fill="#d64541"/><rect x="6" y="14" width="68" height="186" fill="#9aa7b8"/><g class="wl" fill="#a8dcf5" stroke="#6b7a8c" stroke-width="1.5"><rect x="14" y="24" width="13" height="14"/><rect x="34" y="24" width="13" height="14"/><rect x="54" y="24" width="13" height="14"/><rect x="14" y="46" width="13" height="14"/><rect x="34" y="46" width="13" height="14"/><rect x="54" y="46" width="13" height="14"/><rect x="14" y="68" width="13" height="14"/><rect x="34" y="68" width="13" height="14"/><rect x="54" y="68" width="13" height="14"/><rect x="14" y="90" width="13" height="14"/><rect x="34" y="90" width="13" height="14"/><rect x="54" y="90" width="13" height="14"/><rect x="14" y="112" width="13" height="14"/><rect x="34" y="112" width="13" height="14"/><rect x="54" y="112" width="13" height="14"/><rect x="14" y="134" width="13" height="14"/><rect x="34" y="134" width="13" height="14"/><rect x="54" y="134" width="13" height="14"/><rect x="14" y="156" width="13" height="14"/><rect x="54" y="156" width="13" height="14"/></g><rect x="28" y="172" width="24" height="28" fill="#3b4252"/><rect x="31" y="175" width="18" height="25" fill="#a8dcf5" opacity=".6"/>' },
+  'å': { name: 'Riesenrad', w: 3, h: 3, svg: '<path d="M60 56L30 118M60 56L90 118" stroke="#3b4252" stroke-width="5"/><rect x="22" y="114" width="76" height="6" rx="2" fill="#3b4252"/><g class="spin" style="transform-origin:60px 56px"><circle cx="60" cy="56" r="46" fill="none" stroke="#2f6fd6" stroke-width="4"/><path d="M60 10V102M14 56H106M27.5 23.5L92.5 88.5M92.5 23.5L27.5 88.5" stroke="#6c9be6" stroke-width="2"/><g><rect x="54" y="4" width="12" height="10" rx="3" fill="#d64541"/><rect x="54" y="98" width="12" height="10" rx="3" fill="#ffd23f"/><rect x="8" y="51" width="12" height="10" rx="3" fill="#2f9e5b"/><rect x="100" y="51" width="12" height="10" rx="3" fill="#a77ee8"/><rect x="21" y="18" width="12" height="10" rx="3" fill="#f08a24"/><rect x="87" y="18" width="12" height="10" rx="3" fill="#3fa7e0"/><rect x="21" y="84" width="12" height="10" rx="3" fill="#ef5b8a"/><rect x="87" y="84" width="12" height="10" rx="3" fill="#59c27a"/></g></g><circle cx="60" cy="56" r="6" fill="#ffd23f" stroke="#3b4252" stroke-width="2"/>' },
+  'æ': { name: 'Burg', w: 4, h: 4, svg: '<rect x="20" y="76" width="120" height="84" fill="#9aa3ad"/><g fill="#9aa3ad"><rect x="40" y="66" width="14" height="12"/><rect x="66" y="66" width="14" height="12"/><rect x="92" y="66" width="14" height="12"/></g><rect x="0" y="44" width="38" height="116" fill="#8e969f"/><rect x="122" y="44" width="38" height="116" fill="#8e969f"/><path d="M-2 46L19 6L40 46zM120 46L141 6L162 46z" fill="#2f6fd6"/><path d="M19 6V-6M141 6V-6" stroke="#5e3c26" stroke-width="2"/><path d="M19 0h12l-4 4 4 4H19zM141 0h12l-4 4 4 4H141z" fill="#ffd23f"/><path d="M60 160V122a20 20 0 0 1 40 0V160z" fill="#6b4329"/><path d="M60 128h40M60 138h40M60 148h40" stroke="#4d2f1c" stroke-width="2"/><g class="wl" fill="#ffd96b" stroke="#6b737c" stroke-width="1.5"><path d="M13 90V74a6 6 0 0 1 12 0V90z"/><path d="M135 90V74a6 6 0 0 1 12 0V90z"/><path d="M38 108V96a5 5 0 0 1 10 0V108z"/><path d="M112 108V96a5 5 0 0 1 10 0V108z"/></g><path d="M20 100h18M122 120h18M20 140h18M138 100h-10" stroke="#7d858e" stroke-width="1.5"/>' }
+};
+// Fahrzeuge und Straßenmöbel (ein Feld), werden wie Tiere als kleines Bild gezeigt.
+var SPR = {
+  'W': { name: 'Auto', art: 'Das Auto', veh: 1, svg: '<svg viewBox="0 0 40 40"><path d="M3 33v-9q0-4 4-4h5l6-7h10l6 7q3 0 3 4v9z" fill="#d64541"/><path d="M14 20l5-5h4v5zM25 20v-5h3l4 5z" fill="#a8dcf5"/><rect x="3" y="26" width="4" height="3" fill="#ffd23f"/><circle cx="11" cy="33" r="5" fill="#1f2a44"/><circle cx="11" cy="33" r="2" fill="#c9ced6"/><circle cx="29" cy="33" r="5" fill="#1f2a44"/><circle cx="29" cy="33" r="2" fill="#c9ced6"/></svg>' },
+  'ï': { name: 'Polizeiauto', art: 'Das Polizeiauto', veh: 1, svg: '<svg viewBox="0 0 40 40"><rect x="17" y="9" width="6" height="4" rx="1" fill="#2f6fd6"/><path d="M3 33v-9q0-4 4-4h5l6-7h10l6 7q3 0 3 4v9z" fill="#fff" stroke="#c9ced6"/><rect x="3" y="25" width="34" height="4" fill="#2f6fd6"/><path d="M14 20l5-5h4v5zM25 20v-5h3l4 5z" fill="#a8dcf5"/><circle cx="11" cy="33" r="5" fill="#1f2a44"/><circle cx="11" cy="33" r="2" fill="#c9ced6"/><circle cx="29" cy="33" r="5" fill="#1f2a44"/><circle cx="29" cy="33" r="2" fill="#c9ced6"/></svg>' },
+  'X': { name: 'Bus', art: 'Der Bus', veh: 1, svg: '<svg viewBox="0 0 40 40"><rect x="1" y="10" width="38" height="23" rx="4" fill="#ffd23f"/><g fill="#a8dcf5"><rect x="4" y="14" width="7" height="8" rx="1"/><rect x="13" y="14" width="7" height="8" rx="1"/><rect x="22" y="14" width="7" height="8" rx="1"/><rect x="31" y="14" width="6" height="12" rx="1"/></g><rect x="1" y="25" width="30" height="3" fill="#2f9e5b"/><circle cx="9" cy="33" r="4.5" fill="#1f2a44"/><circle cx="9" cy="33" r="1.8" fill="#c9ced6"/><circle cx="30" cy="33" r="4.5" fill="#1f2a44"/><circle cx="30" cy="33" r="1.8" fill="#c9ced6"/></svg>' },
+  'ñ': { name: 'Eiswagen', art: 'Der Eiswagen', veh: 1, svg: '<svg viewBox="0 0 40 40"><path d="M14 4l3 8h-6z" fill="#e0a43a"/><circle cx="14" cy="5" r="3.5" fill="#f2a0b4"/><rect x="2" y="12" width="26" height="21" rx="3" fill="#f6c3d2"/><rect x="5" y="16" width="18" height="8" rx="1" fill="#fff"/><path d="M28 18h5l4 6v9H28z" fill="#ef5b8a"/><rect x="30" y="20" width="4" height="4" fill="#a8dcf5"/><circle cx="10" cy="33" r="4.5" fill="#1f2a44"/><circle cx="31" cy="33" r="4.5" fill="#1f2a44"/></svg>' },
+  'Y': { name: 'Feuerwehrauto', art: 'Das Feuerwehrauto', veh: 1, svg: '<svg viewBox="0 0 40 40"><rect x="25" y="12" width="5" height="3" rx="1" fill="#3fa7e0"/><path d="M2 12h20" stroke="#c9ced6" stroke-width="2"/><path d="M4 9v6M9 9v6M14 9v6M19 9v6" stroke="#c9ced6" stroke-width="1.5"/><rect x="1" y="15" width="24" height="18" rx="2" fill="#d64541"/><path d="M25 15h7l6 8v10H25z" fill="#d64541"/><path d="M27 17h5l4 6h-9z" fill="#a8dcf5"/><rect x="4" y="22" width="18" height="2" fill="#fff"/><circle cx="9" cy="33" r="4.5" fill="#1f2a44"/><circle cx="31" cy="33" r="4.5" fill="#1f2a44"/></svg>' },
+  'Z': { name: 'Traktor', art: 'Der Traktor', veh: 1, svg: '<svg viewBox="0 0 40 40"><rect x="27" y="8" width="3" height="10" fill="#3b4252"/><path d="M4 30V18h18V8h4v22z" fill="#2f9e5b"/><path d="M22 18h14v12H22z" fill="#2f9e5b"/><rect x="7" y="11" width="13" height="8" fill="#a8dcf5" stroke="#1e6b3c" stroke-width="1.5"/><circle cx="12" cy="29" r="9" fill="#1f2a44"/><circle cx="12" cy="29" r="4" fill="#ffd23f"/><circle cx="32" cy="33" r="5" fill="#1f2a44"/><circle cx="32" cy="33" r="2" fill="#ffd23f"/></svg>' },
+  'ê': { name: 'Fahrrad', art: 'Das Fahrrad', veh: 1, svg: '<svg viewBox="0 0 40 40"><circle cx="10" cy="29" r="7" fill="none" stroke="#1f2a44" stroke-width="2.5"/><circle cx="30" cy="29" r="7" fill="none" stroke="#1f2a44" stroke-width="2.5"/><path d="M10 29l8-12h10l2 12M18 17l2 12h-10M28 17l-2-5h4M18 17l-2-4h-3" stroke="#2f6fd6" stroke-width="2.5" fill="none" stroke-linejoin="round"/></svg>' },
+  'ë': { name: 'Lok', art: 'Die Lok', veh: 1, svg: '<svg viewBox="0 0 40 40"><circle cx="10" cy="5" r="3" fill="#dde1e7"/><circle cx="6" cy="2" r="2" fill="#dde1e7"/><rect x="7" y="8" width="6" height="8" fill="#1f2a44"/><rect x="2" y="15" width="22" height="13" rx="3" fill="#2f9e5b"/><rect x="22" y="8" width="16" height="20" fill="#1e6b3c"/><rect x="26" y="11" width="9" height="7" fill="#a8dcf5"/><rect x="0" y="27" width="40" height="3" fill="#3b4252"/><circle cx="8" cy="33" r="4.5" fill="#d64541" stroke="#1f2a44" stroke-width="2"/><circle cx="20" cy="33" r="4.5" fill="#d64541" stroke="#1f2a44" stroke-width="2"/><circle cx="32" cy="33" r="4.5" fill="#d64541" stroke="#1f2a44" stroke-width="2"/></svg>' },
+  'ì': { name: 'Waggon', art: 'Der Waggon', veh: 1, svg: '<svg viewBox="0 0 40 40"><rect x="2" y="10" width="36" height="18" rx="2" fill="#2f6fd6"/><g fill="#a8dcf5"><rect x="6" y="13" width="7" height="7"/><rect x="16.5" y="13" width="7" height="7"/><rect x="27" y="13" width="7" height="7"/></g><rect x="0" y="27" width="40" height="3" fill="#3b4252"/><circle cx="10" cy="33" r="4" fill="#1f2a44"/><circle cx="30" cy="33" r="4" fill="#1f2a44"/></svg>' },
+  'í': { name: 'Boot', art: 'Das Boot', veh: 1, svg: '<svg viewBox="0 0 40 40"><path d="M20 4v24" stroke="#5e3c26" stroke-width="2"/><path d="M21 5l13 20H21z" fill="#fff" stroke="#c9ced6"/><path d="M19 9L8 25h11z" fill="#d64541"/><path d="M2 28h36l-6 9H8z" fill="#8a5a3b"/><path d="M5 31h30" stroke="#ffd23f" stroke-width="2"/></svg>' },
+  'î': { name: 'Heißluftballon', art: 'Der Heißluftballon', veh: 1, svg: '<svg viewBox="0 0 40 40"><path d="M20 2C8 2 4 10 4 16c0 8 10 14 12 18h8c2-4 12-10 12-18c0-6-4-14-16-14z" fill="#ef5b5b"/><path d="M20 2c-5 0-7 8-7 14s3 14 3 18M20 2c5 0 7 8 7 14s-3 14-3 18" fill="none" stroke="#ffd23f" stroke-width="3"/><path d="M4 16h32" stroke="#2f6fd6" stroke-width="2.5"/><path d="M16 34l1 2M24 34l-1 2" stroke="#5e3c26" stroke-width="1"/><rect x="15" y="35" width="10" height="5" rx="1" fill="#9c6a39"/></svg>' },
+  'ò': { name: 'Ampel', svg: '<svg viewBox="0 0 40 40"><rect x="18" y="20" width="4" height="20" fill="#3b4252"/><rect x="13" y="1" width="14" height="24" rx="3" fill="#1f2a44"/><circle cx="20" cy="6" r="3" fill="#ef5b5b"/><circle cx="20" cy="13" r="3" fill="#f7b733"/><circle cx="20" cy="20" r="3" fill="#59c27a"/></svg>' },
+  'ó': { name: 'Schild', svg: '<svg viewBox="0 0 40 40"><rect x="18" y="18" width="4" height="22" fill="#9aa3ad"/><circle cx="20" cy="12" r="10" fill="#fff" stroke="#d64541" stroke-width="3"/><text x="20" y="16" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="11" fill="#1f2a44">30</text></svg>' },
+  'ô': { name: 'Bushaltestelle', svg: '<svg viewBox="0 0 40 40"><rect x="8" y="10" width="3" height="30" fill="#9aa3ad"/><circle cx="9.5" cy="9" r="7" fill="#ffd23f" stroke="#2f9e5b" stroke-width="2"/><text x="9.5" y="12.5" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="9" fill="#2f9e5b">H</text><path d="M16 14h22v3H16z" fill="#3b4252"/><rect x="17" y="17" width="20" height="16" fill="#a8dcf5" opacity=".6"/><rect x="19" y="30" width="16" height="3" fill="#b57d47"/><path d="M21 33v7M33 33v7" stroke="#3b4252" stroke-width="2"/></svg>' },
+  'õ': { name: 'Schranke', svg: '<svg viewBox="0 0 40 40"><rect x="2" y="16" width="6" height="24" fill="#3b4252"/><rect x="5" y="17" width="35" height="5" fill="#fff" stroke="#c9ced6"/><g fill="#d64541"><rect x="9" y="17" width="6" height="5"/><rect x="21" y="17" width="6" height="5"/><rect x="33" y="17" width="6" height="5"/></g><circle cx="5" cy="12" r="3" fill="#ef5b5b"/></svg>' }
+};
+// Boden-Teile liegen auf der obersten Bodenreihe (eigene Ebene S.island.t), darüber kann man weiterbauen.
+var GROUND = { 'ø': 'Straße', 'û': 'Gehweg', 'ù': 'Zebrastreifen', 'ú': 'Schienen', 'ý': 'Bahnübergang' };
+function bldSVG(k) { var B = BLD[k]; return '<svg viewBox="0 0 ' + B.w * 40 + ' ' + B.h * 40 + '" overflow="visible">' + B.svg + '</svg>'; }
+function bldCells(k, anchor) { var B = BLD[k], r = Math.floor(anchor / IW), c = anchor % IW, out = []; for (var rr = r - B.h + 1; rr <= r; rr++) for (var cc = c; cc < c + B.w; cc++) out.push(rr * IW + cc); return out; }
+function bldAt(g, i) { for (var j = 0; j < g.length; j++) if (BLD[g[j]] && bldCells(g[j], j).indexOf(i) >= 0) return j; return -1; }
 var MATS = [
   { k: 'w', name: 'Holz', cat: 'bau' }, { k: 's', name: 'Stein', cat: 'bau' }, { k: 'z', name: 'Ziegel', cat: 'bau' }, { k: 'h', name: 'Stroh', cat: 'bau' },
   { k: 'c', name: 'Putz', cat: 'bau' }, { k: 'u', name: 'Sandstein', cat: 'bau' }, { k: 'e', name: 'Eisblock', cat: 'bau' }, { k: 'o', name: 'Gold', cat: 'bau' }, { k: 'g', name: 'Fenster', cat: 'bau' },
@@ -1618,20 +1759,35 @@ var MATS = [
   { k: '3', name: 'Kaktus', cat: 'natur' }, { k: 'p', name: 'Pilz', cat: 'natur' }, { k: '5', name: 'Kürbis', cat: 'natur' }, { k: '7', name: 'Fels', cat: 'natur' }, { k: 'q', name: 'Wasser', cat: 'natur' }, { k: '6', name: 'Schneemann', cat: 'natur' }
 ];
 'ABCDEFGHIJKLMNOPQR'.split('').forEach(function (k) { MATS.push({ k: k, name: ANIM[k].name, cat: 'tier' }); });
+MATS.push({ k: '9', name: 'Diamant', cat: 'schatz' }, { k: '0', name: 'Springbrunnen', cat: 'schatz' }, { k: 'T', name: 'Schatztruhe', cat: 'schatz' }, { k: 'U', name: 'Regenbogen', cat: 'schatz' }, { k: 'S', name: 'Einhorn', cat: 'schatz' }, { k: 'V', name: 'Olaf-Statue', cat: 'schatz' });
+Object.keys(BLD).forEach(function (k) { MATS.push({ k: k, name: BLD[k].name, cat: 'gebaeude' }); });
+Object.keys(GROUND).forEach(function (k) { MATS.push({ k: k, name: GROUND[k], cat: 'verkehr', ground: true }); });
+Object.keys(SPR).forEach(function (k) { MATS.push({ k: k, name: SPR[k].name, cat: 'verkehr' }); });
+// Preise in Sternen pro Stück: Grundbausteine billig, Besonderes teurer, Schätze zum Sparen.
+var PRICE = { '9': 15, '0': 20, T: 20, U: 25, S: 30, V: 40, o: 10, x: 10, m: 10, B: 8, F: 8, H: 8, G: 8, J: 15, K: 15, R: 15 };
+'gtilkfvre48 36'.replace(/ /g, '').split('').forEach(function (k) { PRICE[k] = 3; });
+'ANMEPDCIOQL'.split('').forEach(function (k) { PRICE[k] = 5; });
+var PRICE2 = { 'ä': 8, 'è': 10, 'ç': 12, 'ö': 15, 'ã': 20, 'é': 20, 'ü': 25, 'ß': 25, 'à': 25, 'á': 25, 'â': 30, 'å': 40, 'æ': 50,
+  'ù': 2, 'ú': 2, 'ý': 3, 'ó': 2, 'ò': 3, 'ô': 3, 'õ': 3, 'ê': 5, W: 8, 'ì': 8, Z: 10, 'í': 10, X: 12, 'ï': 12, 'ñ': 12, Y: 15, 'ë': 15, 'î': 25 };
+for (var pk in PRICE2) PRICE[pk] = PRICE2[pk];
+MATS.forEach(function (m) { m.p = PRICE[m.k] || 1; });
 var ZONES = [
   { id: 'insel', name: 'Insel', terrain: ['WWSGGGGGGGGGGSWW', 'WWWEEEEEEEEEEWWW'], res: 'MNOPRQ', water: 'P', hi: 'Hier hat alles angefangen. Ein Haus mit Tür und Dach lockt Tiere an.' },
   { id: 'hof', name: 'Bauernhof', terrain: ['GGGGGFFFFFFGGGGG', 'EEEEEEEEEEEEEEEE'], res: 'BCDEFA', water: 'P', hi: 'Auf dem Bauernhof wohnen gern Kuh, Schwein, Schaf, Huhn und Pferd. Bau einen Stall mit Tür und Dach!' },
   { id: 'wald', name: 'Wald', terrain: ['DDDDDDDDDDDDDDDD', 'EEEEEEEEEEEEEEEE'], res: 'GHQOML', water: 'I', hi: 'Im Wald leben Fuchs, Reh und Eichhörnchen. Ein Teich lockt einen Frosch an.' },
   { id: 'berg', name: 'Schneeberge', terrain: ['XXXXXXXXXXXXXXXX', 'KKKKKKKKKKKKKKKK'], res: 'JMHAFN', water: 'J', hi: 'Brrr, hier ist es kalt! Bau eine Hütte mit Tür und Dach. Im Wasser badet ein Pinguin.' },
   { id: 'wueste', name: 'Wüste', terrain: ['SSSSSSWWWWSSSSSS', 'SSSSSSSSSSSSSSSS'], res: 'KLMEAN', water: 'P', hi: 'In der Wüste ist es heiß. Kakteen und Palmen passen gut hierher, und ein Kamel sucht ein Zuhause.' },
+  { id: 'dorf', name: 'Dorf', terrain: ['GGGGGGGGGGGGGGGG', 'EEEEEEEEEEEEEEEE'], res: 'ANMEQL', water: 'P', hi: 'Im Dorf ist Platz für Häuser, einen Laden, die Schule und eine Straße mit Bushaltestelle. Straßen kommen auf die oberste Bodenreihe.' },
+  { id: 'hafen', name: 'Hafen', terrain: ['PPPPPPPWWWWWWWWW', 'KKKKKKKWWWWWWWWW'], res: 'ANRMEP', water: 'P', hi: 'Am Hafen legen Boote an. Stell einen Leuchtturm auf und setz ein Boot aufs Wasser.' },
   { id: 'stadt', name: 'Stadt', terrain: ['PPPPPPPPPPPPPPPP', 'RRRRRRRRRRRRRRRR'], res: 'ANRLME', water: 'P', hi: 'Bau eine Stadt mit hohen Häusern, Türmen und Lampen. Mit Gold wird es richtig schick.' }
 ];
-var IV = { tool: 'build', sel: 'w', cat: 'bau', zone: 0, night: false, fresh: -1, residents: -1, gift: false };
+var IV = { tool: 'build', sel: 'w', cat: 'bau', zone: 0, night: false, fresh: -1, residents: -1, gift: false, gift3: false };
 function emptyGrid() { return new Array(IW * IROWS + 1).join('.'); }
 function islandEnsure() {
   if (!S.island || typeof S.island.g !== 'string' || S.island.g.length !== IW * IROWS) {
-    S.island = { g: emptyGrid(), inv: { w: 12, d: 6, t: 1, g: 2, b: 3 }, photos: [] };
-    S.at.island = Date.now(); save();
+    // Neu angelegt: Zeitstempel so alt wie möglich, damit ein echtes Land von einem anderen Gerät beim Abgleich gewinnt
+    S.island = { g: emptyGrid(), inv: { w: 12, d: 6, t: 1, g: 2, b: 3 }, photos: [] }; IV.isNew = true;
+    if (!S.at.island) S.at.island = 1; save();
   }
   var I = S.island;
   if (!I.inv) I.inv = {};
@@ -1642,9 +1798,18 @@ function islandEnsure() {
     // Willkommensgeschenk für Olafs Land (einmalig, auch für alte Spielstände)
     var gift = { i: 3, j: 2, y: 2, c: 4, '1': 2, '4': 2, A: 1, B: 1, D: 1, E: 1 };
     for (var k in gift) I.inv[k] = (I.inv[k] || 0) + gift[k];
-    I.v = 2; IV.gift = true; S.at.island = Date.now(); save();
+    I.v = 2; IV.gift = true; save(); // Geschenk ändert den Zeitstempel nicht: ein neuerer Stand anderswo bleibt gültig
+  }
+  if (!I.t || typeof I.t !== 'object') I.t = {};
+  ZONES.forEach(function (Z) { if (typeof I.t[Z.id] !== 'string' || I.t[Z.id].length !== IW) I.t[Z.id] = new Array(IW + 1).join('.'); });
+  if (!(I.v >= 3)) {
+    // Geschenk zu Gebäuden und Straßen (einmalig)
+    var gift3 = { 'ä': 1, 'ø': 4, W: 1 };
+    for (var k3 in gift3) I.inv[k3] = (I.inv[k3] || 0) + gift3[k3];
+    I.v = 3; IV.gift3 = true; save();
   }
 }
+function landGround(zi) { return S.island.t[ZONES[zi].id]; }
 function landGrid(zi) { return zi ? S.island.z[ZONES[zi].id] : S.island.g; }
 function islandResidents(g) {
   var out = [];
@@ -1661,42 +1826,52 @@ function islandResidents(g) {
   return out;
 }
 function animalDiv(k, n) { return '<div class="animal" style="animation-delay:' + ((n * .37) % 1.6).toFixed(2) + 's">' + ANIM[k].svg + '</div>'; }
-function islandHTML(g, night, interactive, freshIdx, zi) {
-  var Z = ZONES[zi || 0], res = islandResidents(g), wat = g.indexOf('q');
+function sprDiv(k, n) { return '<div class="animal' + (SPR[k].veh ? ' veh' : ' still') + '" style="animation-delay:' + ((n * .37) % 1.6).toFixed(2) + 's">' + SPR[k].svg + '</div>'; }
+function islandHTML(g, night, interactive, freshIdx, zi, t) {
+  var Z = ZONES[zi || 0], res = islandResidents(g), wat = g.indexOf('q'), gsel = interactive && IV.tool === 'build' && matOf(IV.sel).ground;
   var h = '<div class="isl z-' + Z.id + (night ? ' night' : '') + '"' + (interactive ? ' id="isl"' : '') + '>';
   for (var i = 0; i < g.length; i++) {
     var ch = g[i], ri = res.indexOf(i), inner = '';
     if (ANIM[ch]) inner = animalDiv(ch, i);
+    else if (SPR[ch]) inner = sprDiv(ch, i);
+    else if (BLD[ch]) inner = '<div class="bld" style="width:' + BLD[ch].w * 100 + '%;height:' + BLD[ch].h * 100 + '%">' + bldSVG(ch) + '</div>';
     else if (ri >= 0) inner = animalDiv(Z.res[ri % Z.res.length], ri);
     else if (i === wat) inner = animalDiv(Z.water, 0);
-    h += '<div class="c' + (ch === '.' ? (interactive ? ' free' : '') : ' m-' + ch) + (i === freshIdx ? ' fresh' : '') + '" data-i="' + i + '">' + inner + '</div>';
+    h += '<div class="c' + (ch === '.' ? (interactive && !gsel ? ' free' : '') : BLD[ch] ? ' has-bld' : ch === '#' ? '' : ' m-' + ch) + (i === freshIdx ? ' fresh' : '') + '" data-i="' + i + '">' + inner + '</div>';
   }
-  Z.terrain.forEach(function (row) { for (var c = 0; c < IW; c++) h += '<div class="c t-' + row[c] + '"></div>'; });
+  Z.terrain.forEach(function (row, r) {
+    for (var c = 0; c < IW; c++) {
+      var tc = r === 0 && t && t[c] !== '.' ? t[c] : row[c];
+      h += '<div class="c t-' + tc + (r === 0 && gsel && tc === row[c] && tc !== 'W' ? ' free' : '') + '"' + (r === 0 && interactive ? ' data-t="' + c + '"' : '') + '></div>';
+    }
+  });
   return h + '</div>';
 }
 function islandSay(t) { $('iBubble').textContent = t; }
+function emptyMsg(m) { return '„' + m.name + '“ hast du gerade nicht im Vorrat. ' + (stars() >= m.p ? 'Tippe unten auf „' + m.name + ' kaufen“.' : 'Ein Stück kostet ' + m.p + ' ★. Rechne noch ein paar Aufgaben, dann kannst du es kaufen!'); }
 function matOf(k) { return MATS.filter(function (m) { return m.k === k; })[0]; }
 function renderIsland() {
   islandEnsure();
   var I = S.island, st = stars(), zi = IV.zone, Z = ZONES[zi], g = landGrid(zi);
   $('iStars').textContent = st;
   $('iZone').textContent = Z.name;
-  var wrap = $('isl').parentNode; wrap.innerHTML = islandHTML(g, IV.night, true, IV.fresh, zi); IV.fresh = -1;
+  var wrap = $('isl').parentNode; wrap.innerHTML = islandHTML(g, IV.night, true, IV.fresh, zi, landGround(zi)); IV.fresh = -1;
   $('iBuild').className = 'btn' + (IV.tool === 'build' ? '' : ' ghost');
   $('iRemove').className = 'btn' + (IV.tool === 'remove' ? '' : ' ghost');
   $('iNight').textContent = IV.night ? 'Tag' : 'Nacht';
   $('iCats').innerHTML = LCATS.map(function (c) { return '<button class="' + (IV.cat === c.k ? 'on' : '') + '" data-cat="' + c.k + '">' + c.name + '</button>'; }).join('');
   $('iMats').innerHTML = MATS.filter(function (m) { return m.cat === IV.cat; }).map(function (m) {
-    var n = I.inv[m.k] || 0, a = ANIM[m.k];
-    return '<button class="mat' + (IV.sel === m.k ? ' on' : '') + (n ? '' : ' empty') + '" data-m="' + m.k + '">' + (a ? '<div class="sw">' + a.svg + '</div>' : '<div class="sw m-' + m.k + '"></div>') + '<b>' + m.name + '</b><span>' + n + ' Stück</span></button>';
+    var n = I.inv[m.k] || 0, a = ANIM[m.k] || SPR[m.k];
+    var sw = a ? '<div class="sw">' + a.svg + '</div>' : BLD[m.k] ? '<div class="sw">' + bldSVG(m.k) + '</div>' : m.ground ? '<div class="sw t-' + m.k + '"></div>' : '<div class="sw m-' + m.k + '"></div>';
+    return '<button class="mat' + (IV.sel === m.k ? ' on' : '') + (n ? '' : ' empty') + (m.p >= 10 ? ' rare' : '') + '" data-m="' + m.k + '">' + sw + '<b>' + m.name + '</b><span>' + n + ' Stück</span><span class="price">' + m.p + ' ★</span></button>';
   }).join('');
-  var sel = matOf(IV.sel), per = ANIM[IV.sel] ? 1 : 2;
-  $('iBuy').textContent = per + '× ' + sel.name + ' kaufen · 1 ★'; $('iBuy').disabled = st < 1;
-  $('iBuyHint').textContent = st < 1 ? 'Keine Sterne mehr. Rechne ein paar Aufgaben!' : '';
-  $('iZones').innerHTML = ZONES.map(function (Zx, k) { return '<button class="zone' + (k === zi ? ' on' : '') + '" data-z="' + k + '">' + islandHTML(landGrid(k), IV.night, false, -1, k) + Zx.name + '</button>'; }).join('');
+  var sel = matOf(IV.sel), miss = sel.p - st;
+  $('iBuy').textContent = sel.name + ' kaufen · ' + sel.p + ' ★'; $('iBuy').disabled = miss > 0;
+  $('iBuyHint').textContent = miss > 0 ? 'Dir fehlen noch ' + miss + (miss === 1 ? ' Stern' : ' Sterne') + '. Rechne weiter und spar darauf!' : '';
+  $('iZones').innerHTML = ZONES.map(function (Zx, k) { return '<button class="zone' + (k === zi ? ' on' : '') + '" data-z="' + k + '">' + islandHTML(landGrid(k), IV.night, false, -1, k, landGround(k)) + Zx.name + '</button>'; }).join('');
   var ph = I.photos || [];
   $('iPhotosWrap').hidden = !ph.length;
-  $('iPhotos').innerHTML = ph.map(function (x) { return '<figure>' + islandHTML(x.g, x.n, false, -1, x.z || 0) + '<figcaption>' + (ZONES[x.z || 0] || ZONES[0]).name + ' · ' + new Date(x.d).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + '</figcaption></figure>'; }).join('');
+  $('iPhotos').innerHTML = ph.map(function (x) { return '<figure>' + islandHTML(x.g, x.n, false, -1, x.z || 0, x.t) + '<figcaption>' + (ZONES[x.z || 0] || ZONES[0]).name + ' · ' + new Date(x.d).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + '</figcaption></figure>'; }).join('');
   var nres = islandResidents(g).length;
   if (IV.residents >= 0 && nres > IV.residents) islandSay(ANIM[Z.res[(nres - 1) % Z.res.length]].art + ' ist in dein Haus eingezogen! Häuser mit Tür und Dach gefallen den Tieren.');
   IV.residents = nres;
@@ -1714,24 +1889,57 @@ function landGo(zi) {
 $('playIsland').addEventListener('click', function () {
   islandEnsure(); IV.residents = -1; go('island');
   $('iMascot').innerHTML = owlSVG('happy');
-  var tips = ['Ein Haus mit Tür und Dach lockt Tiere an.', 'Mit „Dach links“ und „Dach rechts“ baust du ein spitzes Dach.', 'Oben bei den Pfeilen kommst du in andere Gebiete: Bauernhof, Wald, Berge, Wüste und Stadt.', 'Bei „Tiere“ kannst du Tiere kaufen und überall hinsetzen.', 'Bau einen Teich aus Wasser, dann kommt ein Tier zum Schwimmen.', 'Schalte auf Nacht: Lampen und Fenster leuchten.', 'Mach ein Foto, wenn dir dein Bau gefällt.'];
-  if (IV.gift) { IV.gift = false; islandSay('Willkommen in Olafs Land, ' + S.name + '! Meine Insel ist jetzt viel größer: Es gibt einen Bauernhof, einen Wald, Schneeberge, eine Wüste und eine Stadt. Als Geschenk bekommst du Spitzdächer, Tannen und ein paar Tiere!'); }
+  var tips = ['Ein Haus mit Tür und Dach lockt Tiere an.', 'Mit „Dach links“ und „Dach rechts“ baust du ein spitzes Dach.', 'Oben bei den Pfeilen kommst du in andere Gebiete: Bauernhof, Wald, Berge, Wüste, Dorf, Hafen und Stadt.', 'Bei „Gebäude“ gibt es fertige Häuser, eine Schule, die Feuerwehr, einen Bahnhof und sogar ein Riesenrad.', 'Straßen und Schienen legst du auf die oberste Bodenreihe. Dann können Autos und Züge darauf stehen.', 'Bei „Tiere“ kannst du Tiere kaufen und überall hinsetzen.', 'Bei „Schätze“ gibt es ganz besondere Sachen wie ein Einhorn oder eine Olaf-Statue. Dafür musst du sparen!', 'Bau einen Teich aus Wasser, dann kommt ein Tier zum Schwimmen.', 'Schalte auf Nacht: Lampen und Fenster leuchten.', 'Mach ein Foto, wenn dir dein Bau gefällt.'];
+  if (IV.isNew) { IV.isNew = IV.gift = IV.gift3 = false; islandSay('Willkommen in Olafs Land, ' + S.name + '! Hier baust du, was du willst: auf der Insel, am Bauernhof, im Wald, in den Bergen, in der Wüste, im Dorf, am Hafen und in der Stadt. Zum Start schenke ich dir Holz, Dächer, Türen, ein paar Tiere, ein Haus, ein Auto und Straßen. Wähle unten etwas aus und tippe auf einen freien Platz!'); }
+  else if (IV.gift) { IV.gift = false; islandSay('Willkommen in Olafs Land, ' + S.name + '! Meine Insel ist jetzt viel größer: Es gibt einen Bauernhof, einen Wald, Schneeberge, eine Wüste, ein Dorf, einen Hafen und eine Stadt. Als Geschenk bekommst du Spitzdächer, Tannen, ein paar Tiere, ein Haus, ein Auto und Straßen!'); IV.gift3 = false; }
+  else if (IV.gift3) { IV.gift3 = false; islandSay('Neu in Olafs Land: fertige Gebäude, Straßen, Schienen und Fahrzeuge, dazu ein Dorf und ein Hafen! Ich schenke dir ein Haus, ein Auto und vier Straßenstücke. Straßen kommen auf die oberste Bodenreihe.'); }
   else islandSay('Willkommen in Olafs Land, ' + S.name + '! Wähle unten ein Material und tippe auf einen freien Platz. Tipp: ' + pick(tips));
   renderIsland();
 });
 document.addEventListener('click', function (e) {
   if ($('v-island').hidden) return;
+  var tcell = e.target.closest('#isl .c[data-t]');
+  if (tcell) {
+    var tc = +tcell.getAttribute('data-t'), Zt = ZONES[IV.zone], tg = landGround(IV.zone), tinv = S.island.inv, tm = matOf(IV.sel);
+    var tset = function (ch) { S.island.t[Zt.id] = tg.slice(0, tc) + ch + tg.slice(tc + 1); S.at.island = Date.now(); save(); renderIsland(); };
+    if (IV.tool === 'build') {
+      if (!tm.ground) { islandSay('Auf den Boden kommen nur Straße, Gehweg, Zebrastreifen und Schienen. Darüber kannst du bauen.'); return; }
+      if (tg[tc] !== '.') { islandSay('Da liegt schon etwas. Mit „Abreißen“ kannst du es wegnehmen.'); return; }
+      if (Zt.terrain[0][tc] === 'W') { islandSay('Auf dem Wasser geht das nicht. Bau lieber eine Brücke darüber.'); return; }
+      if (!(tinv[IV.sel] > 0)) { islandSay(emptyMsg(tm)); return; }
+      tinv[IV.sel]--; tset(IV.sel);
+    } else if (tg[tc] !== '.') { tinv[tg[tc]] = (tinv[tg[tc]] || 0) + 1; tset('.'); }
+    return;
+  }
   var cell = e.target.closest('#isl .c[data-i]');
   if (cell) {
-    var i = +cell.getAttribute('data-i'), g = landGrid(IV.zone), ch = g[i], inv = S.island.inv;
+    var i = +cell.getAttribute('data-i'), g = landGrid(IV.zone), ch = g[i], inv = S.island.inv, sm = matOf(IV.sel);
     if (IV.tool === 'build') {
+      if (sm.ground) { islandSay(sm.name + ' kommt auf den Boden. Tippe auf die oberste Bodenreihe.'); return; }
       if (ch !== '.') { islandSay('Da ist schon etwas. Mit „Abreißen“ kannst du Platz machen.'); return; }
-      if (!(inv[IV.sel] > 0)) { islandSay('Du hast kein ' + matOf(IV.sel).name + ' mehr. Kauf neues für einen Stern!'); return; }
+      if (!(inv[IV.sel] > 0)) { islandSay(emptyMsg(sm)); return; }
+      if (BLD[IV.sel]) {
+        var B = BLD[IV.sel], r0 = Math.max(Math.floor(i / IW), B.h - 1), c0 = Math.min(i % IW, IW - B.w), anc = r0 * IW + c0, cells = bldCells(IV.sel, anc);
+        if (cells.some(function (j) { return g[j] !== '.'; })) { islandSay(B.name + ' braucht ' + B.w + ' Felder nebeneinander und ' + B.h + ' übereinander. Such dir einen freien Platz oder reiß etwas ab.'); return; }
+        var ng = g.split(''); cells.forEach(function (j) { ng[j] = '#'; }); ng[anc] = IV.sel; ng = ng.join('');
+        if (IV.zone) S.island.z[ZONES[IV.zone].id] = ng; else S.island.g = ng;
+        inv[IV.sel]--; S.at.island = Date.now(); IV.fresh = anc; save(); renderIsland();
+        islandSay(pick(['Toll, ', 'Super, ', 'Schick, ']) + B.name + ' steht!');
+        return;
+      }
       var firstWater = IV.sel === 'q' && g.indexOf('q') < 0, a = ANIM[IV.sel];
       inv[IV.sel]--; islandSet(i, IV.sel); IV.fresh = i; save(); renderIsland();
       if (firstWater) islandSay('Platsch! ' + ANIM[ZONES[IV.zone].water].art + ' schwimmt jetzt in deinem Wasser.');
       else if (a) islandSay((a.laut ? a.laut + '! ' : 'Hallo! ') + a.art + ' wohnt jetzt hier.');
+      else if (SPR[IV.sel] && SPR[IV.sel].veh) islandSay(pick(['Brumm brumm! ', 'Tut tut! ', 'Los geht’s! ']) + SPR[IV.sel].art + ' ist da.');
     } else if (ch !== '.') {
+      var an = BLD[ch] ? i : ch === '#' ? bldAt(g, i) : -1;
+      if (an >= 0) {
+        var bk = g[an], ng2 = g.split(''); bldCells(bk, an).forEach(function (j) { ng2[j] = '.'; }); ng2 = ng2.join('');
+        if (IV.zone) S.island.z[ZONES[IV.zone].id] = ng2; else S.island.g = ng2;
+        inv[bk] = (inv[bk] || 0) + 1; S.at.island = Date.now(); save(); renderIsland(); return;
+      }
+      if (ch === '#') { islandSet(i, '.'); save(); renderIsland(); return; }
       inv[ch] = (inv[ch] || 0) + 1; islandSet(i, '.'); save(); renderIsland();
     }
     return;
@@ -1746,10 +1954,12 @@ document.addEventListener('click', function (e) {
   else if (e.target.closest('#iRemove')) { IV.tool = 'remove'; islandSay('Tippe auf einen Block, um ihn abzubauen. Du bekommst ihn zurück.'); renderIsland(); }
   else if (e.target.closest('#iNight')) { IV.night = !IV.night; islandSay(IV.night ? 'Gute Nacht! Lampen und Fenster leuchten jetzt.' : 'Guten Morgen!'); renderIsland(); }
   else if (e.target.closest('#iBuy')) {
-    if (stars() < 1) return;
-    spendStars(1); S.island.inv[IV.sel] = (S.island.inv[IV.sel] || 0) + (ANIM[IV.sel] ? 1 : 2); S.at.island = Date.now(); save(); renderIsland();
+    var bm = matOf(IV.sel);
+    if (stars() < bm.p) return;
+    spendStars(bm.p); S.island.inv[IV.sel] = (S.island.inv[IV.sel] || 0) + 1; S.at.island = Date.now(); save(); renderIsland();
+    if (bm.cat === 'schatz') islandSay('Wow, ' + bm.name + '! Dafür hast du richtig gespart. Such einen schönen Platz dafür.');
   } else if (e.target.closest('#iPhoto')) {
-    S.island.photos.unshift({ g: landGrid(IV.zone), n: IV.night, z: IV.zone, d: new Date().toISOString() });
+    S.island.photos.unshift({ g: landGrid(IV.zone), t: landGround(IV.zone), n: IV.night, z: IV.zone, d: new Date().toISOString() });
     S.island.photos = S.island.photos.slice(0, 6); S.at.island = Date.now(); save(); renderIsland();
     var isl = $('isl'); isl.classList.add('flash'); islandSay('Klick! Das Foto ist im Fotoalbum.');
   }
@@ -1802,17 +2012,38 @@ function celebrate() {
   })(start);
 }
 
-/* ---------- Baustelle: pro Stern ein Klemmbaustein ---------- */
-var BRICK = { r: ['#d64541', '#9e2f2c'], w: ['#a8dcf5', '#5fa6cc'], d: ['#8a5a3b', '#5e3c26'], y: ['#3d4b63', '#252f40'], s: ['#9aa3ad', '#6b737c'], f: ['#f4f4f4', '#b9b9b9'], l: ['#ffd23f', '#c99a0a'], b: ['#2f6fd6', '#1d4b99'], k: ['#2f9e5b', '#1e6b3c'], o: ['#f08a24', '#b05e10'] };
+/* ---------- Baustelle: Bauaufträge nach Bauplan und Kran-Turm ---------- */
+// Pro Stern ein Klemmbaustein. Philian sucht sich einen Auftrag aus und setzt jeden Stein selbst:
+// Farbe wählen, dann den richtigen Platz antippen. Mit jedem fertigen Bauwerk steigt der Rang, und es gibt weniger Hilfe.
+// Speicher S.build: cur = Plan-ID des laufenden Auftrags ('' = keiner), set = '0'/'1' je Stein, err = Fehler im Auftrag,
+// done = fertige Plan-IDs, clean = Bauwerke ohne Fehler, tower = Rekord im Kran-Turm, tg = Kran-Spiele.
+// S.dev[…].b zählt weiter alle gesetzten Steine. Ältere Spielstände (Steine liefen der Reihe nach) werden übernommen.
+var BRICK = { r: ['#d64541', '#9e2f2c'], w: ['#a8dcf5', '#5fa6cc'], d: ['#8a5a3b', '#5e3c26'], y: ['#3d4b63', '#252f40'], s: ['#9aa3ad', '#6b737c'], f: ['#f4f4f4', '#b9b9b9'], l: ['#ffd23f', '#c99a0a'], b: ['#2f6fd6', '#1d4b99'], k: ['#2f9e5b', '#1e6b3c'], o: ['#f08a24', '#b05e10'], v: ['#8e5bd6', '#5f3a9a'], p: ['#f28dbb', '#c0567f'], g: ['#f5c518', '#a77d00', 1], e: ['#3fd6cf', '#168a83', 1] };
+// Besondere Steine kosten mehr Sterne als normale (1 Stern).
+var BPRICE = { g: 5, e: 3 };
+function bPrice(c) { return BPRICE[c] || 1; }
+function planCost(pl) { return planBricks(pl).reduce(function (t, b) { return t + bPrice(b.c); }, 0); }
+var BCOL = { r: ['Rot', 'roter'], w: ['Hellblau', 'hellblauer'], d: ['Braun', 'brauner'], y: ['Dunkelgrau', 'dunkelgrauer'], s: ['Grau', 'grauer'], f: ['Weiß', 'weißer'], l: ['Gelb', 'gelber'], b: ['Blau', 'blauer'], k: ['Grün', 'grüner'], o: ['Orange', 'oranger'], v: ['Lila', 'lila'], p: ['Rosa', 'rosa'], g: ['Gold', 'goldener'], e: ['Kristall', 'Kristall'] };
+function stoneName(c) { return c === 'e' ? 'Kristallstein' : BCOL[c][1] + ' Stein'; }
+function topDown(rows) { return rows.slice().reverse(); } // neue Baupläne werden von oben nach unten aufgeschrieben
 var PLANS = [
-  { name: 'Das rote Haus', rows: ['.rrrddrrrrr.', '.rwwddrwwrr.', '.rwwddrwwrr.', '.rrrrrrrrrr.', 'yyyyyyyyyyyy', '.yyyyyyyyyy.', '..yyyyyyyy..', '...yyyyyy...', '....yyyy....'] },
-  { name: 'Der Leuchtturm', rows: ['..ssssssss..', '....rddr....', '....rddr....', '....ffff....', '....rrrr....', '....fwwf....', '....rrrr....', '....ffff....', '...bbbbbb...', '....wllw....', '....rrrr....', '.....rr.....'] },
-  { name: 'Die Burg', rows: ['ssssssssssss', 'sswssddsswss', 'sswssddsswss', 'ssssssssssss', 'ssssssssssss', 's.s.ssss.s.s', '....swws....', '....ssss....', '....s..s....', '......bb....', '......k.....'] },
-  { name: 'Das Baumhaus', rows: ['.....dd.....', '.....dd.....', '.....dd.....', '...oooooo...', '..oowwoooo..', '..oowwoooo..', '..oooooooo..', '.kkkkkkkkkk.', '..kkkkkkkk..', '...kkkkkk...', '....kkkk....'] },
-  { name: 'Olafs Schule', rows: ['oooooddooooo', 'owwooddoowwo', 'oooooooooooo', 'owwoowwoowwo', 'oooooooooooo', 'yyyyyyyyyyyy', '.yyyyyyyyyy.', '...yyllyy...', '....yyyy....', '.....bb.....', '.....r......'] },
-  { name: 'Die Rakete', rows: ['....oooo....', '...rffffr...', '..rrffffrr..', '..r.ffff.r..', '....ffff....', '....fwwf....', '....fwwf....', '....ffff....', '....bbbb....', '....ffff....', '.....rr.....', '.....rr.....'] },
-  { name: 'Die Windmühle', rows: ['...ssddss...', '...ssddss...', '...sswwss...', '....ssss....', '....ssss....', '..f......f..', '...f.yy.f...', '....fyyf....', '...f.yy.f...', '..f..yy..f..', '.....rr.....'] },
-  { name: 'Das Schiff', rows: ['bbbbbbbbbbbb', '.rrrrrrrrrr.', '..rwrrwrrw..', '...ffffff...', '......d.....', '...fffd.....', '...fffdfff..', '....ffdff...', '.....fdf....', '......d.....', '......dll...'] }
+  { id: 'haus', name: 'Das rote Haus', who: 'Familie Igel sucht ein neues Zuhause.', rows: ['.rrrddrrrrr.', '.rwwddrwwrr.', '.rwwddrwwrr.', '.rrrrrrrrrr.', 'yyyyyyyyyyyy', '.yyyyyyyyyy.', '..yyyyyyyy..', '...yyyyyy...', '....yyyy....'] },
+  { id: 'turm', name: 'Der Leuchtturm', who: 'Die Schiffe brauchen nachts ein Licht.', rows: ['..ssssssss..', '....rddr....', '....rddr....', '....ffff....', '....rrrr....', '....fwwf....', '....rrrr....', '....ffff....', '...bbbbbb...', '....wllw....', '....rrrr....', '.....rr.....'] },
+  { id: 'burg', name: 'Die Burg', who: 'König Kunibert wünscht sich eine Burg mit Fahne.', rows: ['ssssssssssss', 'sswssddsswss', 'sswssddsswss', 'ssssssssssss', 'ssssssssssss', 's.s.ssss.s.s', '....swws....', '....ssss....', '....s..s....', '......bb....', '......k.....'] },
+  { id: 'baumhaus', name: 'Das Baumhaus', who: 'Die Kinder aus der Nachbarschaft wollen ein Baumhaus.', rows: ['.....dd.....', '.....dd.....', '.....dd.....', '...oooooo...', '..oowwoooo..', '..oowwoooo..', '..oooooooo..', '.kkkkkkkkkk.', '..kkkkkkkk..', '...kkkkkk...', '....kkkk....'] },
+  { id: 'schule', name: 'Olafs Schule', who: 'Olaf braucht eine Schule für alle Tiere.', rows: ['oooooddooooo', 'owwooddoowwo', 'oooooooooooo', 'owwoowwoowwo', 'oooooooooooo', 'yyyyyyyyyyyy', '.yyyyyyyyyy.', '...yyllyy...', '....yyyy....', '.....bb.....', '.....r......'] },
+  { id: 'rakete', name: 'Die Rakete', who: 'Die Mondforscher brauchen eine Rakete.', rows: ['....oooo....', '...rffffr...', '..rrffffrr..', '..r.ffff.r..', '....ffff....', '....fwwf....', '....fwwf....', '....ffff....', '....bbbb....', '....ffff....', '.....rr.....', '.....rr.....'] },
+  { id: 'muehle', name: 'Die Windmühle', who: 'Müllerin Mia braucht eine Mühle für ihr Mehl.', rows: ['...ssddss...', '...ssddss...', '...sswwss...', '....ssss....', '....ssss....', '..f......f..', '...f.yy.f...', '....fyyf....', '...f.yy.f...', '..f..yy..f..', '.....rr.....'] },
+  { id: 'schiff', name: 'Das Schiff', who: 'Kapitän Kalle möchte ein Segelschiff.', rows: ['bbbbbbbbbbbb', '.rrrrrrrrrr.', '..rwrrwrrw..', '...ffffff...', '......d.....', '...fffd.....', '...fffdfff..', '....ffdff...', '.....fdf....', '......d.....', '......dll...'] },
+  { id: 'bagger', name: 'Der Bagger', veh: true, who: 'Auf der Baustelle fehlt ein Bagger.', rows: topDown(['.......llll.', '......l...l.', '.lll.l....l.', '.lwlll...yy.', '.lwlll...yy.', 'llllll......', 'yyyyyyy.....', 'ysyysyy.....', '.yyyyy......']) },
+  { id: 'scheune', name: 'Die Scheune', who: 'Die Kühe von Bauer Jansen frieren im Regen.', rows: topDown(['.....rr.....', '....rrrr....', '...rrrrrr...', '..rrrffrrr..', '.rrrrrrrrrr.', '.rffrrrrffr.', '.rffrddrffr.', '.rrrrddrrrr.', 'kkkkkkkkkkkk']) },
+  { id: 'traktor', name: 'Der Traktor', veh: true, who: 'Bauer Jansen braucht einen Traktor für sein Feld.', rows: topDown(['.dddd.......', '.d..d...s...', '.dwwd...s...', '.rrrrrrrrr..', 'rrrrrrrrrrr.', 'yyyy...yyy..', 'ysyy...ysy..', 'yyyy....y...']) },
+  { id: 'zelt', name: 'Das Zirkuszelt', who: 'Der Zirkus kommt in die Stadt!', rows: topDown(['.....g......', '.....pp.....', '....vvvv....', '...pppppp...', '..vvvvvvvv..', '.pppppppppp.', '.fpfpddpfpf.', '.fpfpddpfpf.', 'kkkkkkkkkkkk']) },
+  { id: 'feuerwehr', name: 'Das Feuerwehrauto', veh: true, who: 'Die Feuerwehr wünscht sich ein neues Auto mit Leiter.', rows: topDown(['.b..........', '.rrr.ffffff.', '.rwr..s..s..', '.rwrrrrrrrrr', 'rrrrrfrrfrrr', 'rrrrrrrrrrrr', 'lyyrrrrrryyl', '.yy......yy.']) },
+  { id: 'bus', name: 'Der Schulbus', veh: true, who: 'Die Kinder brauchen einen Bus zur Schule.', rows: topDown(['.llllllllll.', 'lwwlwwlwwlwl', 'lwwlwwlwwlwl', 'llllllllllll', 'lllllllllllo', 'lyylllllyyll', '.yy.....yy..']) },
+  { id: 'lok', name: 'Die Lokomotive', veh: true, who: 'Der Bahnhof braucht eine Lokomotive.', rows: topDown(['.ff.........', '..ff........', '.yy.....rrrr', '.yy.....rwwr', 'bbbbbbbbrwwr', 'bbbbbbbbrrrr', 'yyyyyyyyyyyy', '.yy.yy..yy..']) },
+  { id: 'schloss', name: 'Das Königsschloss', prem: true, who: 'Prinzessin Pia wünscht sich ein Schloss mit Gold und Kristallen.', rows: topDown(['..g......g..', '.vvv....vvv.', '.sss.gg.sss.', '.sws.ee.sws.', '.ssssssssss.', '.sswsddswss.', '.ssssddssss.', 'kkkkkkkkkkkk']) },
+  { id: 'truhe', name: 'Die Schatztruhe', prem: true, who: 'Pirat Paul hat einen Schatz gefunden und braucht eine prächtige Truhe.', rows: topDown(['...e.ee.e...', '..gggggggg..', '.dddddddddd.', '.gggggggggg.', '.ddddggdddd.', '.ddddgedddd.', '.dddddddddd.', '.gddddddddg.']) }
 ];
 function planBricks(pl) {
   if (pl.bricks) return pl.bricks;
@@ -1830,69 +2061,426 @@ function planBricks(pl) {
   });
   pl.bricks = out; return out;
 }
-function bricksPlaced() { var t = 0; for (var k in S.dev) t += S.dev[k].b || 0; return t; }
-function buildPos() {
-  var n = bricksPlaced(), i = 0;
-  for (;;) { var pl = PLANS[i % PLANS.length], len = planBricks(pl).length; if (n < len) return { idx: i, plan: pl, placed: n, total: len }; n -= len; i++; }
+function cellMap(pl) {
+  if (pl.cells) return pl.cells;
+  var m = {}; planBricks(pl).forEach(function (b, k) { for (var j = 0; j < b.w; j++) m[(b.x + j) + ',' + b.y] = k; });
+  pl.cells = m; return m;
 }
-function planName(i) { var r = Math.floor(i / PLANS.length); return PLANS[i % PLANS.length].name + (r ? ' ' + (r + 1) : ''); }
-function buildSVG(pl, placed, ghost, drop) {
+function planById(id) { for (var i = 0; i < PLANS.length; i++) if (PLANS[i].id === id) return PLANS[i]; return null; }
+function bricksPlaced() { var t = 0; for (var k in S.dev) t += S.dev[k].b || 0; return t; }
+function zeros(n) { var s = ''; while (s.length < n) s += '0'; return s; }
+function bState() {
+  if (!S.at) S.at = {};
+  if (!S.build || typeof S.build !== 'object') {
+    // Früher liefen die Steine der Reihe nach durch die ersten acht Baupläne: diesen Stand übernehmen.
+    var n = bricksPlaced(), i = 0, done = [];
+    for (;;) { var pl = PLANS[i % 8], len = planBricks(pl).length; if (n < len) break; n -= len; done.push(pl.id); i++; }
+    var cur = n > 0 ? PLANS[i % 8] : null, set = '';
+    if (cur) for (var k = 0; k < planBricks(cur).length; k++) set += k < n ? '1' : '0';
+    S.build = { cur: cur ? cur.id : '', set: set, err: 0, done: done, clean: 0, tower: 0, tg: 0 };
+    if (!S.at.build) S.at.build = 1; // so alt wie möglich: ein echter Stand von einem anderen Gerät gewinnt
+  }
+  var B = S.build;
+  if (!Array.isArray(B.done)) B.done = [];
+  var pl2 = planById(B.cur);
+  if (!pl2) { B.cur = ''; B.set = ''; } else if (typeof B.set !== 'string' || B.set.length !== planBricks(pl2).length) B.set = zeros(planBricks(pl2).length);
+  B.err = B.err || 0; B.clean = B.clean || 0; B.tower = B.tower || 0; B.tg = B.tg || 0;
+  return B;
+}
+function mergeBuild(o, R) {
+  var rb = R.build; if (!rb || typeof rb !== 'object') return;
+  var la = o.at.build || 0, ra = (R.at || {}).build || 0, lb = o.build;
+  if (!lb || ra > la) {
+    var tw = Math.max(lb ? lb.tower || 0 : 0, rb.tower || 0);
+    o.build = JSON.parse(JSON.stringify(rb)); o.build.tower = tw; o.at.build = ra;
+  } else lb.tower = Math.max(lb.tower || 0, rb.tower || 0);
+}
+function bTouch() { S.at.build = Date.now(); }
+function countSet(s) { var n = 0; for (var i = 0; i < s.length; i++) if (s.charAt(i) === '1') n++; return n; }
+function offers() {
+  // drei Aufträge zur Wahl: ein Gebäude, ein Fahrzeug, noch ein Gebäude (zuerst die, die noch nie gebaut wurden)
+  var B = bState(), un = PLANS.filter(function (p) { return B.done.indexOf(p.id) < 0; });
+  var bld = un.filter(function (p) { return !p.veh && !p.prem; }), veh = un.filter(function (p) { return p.veh; }), prem = un.filter(function (p) { return p.prem; }), out = [];
+  if (bld[0]) out.push(bld[0]); if (veh[0]) out.push(veh[0]);
+  if (prem[0] && B.done.length >= 2) out.push(prem[0]); // Luxus-Aufträge ab dem Gesellen
+  else if (bld[1]) out.push(bld[1]); else if (veh[1]) out.push(veh[1]);
+  for (var i = B.done.length; out.length < 3; i++) { var p = PLANS[(i * 5) % PLANS.length]; if (out.indexOf(p) < 0) out.push(p); }
+  return out;
+}
+// Für Startseite und Abzeichen: idx = Zahl fertiger Bauwerke, dazu der laufende (oder nächste) Auftrag.
+function buildPos() {
+  var B = bState(), pl = planById(B.cur), placed = pl ? countSet(B.set) : 0;
+  if (!pl) pl = offers()[0];
+  return { idx: B.done.length, plan: pl, placed: placed, total: planBricks(pl).length };
+}
+var RANKS = ['Lehrling', 'Geselle', 'Meister', 'Großmeister'], RANK_AT = [0, 2, 5, 10];
+function bLevel() { var n = bState().done.length; return n >= 10 ? 3 : n >= 5 ? 2 : n >= 2 ? 1 : 0; }
+function rankText() {
+  var lv = bLevel(), n = bState().done.length;
+  return RANKS[lv] + (lv < 3 ? ' · noch ' + (RANK_AT[lv + 1] - n) + ' bis ' + RANKS[lv + 1] : '');
+}
+function trayColors(pl) {
+  // Lehrling: nur die Farben aus dem Bauplan. Später liegen auch Steine dabei, die man nicht braucht.
+  var used = {}, keys = Object.keys(BRICK), extra = [0, 2, 3, 4][bLevel()], h = 0, i;
+  planBricks(pl).forEach(function (b) { used[b.c] = 1; });
+  for (i = 0; i < pl.id.length; i++) h = (h * 31 + pl.id.charCodeAt(i)) % 997;
+  var others = keys.filter(function (k) { return !used[k] && !BPRICE[k]; });
+  for (i = 0; i < extra && others.length; i++) used[others.splice(h % others.length, 1)[0]] = 1;
+  return keys.filter(function (k) { return used[k]; });
+}
+function canPlace(pl, set, k) {
+  // Ein Stein braucht Halt: alles, was laut Plan direkt darunter liegt, muss schon gebaut sein.
+  var b = planBricks(pl)[k], m = cellMap(pl);
+  for (var j = 0; j < b.w; j++) { var u = m[(b.x + j) + ',' + (b.y - 1)]; if (u !== undefined && set.charAt(u) !== '1') return false; }
+  return true;
+}
+function brickShape(x, y, bw, col, CH, ST, op) {
+  var g = '';
+  for (var j = 0; j < bw / 40; j++) g += '<rect x="' + (x + j * 40 + 10) + '" y="' + (y - ST + 1) + '" width="20" height="' + ST + '" rx="2" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="1.5"' + op + '/>';
+  g += '<rect x="' + (x + 1) + '" y="' + y + '" width="' + (bw - 2) + '" height="' + CH + '" rx="3" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="2"' + op + '/>';
+  g += '<rect x="' + (x + 5) + '" y="' + (y + CH - 8) + '" width="' + (bw - 10) + '" height="4" rx="2" fill="' + col[1] + '" opacity=".45"/>';
+  if (col[2]) { var cx = x + bw / 2, cy = y + CH / 2 - 2; g += '<path d="M' + cx + ' ' + (cy - 8) + 'L' + (cx + 3) + ' ' + (cy - 3) + 'L' + (cx + 8) + ' ' + cy + 'L' + (cx + 3) + ' ' + (cy + 3) + 'L' + cx + ' ' + (cy + 8) + 'L' + (cx - 3) + ' ' + (cy + 3) + 'L' + (cx - 8) + ' ' + cy + 'L' + (cx - 3) + ' ' + (cy - 3) + 'Z" fill="#fff" opacity=".85"/>'; }
+  return g;
+}
+// set: '0'/'1' je Stein oder null (= alles gebaut). o: ghost (Umrisse), drop, bad + badC (falscher Stein), tip.
+function buildSVG(pl, set, o) {
+  o = o || {};
   var bricks = planBricks(pl), CW = 40, CH = 30, ST = 7, BASE = 14, rows = pl.rows.length, W = 12 * CW, H = rows * CH + ST + BASE + 4;
-  var s = '<svg class="buildsvg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + pl.name + '">';
+  var s = '<svg class="buildsvg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(pl.name) + '">';
   s += '<rect x="0" y="' + (H - BASE) + '" width="' + W + '" height="' + BASE + '" rx="3" fill="#3f9d4f"/>';
   for (var i = 0; i < 12; i++) s += '<rect x="' + (i * CW + 10) + '" y="' + (H - BASE - 5) + '" width="20" height="6" rx="1.5" fill="#4fb35f" stroke="#2f7a3c" stroke-width="1"/>';
+  var top = '';
   bricks.forEach(function (b, k) {
-    var x = b.x * CW, y = H - BASE - (b.y + 1) * CH, col = BRICK[b.c], bw = b.w * CW;
-    if (k >= placed) { if (ghost) s += '<rect x="' + (x + 3) + '" y="' + (y + 3) + '" width="' + (bw - 6) + '" height="' + (CH - 6) + '" rx="3" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="5 4"/>'; return; }
-    var g = '<g' + (k === drop ? ' class="drop"' : '') + '>';
-    for (var j = 0; j < b.w; j++) g += '<rect x="' + (x + j * CW + 10) + '" y="' + (y - ST + 1) + '" width="20" height="' + ST + '" rx="2" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="1.5"/>';
-    g += '<rect x="' + (x + 1) + '" y="' + y + '" width="' + (bw - 2) + '" height="' + CH + '" rx="3" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="2"/>';
-    g += '<rect x="' + (x + 5) + '" y="' + (y + CH - 8) + '" width="' + (bw - 10) + '" height="4" rx="2" fill="' + col[1] + '" opacity=".45"/></g>';
-    s += g;
+    var x = b.x * CW, y = H - BASE - (b.y + 1) * CH, bw = b.w * CW;
+    if (set && set.charAt(k) !== '1') {
+      if (k === o.tip) top += '<g class="tipglow">' + brickShape(x, y, bw, BRICK[b.c], CH, ST, ' fill-opacity=".55"') + '</g>';
+      else if (o.ghost) s += '<rect x="' + (x + 3) + '" y="' + (y + 3) + '" width="' + (bw - 6) + '" height="' + (CH - 6) + '" rx="3" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="5 4"/>';
+      if (k === o.bad) top += '<g class="shake">' + brickShape(x, y, bw, BRICK[o.badC], CH, ST, ' fill-opacity=".6"') + '<path d="M' + (x + bw / 2 - 8) + ' ' + (y + 7) + 'l16 16m0 -16l-16 16" stroke="#fff" stroke-width="4" stroke-linecap="round"/></g>';
+      return;
+    }
+    s += '<g' + (k === o.drop ? ' class="drop"' : '') + '>' + brickShape(x, y, bw, BRICK[b.c], CH, ST, '') + '</g>';
   });
-  return s + '</svg>';
+  return s + top + '</svg>';
 }
-var BV = { done: -1, drop: -1, busy: false };
+function trayBrick(c) { var col = BRICK[c]; return '<svg viewBox="0 0 84 44" aria-hidden="true"><rect x="12" y="4" width="20" height="8" rx="2" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="1.5"/><rect x="52" y="4" width="20" height="8" rx="2" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="1.5"/><rect x="2" y="11" width="80" height="30" rx="4" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="2"/></svg>'; }
+
+var BAC = null;
+function bTone(f, d, type, delay) {
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    if (!BAC) BAC = new AC(); if (BAC.state === 'suspended') BAC.resume();
+    var t = BAC.currentTime + (delay || 0) + .01, o = BAC.createOscillator(), g = BAC.createGain();
+    o.type = type || 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.14, t + .01); g.gain.exponentialRampToValueAtTime(.001, t + d);
+    o.connect(g); g.connect(BAC.destination); o.start(t); o.stop(t + d + .05);
+  } catch (e) {}
+}
+function brickRain() {
+  // Zur Feier regnet es Klemmbausteine
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var old = $('party'); if (old) old.remove();
+  var cv = document.createElement('canvas'); cv.id = 'party'; document.body.appendChild(cv);
+  var dpr = Math.min(2, window.devicePixelRatio || 1), W = window.innerWidth, H = window.innerHeight, keys = Object.keys(BRICK), ps = [];
+  cv.width = W * dpr; cv.height = H * dpr; var c = cv.getContext('2d'); c.scale(dpr, dpr);
+  for (var i = 0; i < 70; i++) ps.push({ x: Math.random() * W, y: -40 - Math.random() * H * .8, v: 160 + Math.random() * 220, r: Math.random() * 6, vr: (Math.random() - .5) * 4, w: Math.random() < .5 ? 22 : 40, col: BRICK[keys[i % keys.length]] });
+  var start = performance.now(), last = start;
+  (function loop(now) {
+    var dt = Math.min(.05, (now - last) / 1000), fade = Math.max(0, Math.min(1, (3600 - (now - start)) / 700)); last = now;
+    c.clearRect(0, 0, W, H); c.globalAlpha = fade;
+    ps.forEach(function (p) {
+      p.y += p.v * dt; p.r += p.vr * dt;
+      c.save(); c.translate(p.x, p.y); c.rotate(p.r); c.fillStyle = p.col[0]; c.strokeStyle = p.col[1]; c.lineWidth = 2;
+      c.fillRect(-p.w / 2, -8, p.w, 16); c.strokeRect(-p.w / 2, -8, p.w, 16);
+      for (var j = 0; j < p.w / 20; j++) c.fillRect(-p.w / 2 + 5 + j * 20, -12, 10, 4);
+      c.restore();
+    });
+    if (fade > 0 && document.body.contains(cv)) requestAnimationFrame(loop); else cv.remove();
+  })(start);
+}
+
+var BV = { busy: false, tab: 'plan', sel: '', drop: -1, bad: -1, badC: '', tip: -1, msg: '', mood: 'happy', fin: null };
+function bSay(t, mood) { BV.msg = t; BV.mood = mood || 'happy'; }
 function renderBuild() {
-  var pos = buildPos(), st = stars();
+  var B = bState(), st = stars();
   $('bStars').textContent = st;
-  if (BV.done >= 0) {
-    var pl = PLANS[BV.done % PLANS.length];
-    $('bTitle').textContent = 'Fertig: ' + planName(BV.done) + '!';
-    $('bInfo').textContent = 'Alle ' + planBricks(pl).length + ' Steine sind verbaut. Super gebaut!';
-    $('bScene').innerHTML = buildSVG(pl, 9999, false, BV.drop);
-    $('bActions').innerHTML = '<button class="btn" id="bNext">Nächstes Bauwerk: ' + planName(BV.done + 1) + '</button>';
+  $('bTabPlan').className = 'btn' + (BV.tab === 'plan' ? '' : ' ghost');
+  $('bTabCrane').className = 'btn' + (BV.tab === 'crane' ? '' : ' ghost');
+  $('bPlanPane').hidden = BV.tab !== 'plan'; $('bCranePane').hidden = BV.tab !== 'crane';
+  if (BV.tab === 'crane') { renderCrane(); return; }
+  var pl = planById(B.cur), lv = bLevel();
+  $('bRank').textContent = rankText();
+  $('bMascot').innerHTML = owlSVG(BV.mood);
+  $('bPick').hidden = !!(pl || BV.fin); $('bWork').hidden = !(pl || BV.fin); $('bPlanFig').hidden = !!BV.fin || !pl;
+  if (BV.fin) {
+    var fp = planById(BV.fin.id);
+    $('bTitle').textContent = 'Fertig: ' + fp.name + '!';
+    $('bInfo').textContent = 'Alle ' + planBricks(fp).length + ' Steine sind verbaut.';
+    $('bBubble').textContent = BV.msg || 'Super gebaut!';
+    $('bScene').innerHTML = buildSVG(fp, null, {});
+    $('bTray').innerHTML = '';
+    $('bActions').innerHTML = '<button class="btn" id="bNew">Neuen Auftrag aussuchen</button>';
     $('bHint').textContent = '';
+  } else if (!pl) {
+    $('bTitle').textContent = 'Neuer Bauauftrag';
+    $('bInfo').textContent = 'Such dir aus, was du bauen möchtest. Ein Stein kostet 1 Stern, Gold und Kristall kosten mehr.';
+    $('bBubble').textContent = BV.msg || 'Drei Kunden warten schon auf dich. Wen möchtest du glücklich machen?';
+    $('bPick').innerHTML = offers().map(function (p) {
+      var again = B.done.indexOf(p.id) >= 0;
+      return '<button class="bpick" data-p="' + p.id + '">' + buildSVG(p, null, {}) + '<b>' + esc(p.name) + (again ? ' (nochmal)' : '') + '</b><span>' + esc(p.who) + '</span><span class="muted">' + (p.prem ? '<b class="lux">Luxus-Auftrag</b> · ' : '') + planBricks(p).length + ' Steine · ' + planCost(p) + ' ★' + (p.veh ? ' · Fahrzeug' : '') + '</span></button>';
+    }).join('');
+    $('bTray').innerHTML = ''; $('bActions').innerHTML = '';
+    $('bHint').textContent = st < 1 ? 'Du hast gerade keine Sterne. Rechne ein paar Aufgaben, dann kannst du loslegen!' : 'Du hast ' + st + (st === 1 ? ' Stern.' : ' Sterne.');
   } else {
-    $('bTitle').textContent = planName(pos.idx);
-    $('bInfo').textContent = pos.placed + ' von ' + pos.total + ' Steinen gesetzt · noch ' + (pos.total - pos.placed);
-    $('bScene').innerHTML = buildSVG(pos.plan, pos.placed, true, BV.drop);
-    $('bActions').innerHTML = '<button class="btn" id="bOne"' + (st < 1 ? ' disabled' : '') + '>Stein setzen · 1 ★</button>' + (st >= 5 ? '<button class="btn ghost" id="bFive">5 Steine setzen</button>' : '');
-    $('bHint').textContent = st < 1 ? 'Keine Sterne mehr. Rechne ein paar Aufgaben, dann geht es weiter!' : 'Du hast ' + st + (st === 1 ? ' Stern' : ' Sterne') + ' für neue Steine.';
+    var total = planBricks(pl).length, placed = countSet(B.set);
+    $('bTitle').textContent = pl.name;
+    var left = 0; planBricks(pl).forEach(function (b, k) { if (B.set.charAt(k) !== '1') left += bPrice(b.c); });
+    $('bInfo').textContent = placed + ' von ' + total + ' Steinen gesetzt · es fehlen noch ' + left + ' ★';
+    $('bBubble').textContent = BV.msg || (placed === 0 ? pl.who + ' ' : '') + [
+      'Wähle unten eine Farbe und tippe auf den Platz, wo der Stein hingehört. Die gestrichelten Umrisse helfen dir.',
+      'Als Geselle liegen auch Farben dabei, die du nicht brauchst. Schau genau auf den Bauplan!',
+      'Meister bauen ohne Umrisse. Schau auf den Bauplan und zähle die Noppen auf der grünen Platte.',
+      'Großmeister bauen ohne Umrisse und mit vielen falschen Farben. Du schaffst das!'][lv];
+    $('bScene').innerHTML = buildSVG(pl, B.set, { ghost: lv < 2, drop: BV.drop, bad: BV.bad, badC: BV.badC, tip: BV.tip });
+    $('bPlan').innerHTML = buildSVG(pl, null, {});
+    $('bTray').innerHTML = trayColors(pl).map(function (c) { return '<button data-c="' + c + '" class="' + (c === BV.sel ? 'on' : '') + '"' + (st < 1 ? ' disabled' : '') + ' aria-pressed="' + (c === BV.sel) + '">' + trayBrick(c) + '<span>' + BCOL[c][0] + (BPRICE[c] ? ' · ' + BPRICE[c] + ' ★' : '') + '</span></button>'; }).join('');
+    $('bActions').innerHTML = '<button class="btn ghost" id="bTip"' + (st < 1 ? ' disabled' : '') + '>Tipp zeigen</button>';
+    $('bHint').textContent = st < 1 ? 'Keine Sterne mehr. Rechne ein paar Aufgaben, dann geht es weiter!' : 'Du hast ' + st + (st === 1 ? ' Stern' : ' Sterne') + ' für neue Steine.' + (B.err ? '' : ' Bisher ohne Fehler!');
   }
-  BV.drop = -1;
-  var g = '', from = Math.max(0, pos.idx - 6);
-  for (var i = pos.idx - 1; i >= from; i--) g += '<figure>' + buildSVG(PLANS[i % PLANS.length], 9999, false, -1) + '<figcaption>' + esc(planName(i)) + '</figcaption></figure>';
+  BV.drop = -1; BV.bad = -1;
+  var g = '';
+  for (var i = B.done.length - 1; i >= Math.max(0, B.done.length - 9); i--) { var dp = planById(B.done[i]); if (dp) g += '<figure>' + buildSVG(dp, null, {}) + '<figcaption>' + esc(dp.name) + '</figcaption></figure>'; }
   $('bGallery').innerHTML = g; $('bGalleryWrap').hidden = !g;
 }
-function placeBrick() {
-  if (stars() < 1 || BV.done >= 0) return false;
-  var before = buildPos();
-  spendStars(1); S.dev[DEV].b = (S.dev[DEV].b || 0) + 1; save();
-  BV.drop = before.placed;
-  if (before.placed + 1 === before.total) { BV.done = before.idx; setTimeout(function () { checkBadges(); }, 700); }
-  renderBuild(); return true;
-}
-$('playBuild').addEventListener('click', function () { BV.done = -1; BV.drop = -1; go('build'); renderBuild(); });
-$('bActions').addEventListener('click', function (e) {
-  if (BV.busy) return;
-  if (e.target.closest('#bOne')) placeBrick();
-  else if (e.target.closest('#bNext')) { BV.done = -1; renderBuild(); }
-  else if (e.target.closest('#bFive')) {
-    BV.busy = true; var n = 0;
-    (function step() { if (n < 5 && !$('v-build').hidden && placeBrick()) { n++; setTimeout(step, 380); } else BV.busy = false; })();
+function bTap(cx, cyF) {
+  var B = bState(), pl = planById(B.cur); if (!pl || BV.fin) return;
+  var m = cellMap(pl), base = Math.floor(cyF), near = cyF - base < .5 ? base - 1 : base + 1, k = -1, filled = false;
+  [base, near].forEach(function (cy) { var kk = m[cx + ',' + cy]; if (k >= 0 || kk === undefined) return; if (B.set.charAt(kk) === '1') filled = true; else k = kk; });
+  if (stars() < 1) { bSay('Du hast keine Sterne mehr. Rechne ein paar Aufgaben, dann baust du weiter!'); renderBuild(); return; }
+  if (!BV.sel) { bSay('Wähle zuerst unten eine Farbe aus.'); renderBuild(); return; }
+  if (k < 0) {
+    if (filled) bSay('Da steht schon ein Stein.');
+    else { B.err++; bTouch(); save(); bTone(196, .25, 'sine'); bSay('Laut Bauplan kommt da kein Stein hin. Schau noch mal genau!', 'think'); }
+    renderBuild(); return;
   }
+  if (!canPlace(pl, B.set, k)) { bSay('Der Stein braucht Halt. Bau erst darunter weiter!'); renderBuild(); return; }
+  var b = planBricks(pl)[k];
+  if (b.c !== BV.sel) {
+    B.err++; bTouch(); save(); bTone(196, .25, 'sine');
+    BV.bad = k; BV.badC = BV.sel;
+    bSay(bLevel() === 0 ? 'Fast! Hier gehört ein ' + stoneName(b.c) + ' hin.' : 'Die Farbe passt hier nicht. Schau auf den Bauplan!', 'think');
+    renderBuild(); return;
+  }
+  var price = bPrice(b.c);
+  if (stars() < price) { bSay('Ein ' + stoneName(b.c) + ' kostet ' + price + ' Sterne, du hast nur ' + stars() + '. Rechne noch ein paar Aufgaben!', 'think'); renderBuild(); return; }
+  spendStars(price); S.dev[DEV].b = (S.dev[DEV].b || 0) + 1;
+  B.set = B.set.slice(0, k) + '1' + B.set.slice(k + 1); BV.drop = k; if (BV.tip === k) BV.tip = -1;
+  bTone(520 + b.y * 30, .09, 'square'); if (price > 1) bTone(1320, .18, 'triangle', .08);
+  if (countSet(B.set) === B.set.length) {
+    var clean = !B.err; B.done.push(pl.id); if (clean) B.clean++;
+    B.cur = ''; B.set = ''; B.err = 0; BV.fin = { id: pl.id }; BV.tip = -1;
+    var n = B.done.length, ri = RANK_AT.indexOf(n);
+    bSay(pl.who.replace(/\.$/, '') + ': erledigt! Danke, du bist ein toller Baumeister.' + (clean ? ' Und das ganz ohne Fehler!' : '') + (ri > 0 ? ' Du bist jetzt ' + RANKS[ri] + '!' : ''), 'cheer');
+    setTimeout(function () { chime(); brickRain(); }, 450);
+    setTimeout(function () { checkBadges(); }, 1200);
+  } else bSay(pick(['Prima!', 'Passt!', 'Genau richtig!', 'Klack, sitzt!', 'Weiter so!', 'Super!']));
+  bTouch(); save(); renderBuild();
+}
+function bTip() {
+  var B = bState(), pl = planById(B.cur); if (!pl) return;
+  var bricks = planBricks(pl), any = -1, same = -1;
+  for (var k = 0; k < bricks.length; k++) {
+    if (B.set.charAt(k) === '1' || !canPlace(pl, B.set, k)) continue;
+    if (any < 0) any = k;
+    if (same < 0 && bricks[k].c === BV.sel) same = k;
+  }
+  var t = same >= 0 ? same : any; if (t < 0) return;
+  BV.tip = t;
+  if (same < 0) { BV.sel = bricks[t].c; bSay(BV.sel && same < 0 ? 'Mit dieser Farbe geht gerade nichts. Nimm ' + BCOL[bricks[t].c][0] + ', der leuchtende Platz ist frei.' : 'Der leuchtende Platz ist frei.'); }
+  else bSay('Schau, der leuchtende Platz passt zu deiner Farbe.');
+  renderBuild();
+  setTimeout(function () { if (BV.tip === t) { BV.tip = -1; if (!$('v-build').hidden && BV.tab === 'plan') renderBuild(); } }, 2600);
+}
+$('playBuild').addEventListener('click', function () { BV.fin = null; BV.tab = 'plan'; BV.msg = ''; BV.mood = 'happy'; BV.tip = -1; go('build'); renderBuild(); });
+$('bTabPlan').addEventListener('click', function () { BV.tab = 'plan'; renderBuild(); });
+$('bTabCrane').addEventListener('click', function () { BV.tab = 'crane'; renderBuild(); });
+$('bPick').addEventListener('click', function (e) {
+  var p = e.target.closest('[data-p]'); if (!p) return;
+  var B = bState(), pl = planById(p.getAttribute('data-p')); if (!pl || B.cur) return;
+  B.cur = pl.id; B.set = zeros(planBricks(pl).length); B.err = 0; bTouch(); save();
+  BV.sel = ''; BV.tip = -1; bSay('Auftrag angenommen: ' + pl.name + '. Wähle eine Farbe und fang unten an!');
+  renderBuild();
 });
+$('bTray').addEventListener('click', function (e) {
+  var c = e.target.closest('[data-c]'); if (!c || c.disabled) return;
+  BV.sel = c.getAttribute('data-c'); bSay(BCOL[BV.sel][0] + ' ist ausgewählt. Tippe jetzt auf den Platz für den Stein.'); bTone(880, .05, 'sine'); renderBuild();
+});
+$('bScene').addEventListener('click', function (e) {
+  var svg = $('bScene').querySelector('svg'); if (!svg || BV.fin) return;
+  var vb = svg.viewBox.baseVal, r = svg.getBoundingClientRect(); if (!r.width) return;
+  var x = (e.clientX - r.left) / r.width * vb.width, y = (e.clientY - r.top) / r.height * vb.height;
+  var cx = Math.floor(x / 40), cyF = (vb.height - 14 - y) / 30;
+  if (cx < 0 || cx > 11 || cyF < -.4) return;
+  bTap(cx, Math.max(0, cyF));
+});
+$('bActions').addEventListener('click', function (e) {
+  if (e.target.closest('#bTip')) bTip();
+  else if (e.target.closest('#bNew')) { BV.fin = null; BV.msg = ''; BV.mood = 'happy'; renderBuild(); window.scrollTo(0, 0); }
+});
+
+/* Kran-Turm: Der Kran schwenkt einen Stein hin und her, Tippen lässt ihn fallen. Was übersteht, bricht ab. */
+var KT = null, KW = 400, KBH = 30, KCOLS = ['r', 'b', 'l', 'k', 'o', 'v', 'w', 'p'];
+function towerName(n) { return n >= 30 ? 'ein Turm bis zu den Sternen' : n >= 20 ? 'ein Wolkenkratzer' : n >= 10 ? 'ein Hochhaus' : n >= 5 ? 'ein Wohnhaus' : 'ein Gartenhaus'; }
+function renderCrane() {
+  var B = bState(), st = stars(), run = !!(KT && !KT.over);
+  $('kGame').hidden = !KT; $('kPanel').hidden = run;
+  $('kBest').textContent = B.tower;
+  if (KT) { $('kFloors').textContent = KT.floors; $('kHearts').textContent = '♥♥♥'.slice(0, KT.hearts) + '♡♡♡'.slice(0, 3 - KT.hearts); }
+  if (run) { if (KT.paused) { KT.paused = false; KT.last = 0; KT.raf = requestAnimationFrame(kTick); } return; }
+  $('kText').textContent = KT ? 'Dein Turm hat ' + KT.floors + (KT.floors === 1 ? ' Stockwerk' : ' Stockwerke') + ', das ist ' + towerName(KT.floors) + '!' + (KT.rec ? ' Neuer Rekord!' : '')
+    : 'Der Kran bringt einen Stein nach dem anderen. Tippe auf das Bild, dann fällt der Stein. Was übersteht, bricht ab. Bei drei Fehlwürfen ist Schluss.';
+  $('kRec').textContent = B.tower ? 'Dein Rekord: ' + B.tower + (B.tower === 1 ? ' Stockwerk. ' : ' Stockwerke. ') + 'Ab 10 wird es ein Hochhaus, ab 20 ein Wolkenkratzer.' : 'Ab 10 Stockwerken wird es ein Hochhaus, ab 20 ein Wolkenkratzer.';
+  $('kGo').disabled = st < COST; $('kGo').textContent = (KT ? 'Nochmal spielen' : 'Spielen') + ' · ' + COST + ' ★';
+  $('kNeed').textContent = st < COST ? 'Du brauchst ' + COST + ' Sterne. Noch ' + (COST - st) + ' sammeln!' : 'Du hast ' + st + ' Sterne.';
+}
+function kStart() {
+  var B = bState(); if (stars() < COST || (KT && !KT.over)) return;
+  spendStars(COST); B.tg++; bTouch(); save();
+  if (KT && KT.raf) cancelAnimationFrame(KT.raf);
+  KT = { floors: 0, hearts: 3, stack: [{ x: 120, w: 160, c: 'y' }], chunks: [], perfect: 0, ph: Math.random() * 6, mode: 'swing', bx: 0, by: 0, vy: 0, w: 160, c: 0, cam: 0,
+    msg: 'Tippe, damit der Stein fällt!', msgT: 2.5, over: false, rec: false, best0: B.tower, last: 0, wait: 0, paused: false };
+  renderBuild();
+  var cv = $('kCanvas'), w = cv.clientWidth || 360, h = cv.clientHeight || 520, dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  KT.ctx = cv.getContext('2d'); KT.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); KT.W = w; KT.H = h; KT.sc = w / KW;
+  KT.raf = requestAnimationFrame(kTick);
+}
+function kTop() { return KT.stack.length * KBH; }
+function kMsg(t) { KT.msg = t; KT.msgT = 1.6; }
+function kDrop() { if (KT && !KT.over && KT.mode === 'swing') { KT.mode = 'fall'; KT.vy = 0; } }
+function kTick(now) {
+  if (!KT || KT.over) return;
+  if ($('v-build').hidden || BV.tab !== 'crane') { KT.paused = true; KT.raf = 0; return; }
+  var dt = KT.last ? Math.min(.05, (now - KT.last) / 1000) : 0; KT.last = now;
+  kStep(dt); kDraw();
+  if (!KT.over) KT.raf = requestAnimationFrame(kTick);
+}
+function kStep(dt) {
+  var top = kTop();
+  KT.ph += dt * (1.25 + Math.min(2.3, KT.floors * .08));
+  if (KT.mode === 'swing') { KT.bx = KW / 2 + Math.min(150, 195 - KT.w / 2) * Math.sin(KT.ph) - KT.w / 2; KT.by = top + 3.2 * KBH; }
+  else if (KT.mode === 'fall') { KT.vy += 2400 * dt; KT.by -= KT.vy * dt; if (KT.by <= top) kLand(); }
+  else if (KT.mode === 'wait') { KT.wait -= dt; if (KT.wait <= 0) { if (KT.hearts <= 0) { kOver(); return; } KT.mode = 'swing'; } }
+  KT.chunks = KT.chunks.filter(function (p) { p.vy += 1800 * dt; p.y -= p.vy * dt; p.x += p.vx * dt; p.r += p.vr * dt; return p.y > KT.cam - 300; });
+  var viewH = KT.H / KT.sc, target = Math.max(0, kTop() + 5.4 * KBH + 46 / KT.sc - viewH);
+  KT.cam += (target - KT.cam) * Math.min(1, dt * 4);
+  if (KT.msgT > 0) KT.msgT -= dt;
+}
+function kLand() {
+  var B = bState(), t = KT.stack[KT.stack.length - 1], L = Math.max(KT.bx, t.x), R = Math.min(KT.bx + KT.w, t.x + t.w), ov = R - L;
+  var col = KCOLS[KT.c % KCOLS.length], top = kTop(), left = KT.bx < t.x, nb;
+  if (ov <= 2) {
+    KT.chunks.push({ x: KT.bx, y: top, w: KT.w, c: col, vx: left ? -90 : 90, vy: 120, r: 0, vr: left ? -2.5 : 2.5 });
+    KT.hearts--; KT.perfect = 0; kMsg(KT.hearts ? 'Plumps! Daneben.' : 'Plumps!'); bTone(180, .3, 'sine');
+    KT.mode = 'wait'; KT.wait = KT.hearts ? .7 : 1.3; renderCrane(); return;
+  }
+  if (Math.abs(KT.bx - t.x) <= 7) {
+    nb = { x: t.x, w: t.w, c: col }; KT.perfect++;
+    if (KT.perfect % 3 === 0 && nb.w < 160) { var g = Math.min(16, 160 - nb.w); nb.w += g; nb.x = Math.max(0, Math.min(KW - nb.w, nb.x - g / 2)); kMsg('Perfekt! Der Turm wird breiter.'); }
+    else kMsg(KT.perfect > 1 ? KT.perfect + '× perfekt!' : 'Perfekt!');
+    bTone(784, .12, 'triangle'); bTone(1046, .16, 'triangle', .09);
+  } else {
+    nb = { x: L, w: ov, c: col }; KT.perfect = 0;
+    KT.chunks.push({ x: left ? KT.bx : R, y: top, w: KT.w - ov, c: col, vx: left ? -60 : 60, vy: 0, r: 0, vr: left ? -3 : 3 });
+    bTone(440, .08, 'square');
+  }
+  KT.stack.push(nb); KT.floors++; KT.w = nb.w; KT.c++;
+  var ms = { 5: 'Ein Wohnhaus!', 10: 'Ein Hochhaus!', 20: 'Ein Wolkenkratzer!', 30: 'Bis zu den Sternen!' }[KT.floors];
+  if (ms) { kMsg(ms); bTone(523, .12); bTone(659, .12, 'triangle', .12); bTone(784, .25, 'triangle', .24); }
+  if (KT.floors > B.tower) { B.tower = KT.floors; bTouch(); save(); }
+  KT.mode = 'wait'; KT.wait = .25; renderCrane();
+}
+function kOver() {
+  KT.over = true; KT.rec = KT.floors > KT.best0; KT.raf = 0;
+  kDraw(); save(); renderBuild();
+  if (KT.rec && KT.best0) { chime(); }
+  setTimeout(function () { checkBadges(); }, 600);
+}
+function kMix(a, b, t) {
+  var x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16), o = [16, 8, 0].map(function (s) { var p = (x >> s) & 255, q = (y >> s) & 255; return Math.round(p + (q - p) * t); });
+  return 'rgb(' + o.join(',') + ')';
+}
+function kBrick(c, x, y, w, h, colKey, sc) {
+  var col = BRICK[colKey]; c.fillStyle = col[0]; c.strokeStyle = col[1]; c.lineWidth = 2;
+  for (var sx = 5; sx + 10 <= w / sc - 2; sx += 20) { c.fillRect(x + sx * sc, y - 6 * sc, 10 * sc, 6 * sc); c.strokeRect(x + sx * sc, y - 6 * sc, 10 * sc, 6 * sc); }
+  c.fillRect(x, y, w, h); c.strokeRect(x + 1, y + 1, w - 2, h - 2);
+}
+function kDraw() {
+  var c = KT.ctx, W = KT.W, H = KT.H, sc = KT.sc, cam = KT.cam, top = kTop(), i;
+  function Y(wy) { return H - (wy - cam) * sc; }
+  var f = Math.min(1, cam / 900), g = c.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, kMix('#6fbbef', '#0f1a40', f)); g.addColorStop(1, kMix('#d7efff', '#3a4785', f));
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  if (f > .4) { c.fillStyle = 'rgba(255,255,255,' + ((f - .4) * 1.6) + ')'; for (i = 0; i < 40; i++) { var sx = (i * 97) % 400, sy = ((i * 53) % 600 + cam * .3) % H; c.fillRect(sx * sc, sy, 2, 2); } }
+  [250, 470, 720, 980, 1260, 1560].forEach(function (cy, j) {
+    var y = Y(cy), x = ((j * 137) % 300 + 40) * sc; if (y < -40 || y > H + 40) return;
+    c.fillStyle = 'rgba(255,255,255,.85)'; c.beginPath(); c.ellipse(x, y, 34 * sc, 14 * sc, 0, 0, 7); c.ellipse(x + 26 * sc, y - 8 * sc, 24 * sc, 14 * sc, 0, 0, 7); c.ellipse(x - 24 * sc, y + 2 * sc, 20 * sc, 10 * sc, 0, 0, 7); c.fill();
+  });
+  var gy = Y(0); if (gy < H) { c.fillStyle = '#5cbf61'; c.fillRect(0, gy, W, H - gy); c.fillStyle = '#4aa74f'; c.fillRect(0, gy, W, 4); }
+  // Kran: Mast links, Ausleger oben
+  var jib = Y(top + 5.4 * KBH), mx = 8 * sc, mw = 18 * sc;
+  c.fillStyle = '#f2b81f'; c.fillRect(mx, jib, mw, Math.max(0, gy - jib)); c.strokeStyle = '#b8860b'; c.lineWidth = 1.5;
+  c.beginPath(); for (var yy = jib; yy < Math.min(H, gy); yy += mw) { c.moveTo(mx, yy); c.lineTo(mx + mw, yy + mw); } c.stroke();
+  c.fillStyle = '#f2b81f'; c.fillRect(0, jib - 8 * sc, W, 10 * sc); c.strokeStyle = '#b8860b'; c.strokeRect(0, jib - 8 * sc, W, 10 * sc);
+  c.fillStyle = '#3d4b63'; c.fillRect(mx - 2 * sc, jib - 26 * sc, 26 * sc, 18 * sc); c.fillStyle = '#a8dcf5'; c.fillRect(mx + 3 * sc, jib - 22 * sc, 14 * sc, 9 * sc);
+  // Turm
+  KT.stack.forEach(function (b, k) { var y = Y((k + 1) * KBH); if (y > -KBH * sc && y - KBH * sc < H) kBrick(c, b.x * sc, y, b.w * sc, KBH * sc, b.c, sc); });
+  c.fillStyle = '#fff'; c.font = '800 ' + Math.round(14 * Math.max(.8, sc)) + 'px "Baloo 2", sans-serif'; c.textAlign = 'left';
+  for (i = 10; i < KT.stack.length; i += 10) { var fy = Y((i + .5) * KBH); c.fillStyle = 'rgba(0,0,0,.35)'; c.fillRect(W - 38 * sc, fy - 9, 34 * sc, 18); c.fillStyle = '#fff'; c.fillText(String(i), W - 34 * sc, fy + 5); }
+  // hängender oder fallender Stein
+  if (KT.mode !== 'wait' && !KT.over) {
+    var col = KCOLS[KT.c % KCOLS.length], bx = KT.bx * sc, by = Y(KT.by + KBH), bw = KT.w * sc;
+    if (KT.mode === 'swing') {
+      c.fillStyle = '#3d4b63'; c.fillRect(bx + bw / 2 - 10 * sc, jib, 20 * sc, 8 * sc);
+      c.strokeStyle = '#3d4b63'; c.lineWidth = 2; c.beginPath(); c.moveTo(bx + bw / 2, jib + 8 * sc); c.lineTo(bx + bw / 2, by - 8 * sc); c.stroke();
+      c.setLineDash([5, 5]); c.strokeStyle = 'rgba(255,255,255,.7)'; c.beginPath(); c.moveTo(bx, by + KBH * sc); c.lineTo(bx, Y(top)); c.moveTo(bx + bw, by + KBH * sc); c.lineTo(bx + bw, Y(top)); c.stroke(); c.setLineDash([]);
+    }
+    kBrick(c, bx, by, bw, KBH * sc, col, sc);
+  }
+  KT.chunks.forEach(function (p) {
+    c.save(); c.translate((p.x + p.w / 2) * sc, Y(p.y + KBH / 2)); c.rotate(p.r);
+    kBrick(c, -p.w / 2 * sc, -KBH / 2 * sc, p.w * sc, KBH * sc, p.c, sc); c.restore();
+  });
+  if (KT.msgT > 0 && KT.msg) {
+    c.globalAlpha = Math.min(1, KT.msgT * 2); c.font = '800 ' + Math.round(Math.max(20, 28 * sc)) + 'px "Baloo 2", sans-serif'; c.textAlign = 'center';
+    c.lineWidth = 5; c.strokeStyle = 'rgba(20,30,60,.75)'; c.strokeText(KT.msg, W / 2, H * .3); c.fillStyle = '#fff'; c.fillText(KT.msg, W / 2, H * .3); c.globalAlpha = 1;
+  }
+}
+$('kGo').addEventListener('click', kStart);
+(function () {
+  var cv = $('kCanvas');
+  if (window.PointerEvent) cv.addEventListener('pointerdown', function (e) { e.preventDefault(); kDrop(); });
+  else { cv.addEventListener('touchstart', function (e) { e.preventDefault(); kDrop(); }); cv.addEventListener('mousedown', kDrop); }
+  document.addEventListener('keydown', function (e) {
+    if (!KT || $('v-build').hidden || BV.tab !== 'crane' || (e.key !== ' ' && e.key !== 'Enter' && e.key !== 'ArrowDown')) return;
+    if (e.target && e.target.tagName === 'BUTTON') return;
+    e.preventDefault(); kDrop();
+  });
+})();
+
+// Neue Abzeichen für die Baustelle (hinter „Stadtplaner“ einsortiert)
+(function () {
+  var ids = BADGES.map(function (b) { return b.id; }), sp = BADGES[ids.indexOf('stadtplaner')];
+  if (sp) sp.desc = 'Acht Bauwerke gebaut';
+  var add = [
+    { id: 'fahrzeugbau', name: 'Fahrzeugbauer', desc: 'Ein Fahrzeug gebaut', col: '#f08a24', sym: '⚙', test: function () { return bState().done.some(function (id) { var p = planById(id); return p && p.veh; }); } },
+    { id: 'sauberbau', name: 'Sauber gebaut', desc: 'Ein Bauwerk ganz ohne Fehler', col: '#2f9e5b', sym: '✓', test: function () { return bState().clean >= 1; } },
+    { id: 'baumeisterrang', name: 'Bau-Meister', desc: 'Rang Meister auf der Baustelle', col: '#6b3fb0', sym: '⌂⌂', test: function () { return bState().done.length >= 5; } },
+    { id: 'luxusbau', name: 'Luxus-Baumeister', desc: 'Einen Luxus-Auftrag mit Gold gebaut', col: '#a77d00', sym: '◆', test: function () { return bState().done.some(function (id) { var p = planById(id); return p && p.prem; }); } },
+    { id: 'kran10', name: 'Kranfahrer', desc: 'Kran-Turm mit 10 Stockwerken', col: '#c99a0a', sym: '10', test: function () { return bState().tower >= 10; } },
+    { id: 'kran20', name: 'Wolkenkratzer', desc: 'Kran-Turm mit 20 Stockwerken', col: '#1d4f9c', sym: '20', test: function () { return bState().tower >= 20; } }
+  ];
+  var at = ids.indexOf('stadtplaner') + 1 || BADGES.length;
+  BADGES.splice.apply(BADGES, [at, 0].concat(add));
+})();
 
 /* ---------- Eltern ---------- */
 var gateAns = 0;
@@ -1959,6 +2547,21 @@ $('rewSave').addEventListener('click', function () {
 $('rewDone').addEventListener('click', function () { S.reward = null; S.at.reward = Date.now(); save(); renderParents(); });
 $('silbenIn').addEventListener('change', function () { S.silben = $('silbenIn').checked; S.at.silben = Date.now(); save(); });
 
+/* Ältere sync.php (json_decode mit assoc) macht aus leeren Objekten {} leere Listen [] und aus {"0":…} Listen.
+   In einer Liste gehen später gesetzte Schlüssel (z. B. gekaufte Teile in Olafs Land) beim Speichern verloren.
+   Darum alles, was keine echte Liste ist, wieder zum Objekt machen. */
+var LISTS = { history: 1, wrong: 1, photos: 1, done: 1 };
+function fixShapes(x, key) {
+  if (!x || typeof x !== 'object') return x;
+  var i, k;
+  if (Array.isArray(x)) {
+    if (LISTS[key]) { for (i = 0; i < x.length; i++) x[i] = fixShapes(x[i]); return x; }
+    var o = {}; for (i = 0; i < x.length; i++) o[i] = fixShapes(x[i]); return o;
+  }
+  for (k in x) if (Object.prototype.hasOwnProperty.call(x, k)) x[k] = fixShapes(x[k], k);
+  return x;
+}
+S = fixShapes(S);
 ensure(); save(true);
 go('home');
 syncNow();
