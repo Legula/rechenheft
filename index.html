@@ -372,6 +372,13 @@ body.testing .wrap { padding-bottom: 90px; }
 .chbar { height: 12px; border-radius: 999px; background: var(--line); overflow: hidden; }
 .chbar i { display: block; height: 100%; width: 0; background: #c98b4a; transition: width .2s; }
 .chase-intro { align-items: center; text-align: center; }
+.chopts { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 640px; text-align: left; }
+.chopts h4 { margin: 0 0 6px; font-family: var(--f-display); font-size: 1.1rem; }
+.chrow { display: flex; gap: 8px; flex-wrap: wrap; }
+.chopt { flex: 1 1 120px; min-height: 56px; padding: 8px 10px; border-radius: 14px; border: 3px solid var(--line); background: var(--card); color: var(--ink); font-weight: 700; font-size: 1rem; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; line-height: 1.15; }
+.chopt small { font-weight: 600; font-size: .8rem; opacity: .75; }
+.chopt canvas { width: 72px; height: 54px; border-radius: 10px; }
+.chopt[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, var(--card)); box-shadow: 0 0 0 2px var(--accent) inset; }
 .chase-intro .rudi svg { width: 150px; height: auto; }
 .hud { display: flex; justify-content: space-between; font-family: var(--f-display); font-weight: 800; font-size: 1.4rem; font-variant-numeric: tabular-nums; }
 
@@ -473,14 +480,15 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   <div class="sheet chase-intro" id="chIntro">
     <div class="rudi" id="chIntroPic"></div>
     <h2>Haltet den Keks-Dieb!</h2>
-    <p>Waschbär <b>Rudi</b> hat die Kekse vom Schulfest stibitzt und düst <span id="chPlace">durch die Stadt</span> davon. Fahr mit dem Polizeiauto hinterher!</p>
+    <p>Waschbär <b>Rudi</b> hat die Kekse vom Schulfest stibitzt und düst <span id="chPlace">durch die Stadt</span> davon. Fahr mit der Polizei hinterher!</p>
     <p id="chGoal"></p>
-    <p class="muted">Goldene Kekse zählen dreifach. Mit dem <b style="color:#2f6fd6">Blaulicht</b> fährst du kurz durch alles hindurch und sammelst Krümel auf allen Spuren.</p>
+    <div class="chopts" id="chOpts"></div>
+    <p class="muted">Goldene Kekse zählen dreifach. Mit dem <b style="color:#2f6fd6">Blaulicht</b> fährst du kurz durch alles hindurch und sammelst Krümel auf allen Spuren. Die <b style="color:#c73d3d">Stoppuhr</b> schenkt dir 8 Sekunden mehr.</p>
     <p class="muted">Lenken: Finger auf die Straße legen und nach links oder rechts schieben.</p>
     <div class="row" style="justify-content:center"><button class="btn" id="chGo">Los geht's!</button></div>
   </div>
   <div id="chWrap" hidden>
-    <div class="hud"><span>Krümel: <span id="chCrumbs">0</span> / <span id="chNeed">20</span></span><span><span id="chTime">60</span> s</span></div>
+    <div class="hud"><span>Krümel: <span id="chCrumbs">0</span> <span id="chNeedWrap">/ <span id="chNeed">20</span></span></span><span><span id="chTime">60</span> s</span></div>
     <div class="chbar"><i id="chBar"></i></div>
     <canvas id="chCanvas" class="chase-cv"></canvas>
   </div>
@@ -488,7 +496,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <div class="rudi" id="chEndPic"></div>
     <h2 id="chEndTitle"></h2>
     <p id="chEndText"></p>
-    <div class="row" style="justify-content:center"><button class="btn" data-go="home">Zur Startseite</button></div>
+    <div class="row" style="justify-content:center"><button class="btn" id="chAgain">Nochmal (5 Sterne)</button><button class="btn ghost" data-go="home">Zur Startseite</button></div>
   </div>
 </section>
 
@@ -617,9 +625,9 @@ var COST = 5, PASS = 8, LOW = 4, ROUND = 10;
 function lastScore(theme, level) { for (var i = S.history.length - 1; i >= 0; i--) { var x = S.history[i]; if (x.theme === theme) return x.level === level ? x.score : null; } return null; }
 
 function merge(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call(b, k)) a[k] = b[k]; return a; }
-function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, uhr: 1, geld: 1, sach: 1 }, mastered: {}, history: [], best: { caught: 0, chase: 0 } }; }
+function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, uhr: 1, geld: 1, sach: 1 }, mastered: {}, history: [], best: { caught: 0, chase: 0, crumbs: 0 } }; }
 var S = fresh();
-try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, uhr: 1, geld: 1, sach: 1 }, p.levels || {}); S.best = merge({ caught: 0, chase: 0 }, p.best || {}); } } catch (e) {}
+try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, uhr: 1, geld: 1, sach: 1 }, p.levels || {}); S.best = merge({ caught: 0, chase: 0, crumbs: 0 }, p.best || {}); } } catch (e) {}
 function save(noSync) { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} if (!noSync) scheduleSync(); }
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -635,7 +643,7 @@ function ensure() {
   if (!S.at) S.at = {};
   if (!S.epoch) S.epoch = 0;
   S.levels = merge({ plus: 1, uhr: 1, geld: 1, sach: 1 }, S.levels || {});
-  S.best = merge({ caught: 0, chase: 0 }, S.best || {});
+  S.best = merge({ caught: 0, chase: 0, crumbs: 0 }, S.best || {});
   if (!S.mastered) S.mastered = {};
   if (!S.history) S.history = [];
 }
@@ -662,6 +670,7 @@ function mergeState(L, R) {
   o.history = all.slice(-200);
   var rb = R.best || {};
   o.best.caught = Math.max(o.best.caught || 0, rb.caught || 0);
+  o.best.crumbs = Math.max(o.best.crumbs || 0, rb.crumbs || 0);
   var m1 = o.best.chase || 0, m2 = rb.chase || 0; o.best.chase = m1 && m2 ? Math.min(m1, m2) : (m1 || m2);
   return o;
 }
@@ -1109,9 +1118,26 @@ $('resAgain').addEventListener('click', function () { openLearn(Q.theme, Q.next 
 /* ---------- Die Keks-Jagd ---------- */
 /* Waschbär Rudi hat die Kekse vom Schulfest stibitzt. Krümel sammeln, Hindernissen ausweichen, Rudi einholen. Keine Gewalt: Rudi gibt die Kekse zurück und hilft beim Fest. */
 var CH = null, CHASE_SECONDS = 60;
-var CH_PLACES = [{ name: 'Stadt', where: 'durch die Stadt' }, { name: 'Park', where: 'durch den Park' }, { name: 'Abend', where: 'durch die Straßen, es wird schon dunkel' }];
+var CH_PLACES = [{ name: 'Stadt', where: 'durch die Stadt' }, { name: 'Park', where: 'durch den Park' }, { name: 'Abend', where: 'durch die Straßen, es wird schon dunkel' },
+  { name: 'Strand', where: 'am Strand entlang' }, { name: 'Winter', where: 'durch den verschneiten Winterwald' }];
+/* Auswahl vor dem Start: Spielart, Fahrzeug, Ort, Tempo (pro Gerät gemerkt, nicht synchronisiert) */
+var CH_MODES = [{ id: 'jagd', name: 'Jagd', info: 'Hol Rudi ein' }, { id: 'rekord', name: 'Krümel-Rekord', info: '60 Sekunden sammeln' }];
+var CH_VEH = [
+  { id: 'auto', name: 'Streifenwagen', info: 'robust: verliert weniger', w: 0.56, max: 56, r: 1.75, steer: 6, lose: 1, mag: 0 },
+  { id: 'moto', name: 'Motorrad', info: 'flink beim Lenken', w: 0.36, max: 36, r: 1.9, steer: 11, lose: 2, mag: 0 },
+  { id: 'rad', name: 'Fahrrad', info: 'Krümel-Magnet', w: 0.3, max: 30, r: 2, steer: 7, lose: 2, mag: 0.6 },
+  { id: 'heli', name: 'Hubschrauber', info: 'fliegt über Pfützen', w: 0.5, max: 50, r: 1.6, steer: 6, lose: 2, mag: 0, fly: true }];
+var CH_PLACEOPTS = [{ id: 'auto', name: 'Überraschung', info: 'neuer Ort je Fall' }].concat(CH_PLACES.map(function (p, i) { return { id: i, name: p.name, info: '' }; }));
+var CH_TEMPO = [{ id: 'easy', name: 'Gemütlich', info: 'langsamer, 90 Sekunden', sp: 0.75, obs: 1.4, time: 90 }, { id: 'norm', name: 'Normal', info: 'wie immer', sp: 1, obs: 1, time: 60 }, { id: 'fast', name: 'Flott', info: 'schneller, mehr Hütchen', sp: 1.22, obs: 0.8, time: 60 }];
+var CH_OBS = [['cone', 'puddle', 'box', 'cone'], ['cone', 'puddle', 'box', 'cone'], ['cone', 'puddle', 'box', 'cone'], ['castle', 'ball', 'puddle', 'castle'], ['snowman', 'ice', 'box', 'snowman']];
+function byId(list, id) { for (var i = 0; i < list.length; i++) if (String(list[i].id) === String(id)) return list[i]; return list[0]; }
+function chOpt() {
+  var o = {}; try { o = JSON.parse(lsGet(KEY + '-chase-opt') || '{}') || {}; } catch (e) { o = {}; }
+  return { mode: byId(CH_MODES, o.mode).id, veh: byId(CH_VEH, o.veh).id, place: byId(CH_PLACEOPTS, o.place).id, tempo: byId(CH_TEMPO, o.tempo || 'norm').id };
+}
+function chSetOpt(k, v) { var o = chOpt(); o[k] = v; lsSet(KEY + '-chase-opt', JSON.stringify(o)); }
 var CH_HELP = ['hilft er beim Schulfest am Kuchenstand mit', 'hängt er beim Schulfest die bunten Girlanden auf', 'spült er nach dem Fest das ganze Geschirr', 'verteilt er beim Schulfest Luftballons an alle Kinder', 'fegt er nach dem Fest den ganzen Schulhof', 'backt er mit Olaf neue Kekse für alle'];
-function chCase() { var n = (S.best.caught || 0) + 1; return { n: n, need: 20 + Math.min(10, (n - 1) * 2), fast: 1 + Math.min(0.45, (n - 1) * 0.06), scene: (n - 1) % 3 }; }
+function chCase() { var n = (S.best.caught || 0) + 1; return { n: n, need: 20 + Math.min(10, (n - 1) * 2), fast: 1 + Math.min(0.45, (n - 1) * 0.06), scene: (n - 1) % CH_PLACES.length }; }
 function rudiSVG(mood) {
   var mouth = mood === 'sorry' ? '<path d="M52 74 q8 -5 16 0" stroke="#2a2a2a" stroke-width="3" fill="none" stroke-linecap="round"/>' : '<path d="M50 72 q10 9 20 0" stroke="#2a2a2a" stroke-width="3" fill="none" stroke-linecap="round"/>';
   var hold = mood === 'sorry'
@@ -1126,14 +1152,45 @@ function rudiSVG(mood) {
     '<ellipse cx="60" cy="70" rx="14" ry="10" fill="#e7e2da"/><ellipse cx="60" cy="66" rx="4.5" ry="3.2" fill="#1a1a1a"/>' + mouth +
     (mood === 'sorry' ? '<path d="M37 47 l12 -5 M83 47 l-12 -5" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/>' : '') + hold + '</svg>';
 }
-$('playChase').addEventListener('click', function () {
+function openChase() {
   if (stars() < COST) return;
   spendStars(COST); save();
   $('chIntroPic').innerHTML = rudiSVG('cheeky');
-  var cs = chCase(); $('chCase').textContent = 'Keks-Jagd · Fall ' + cs.n; $('chPlace').textContent = CH_PLACES[cs.scene].where;
-  $('chGoal').innerHTML = 'Sammle <b>' + cs.need + ' Krümel</b> auf seiner Spur, dann holst du ihn ein. Weich Hütchen, Pfützen und Kisten aus.' + (cs.n > 1 ? ' Rudi ist diesmal etwas schneller!' : '');
+  chRenderOpts();
   $('chIntro').hidden = false; $('chWrap').hidden = true; $('chEnd').hidden = true;
   go('chase');
+}
+$('playChase').addEventListener('click', openChase);
+$('chAgain').addEventListener('click', function () { if (stars() >= COST) openChase(); else go('home'); });
+function chScene(o, cs) { return o.place === 'auto' ? cs.scene : +o.place; }
+function chRenderOpts() {
+  var o = chOpt(), cs = chCase(), sc = chScene(o, cs), t = byId(CH_TEMPO, o.tempo);
+  $('chCase').textContent = o.mode === 'jagd' ? 'Keks-Jagd · Fall ' + cs.n : 'Keks-Jagd · Krümel-Rekord';
+  $('chPlace').textContent = CH_PLACES[sc].where;
+  var obsTxt = sc === 3 ? 'Sandburgen, Wasserbällen und Pfützen' : sc === 4 ? 'Schneemännern, Eis und Kisten' : 'Hütchen, Pfützen und Kisten';
+  $('chGoal').innerHTML = o.mode === 'jagd'
+    ? 'Sammle <b>' + cs.need + ' Krümel</b> auf seiner Spur, dann holst du ihn ein. Du hast <b>' + t.time + ' Sekunden</b>. Weich ' + obsTxt + ' aus.' + (cs.n > 1 ? ' Rudi ist diesmal etwas schneller!' : '')
+    : 'Rudi lässt Krümel fallen. Sammle in <b>60 Sekunden</b> so viele wie du kannst! Weich ' + obsTxt + ' aus.' + (S.best.crumbs ? ' Dein Rekord: <b>' + S.best.crumbs + ' Krümel</b>.' : '');
+  var groups = [['mode', 'Was spielst du?', CH_MODES], ['veh', 'Womit fährst du?', CH_VEH], ['place', 'Wo geht es lang?', CH_PLACEOPTS], ['tempo', 'Wie schnell?', CH_TEMPO]];
+  var h = '';
+  groups.forEach(function (gr) {
+    h += '<div><h4>' + gr[1] + '</h4><div class="chrow" role="group" aria-label="' + gr[1] + '">';
+    gr[2].forEach(function (it) {
+      var pic = gr[0] === 'veh' || (gr[0] === 'place' && it.id !== 'auto') ? '<canvas data-pic="' + gr[0] + ':' + it.id + '" width="144" height="108"></canvas>' : '';
+      h += '<button class="chopt" data-k="' + gr[0] + '" data-v="' + it.id + '" aria-pressed="' + (String(o[gr[0]]) === String(it.id)) + '">' + pic + '<span>' + it.name + '</span>' + (it.info ? '<small>' + it.info + '</small>' : '') + '</button>';
+    });
+    h += '</div></div>';
+  });
+  $('chOpts').innerHTML = h;
+  Array.prototype.forEach.call($('chOpts').querySelectorAll('canvas[data-pic]'), function (cv) {
+    var g = cv.getContext('2d'), a = cv.getAttribute('data-pic').split(':'); g.setTransform(2, 0, 0, 2, 0, 0);
+    if (a[0] === 'veh') { g.fillStyle = '#6b6f76'; g.fillRect(0, 0, 72, 54); var v = byId(CH_VEH, a[1]), vh = v.fly ? 34 : 42; chDrawVeh(g, v, 36, (54 - vh) / 2, vh / v.r, vh, 400); }
+    else chDrawScene(g, { scene: +a[1], rx: 26, road: 20, scroll: 40 }, 72, 54, 20 / 3);
+  });
+}
+$('chOpts').addEventListener('click', function (e) {
+  var b = e.target.closest ? e.target.closest('.chopt') : null; if (!b) return;
+  chSetOpt(b.getAttribute('data-k'), b.getAttribute('data-v')); chRenderOpts();
 });
 $('chGo').addEventListener('click', startChase);
 function startChase() {
@@ -1142,12 +1199,16 @@ function startChase() {
   cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
   var ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   var road = Math.min(w * 0.76, 480), lw = road / 3, rx = (w - road) / 2;
-  var cs = chCase();
-  CH = { cs: cs, need: cs.need, scene: cs.scene, boost: 0, sirenT: 9 + Math.random() * 4, ctx: ctx, w: w, h: h, rx: rx, lw: lw, road: road, cw: Math.min(lw * 0.56, 56), carX: rx + lw * 1.5, tx: rx + lw * 1.5,
+  var cs = chCase(), o = chOpt(), V = byId(CH_VEH, o.veh), T = byId(CH_TEMPO, o.tempo), rek = o.mode === 'rekord', sc = chScene(o, cs);
+  CH = { cs: cs, need: rek ? 0 : cs.need, rek: rek, V: V, T: T, dur: rek ? 60 : T.time, obsKinds: CH_OBS[sc], clockT: 16 + Math.random() * 6,
+    scene: sc, boost: 0, sirenT: 9 + Math.random() * 4, ctx: ctx, w: w, h: h, rx: rx, lw: lw, road: road, cw: Math.min(lw * V.w, V.max), carX: rx + lw * 1.5, tx: rx + lw * 1.5,
     items: [], scroll: 0, t: 0, last: 0, crumbs: 0, trail: 1, trailT: 0, obsT: 1.6, slow: 0, wobble: 0, phase: 'run',
     rudiX: rx + lw * 1.5, rudiLane: 1, rudiY: -70, hopT: 2, msg: 'Folge der Krümelspur!', msgT: 2, pops: [], raf: 0 };
-  CH.ch = CH.cw * 1.75; CH.carY = h - CH.ch - 18;
-  $('chNeed').textContent = cs.need; $('chCrumbs').textContent = 0; $('chBar').style.width = '0%'; $('chTime').textContent = CHASE_SECONDS;
+  CH.ch = CH.cw * V.r; CH.carY = h - CH.ch - 18;
+  if (rek) { CH.msg = 'Sammle so viele Krümel wie du kannst!'; CH.rudiY = h * 0.1; }
+  $('chNeedWrap').textContent = rek ? (S.best.crumbs ? '· Rekord ' + S.best.crumbs : '') : '';
+  if (!rek) $('chNeedWrap').innerHTML = '/ <span id="chNeed">' + cs.need + '</span>';
+  $('chCrumbs').textContent = 0; $('chBar').style.width = rek ? '100%' : '0%'; $('chTime').textContent = CH.dur;
   CH.raf = requestAnimationFrame(chTick);
 }
 function chSteer(e) {
@@ -1179,66 +1240,72 @@ function chTick(now) {
   if (!CH) return;
   var c = CH, dt = c.last ? Math.min(0.05, (now - c.last) / 1000) : 0; c.last = now;
   if (c.phase !== 'caught') c.t += dt;
-  var sp = c.phase === 'caught' ? 0 : c.h * 0.5 * c.cs.fast * (1 + Math.min(c.t, 60) / 80) * (c.slow > 0 ? 0.5 : 1) * (c.boost > 0 ? 1.15 : 1);
+  var sp = c.phase === 'caught' ? 0 : c.h * 0.5 * (c.rek ? 1 : c.cs.fast) * c.T.sp * (1 + Math.min(c.t, 60) / 80) * (c.slow > 0 ? 0.5 : 1) * (c.boost > 0 ? 1.15 : 1);
   c.slow = Math.max(0, c.slow - dt); c.boost = Math.max(0, c.boost - dt); c.wobble = Math.max(0, c.wobble - dt); c.msgT = Math.max(0, c.msgT - dt);
   c.scroll += sp * dt;
-  var mv = c.lw * 6 * dt; c.carX += Math.max(-mv, Math.min(mv, c.tx - c.carX));
+  var mv = c.lw * c.V.steer * dt; c.carX += Math.max(-mv, Math.min(mv, c.tx - c.carX));
   if (c.phase === 'run') {
     c.trailT -= dt;
     if (c.trailT <= 0) {
       c.trailT = 0.3;
       if (Math.random() < 0.14) c.trail = Math.max(0, Math.min(2, c.trail + (Math.random() < 0.5 ? -1 : 1)));
-      var blocked = c.items.some(function (it) { return it.k !== 'c' && it.lane === c.trail && it.y < 40; });
-      if (!blocked) c.items.push({ k: Math.random() < 0.06 ? 'gold' : 'c', lane: c.trail, y: -30 });
+      var sy = c.rek ? c.rudiY + c.lw * 0.9 : -30;
+      var blocked = c.items.some(function (it) { return it.k !== 'c' && it.k !== 'gold' && it.lane === c.trail && it.y < sy + 70; });
+      if (!blocked) c.items.push({ k: Math.random() < 0.06 ? 'gold' : 'c', lane: c.trail, y: sy });
     }
     c.obsT -= dt;
     if (c.obsT <= 0) {
-      c.obsT = Math.max(0.7, 1.5 - c.t / 70);
+      c.obsT = Math.max(0.7, 1.5 - c.t / 70) * c.T.obs;
       var ln = Math.random() < 0.3 ? c.trail : rnd(0, 2);
-      c.items.push({ k: pick(['cone', 'puddle', 'box', 'cone']), lane: ln, y: -50 });
+      c.items.push({ k: pick(c.obsKinds), lane: ln, y: -50 });
     }
     c.sirenT -= dt;
     if (c.sirenT <= 0) { c.sirenT = 13 + Math.random() * 6; c.items.push({ k: 'siren', lane: rnd(0, 2), y: -40 }); }
-    if (c.t >= CHASE_SECONDS) { chEnd(false); return; }
+    c.clockT -= dt;
+    if (c.clockT <= 0) { c.clockT = 20 + Math.random() * 8; c.items.push({ k: 'clock', lane: rnd(0, 2), y: -40 }); }
+    if (c.t >= c.dur) { if (c.rek) chEndRekord(); else chEnd(false); return; }
   }
   var cx0 = c.carX - c.cw / 2, cx1 = c.carX + c.cw / 2, cy0 = c.carY, cy1 = c.carY + c.ch;
   c.items = c.items.filter(function (it) {
     it.y += sp * dt;
     if (it.y > c.h + 60) return false;
-    var x = laneX(it.lane), food = it.k === 'c' || it.k === 'gold', r = c.lw * (food ? 0.16 : 0.24), mag = food && c.boost > 0 ? c.lw * 1.5 : 0;
+    var x = laneX(it.lane), food = it.k === 'c' || it.k === 'gold', r = c.lw * (food ? 0.16 : 0.24), mag = food ? (c.boost > 0 ? c.lw * 1.5 : c.lw * c.V.mag) : 0;
+    if (c.V.fly && (it.k === 'puddle' || it.k === 'ice')) return true;
     if (!it.hit && x + r + mag > cx0 && x - r - mag < cx1 && it.y + r > cy0 && it.y - r < cy1) {
+      if (it.k === 'clock') { c.dur += 8; c.msg = 'Mehr Zeit: 8 Sekunden!'; c.msgT = 1.8; chPop('+8 s', x, it.y, '#ff8a80'); return false; }
       if (it.k === 'siren') { c.boost = 5; c.slow = 0; c.msg = 'Blaulicht an! Tatütata!'; c.msgT = 1.8; chPop('★', x, it.y, '#9cc3ff'); return false; }
       if (food) {
         if (c.phase === 'run') {
           var add = it.k === 'gold' ? 3 : 1;
-          c.crumbs = Math.min(c.need, c.crumbs + add); chPop('+' + add, x, it.y);
-          if (c.crumbs >= c.need) { c.phase = 'near'; c.msg = 'Da vorne ist Rudi! Fahr hinter ihn!'; c.msgT = 3; c.items = c.items.filter(function (o) { return o.k === 'c' || o.y > c.h * 0.4; }); }
+          c.crumbs = c.rek ? c.crumbs + add : Math.min(c.need, c.crumbs + add); chPop('+' + add, x, it.y);
+          if (!c.rek && c.crumbs >= c.need) { c.phase = 'near'; c.msg = 'Da vorne ist Rudi! Fahr hinter ihn!'; c.msgT = 3; c.items = c.items.filter(function (o) { return o.k === 'c' || o.y > c.h * 0.4; }); }
         }
         return false;
       }
       if (c.boost > 0) return true;
       if (c.wobble <= 0) {
         it.hit = true; c.wobble = 1; c.slow = 1.2;
-        var lost = Math.min(2, c.crumbs); if (c.phase === 'run') c.crumbs -= lost;
-        c.msg = it.k === 'puddle' ? 'Platsch! Langsam weiter.' : 'Hoppla! Vorsichtig fahren.'; c.msgT = 1.4;
+        var lost = Math.min(c.V.lose, c.crumbs); if (c.phase === 'run') c.crumbs -= lost;
+        c.msg = { puddle: 'Platsch! Langsam weiter.', ice: 'Huiii, ganz schön glatt!', ball: 'Boing! Ein Wasserball.', snowman: 'Hoppla! Sorry, Schneemann.', castle: 'Oh, die schöne Sandburg!' }[it.k] || 'Hoppla! Vorsichtig fahren.'; c.msgT = 1.4;
         if (lost && c.phase === 'run') chPop('−' + lost, x, it.y, '#ff8a80');
       }
     }
     return true;
   });
   // Rudi: kommt mit jedem Krümel näher, am Ende bleibt er vor dem Polizeiauto
-  var target = c.phase === 'run' ? -60 + (c.crumbs / c.need) * c.h * 0.32 : c.carY - c.ch * 0.95;
+  var target = c.rek ? c.h * 0.1 : c.phase === 'run' ? -60 + (c.crumbs / c.need) * c.h * 0.32 : c.carY - c.ch * 0.95;
   c.rudiY += (target - c.rudiY) * Math.min(1, dt * (c.phase === 'run' ? 2 : 0.9));
   c.hopT -= dt;
-  if (c.hopT <= 0 && c.phase !== 'caught') { c.hopT = c.phase === 'near' ? 1.7 : 2.4; var nl = c.rudiLane + (Math.random() < 0.5 ? -1 : 1); if (nl < 0 || nl > 2) nl = 1; c.rudiLane = nl; }
+  if (c.rek) c.rudiLane = c.trail;
+  else if (c.hopT <= 0 && c.phase !== 'caught') { c.hopT = c.phase === 'near' ? 1.7 : 2.4; var nl = c.rudiLane + (Math.random() < 0.5 ? -1 : 1); if (nl < 0 || nl > 2) nl = 1; c.rudiLane = nl; }
   c.rudiX += (laneX(c.rudiLane) - c.rudiX) * Math.min(1, dt * 2.2);
   if (c.phase === 'near' && Math.abs(c.carX - c.rudiX) < c.lw * 0.45 && c.rudiY > c.carY - c.ch * 1.15) {
     c.phase = 'caught'; c.msg = 'Erwischt!'; c.msgT = 5; c.rudiLane = Math.round((c.rudiX - c.rx) / c.lw - 0.5);
     setTimeout(function () { if (CH === c) chEnd(true); }, 1300);
   }
   c.pops.forEach(function (p) { p.t -= dt; p.y -= 40 * dt; }); c.pops = c.pops.filter(function (p) { return p.t > 0; });
-  $('chCrumbs').textContent = c.crumbs; $('chBar').style.width = (c.crumbs / c.need * 100) + '%';
-  $('chTime').textContent = c.phase === 'run' ? Math.max(0, Math.ceil(CHASE_SECONDS - c.t)) : '–';
+  $('chCrumbs').textContent = c.crumbs; $('chBar').style.width = (c.rek ? Math.max(0, 1 - c.t / c.dur) : c.crumbs / c.need) * 100 + '%';
+  $('chTime').textContent = c.phase === 'run' ? Math.max(0, Math.ceil(c.dur - c.t)) : '–';
   chDraw(now);
   c.raf = requestAnimationFrame(chTick);
 }
@@ -1257,6 +1324,31 @@ function chDraw(now) {
       g.fillStyle = 'rgba(61,139,255,.25)'; g.beginPath(); g.arc(x, yy, sr * 1.8, 0, 7); g.fill();
       g.fillStyle = '#333'; g.fillRect(x - sr, yy + sr * 0.3, sr * 2, sr * 0.5);
       g.fillStyle = on2 ? '#3d8bff' : '#9cc3ff'; g.beginPath(); g.arc(x, yy + sr * 0.3, sr * 0.85, Math.PI, 0); g.fill();
+    } else if (it.k === 'clock') {
+      var cr0 = lw * 0.19, on3 = Math.floor(now / 200) % 2;
+      g.fillStyle = 'rgba(255,138,128,.3)'; g.beginPath(); g.arc(x, yy, cr0 * 1.7, 0, 7); g.fill();
+      g.fillStyle = '#c73d3d'; g.fillRect(x - cr0 * 0.25, yy - cr0 * 1.35, cr0 * 0.5, cr0 * 0.4);
+      g.fillStyle = '#fff'; g.beginPath(); g.arc(x, yy, cr0, 0, 7); g.fill(); g.strokeStyle = '#c73d3d'; g.lineWidth = 3; g.stroke();
+      g.strokeStyle = '#222'; g.lineWidth = 2; g.beginPath(); g.moveTo(x, yy); g.lineTo(x, yy - cr0 * 0.7); g.moveTo(x, yy); g.lineTo(x + cr0 * (on3 ? 0.55 : 0.4), yy + cr0 * (on3 ? 0.1 : 0.4)); g.stroke();
+    } else if (it.k === 'castle') {
+      var k = lw * 0.2; g.globalAlpha = it.hit ? 0.5 : 1;
+      g.fillStyle = '#e2bf72'; g.fillRect(x - k, yy - k * 0.5, k * 2, k * 1.3); g.fillRect(x - k * 1.1, yy - k * 1.1, k * 0.7, k * 0.7); g.fillRect(x + k * 0.4, yy - k * 1.1, k * 0.7, k * 0.7);
+      g.fillStyle = '#c99a4a'; g.fillRect(x - k * 0.25, yy + k * 0.2, k * 0.5, k * 0.6);
+      g.strokeStyle = '#d64541'; g.lineWidth = 2; g.beginPath(); g.moveTo(x - k * 0.75, yy - k * 1.1); g.lineTo(x - k * 0.75, yy - k * 1.8); g.stroke(); g.fillStyle = '#d64541'; g.fillRect(x - k * 0.75, yy - k * 1.8, k * 0.5, k * 0.3); g.globalAlpha = 1;
+    } else if (it.k === 'ball') {
+      var br = lw * 0.2, cols = ['#d64541', '#fff', '#2f6fd6', '#fff', '#ffd23f', '#fff']; g.globalAlpha = it.hit ? 0.5 : 1;
+      for (var q = 0; q < 6; q++) { g.fillStyle = cols[q]; g.beginPath(); g.moveTo(x, yy); g.arc(x, yy, br, q * Math.PI / 3 + now / 600, (q + 1) * Math.PI / 3 + now / 600); g.fill(); }
+      g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1.5; g.beginPath(); g.arc(x, yy, br, 0, 7); g.stroke(); g.globalAlpha = 1;
+    } else if (it.k === 'snowman') {
+      var sr2 = lw * 0.15; g.globalAlpha = it.hit ? 0.5 : 1;
+      g.fillStyle = '#fff'; g.strokeStyle = '#b7c7d8'; g.lineWidth = 2;
+      g.beginPath(); g.arc(x, yy + sr2 * 0.5, sr2 * 1.1, 0, 7); g.fill(); g.stroke(); g.beginPath(); g.arc(x, yy - sr2 * 0.9, sr2 * 0.75, 0, 7); g.fill(); g.stroke();
+      g.fillStyle = '#222'; g.beginPath(); g.arc(x - sr2 * 0.28, yy - sr2 * 1.05, sr2 * 0.1, 0, 7); g.arc(x + sr2 * 0.28, yy - sr2 * 1.05, sr2 * 0.1, 0, 7); g.fill();
+      g.fillStyle = '#f08a24'; g.beginPath(); g.moveTo(x, yy - sr2 * 0.85); g.lineTo(x + sr2 * 0.6, yy - sr2 * 0.7); g.lineTo(x, yy - sr2 * 0.6); g.fill();
+      g.fillStyle = '#d64541'; g.fillRect(x - sr2 * 0.7, yy - sr2 * 0.35, sr2 * 1.4, sr2 * 0.25); g.globalAlpha = 1;
+    } else if (it.k === 'ice') {
+      g.fillStyle = it.hit ? 'rgba(170,215,245,.45)' : '#bfe3fb'; g.beginPath(); g.ellipse ? g.ellipse(x, yy, lw * 0.32, lw * 0.18, 0, 0, 7) : g.arc(x, yy, lw * 0.22, 0, 7); g.fill();
+      g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.moveTo(x - lw * 0.15, yy - lw * 0.04); g.lineTo(x - lw * 0.02, yy - lw * 0.08); g.moveTo(x + lw * 0.02, yy + lw * 0.05); g.lineTo(x + lw * 0.14, yy + lw * 0.01); g.stroke();
     } else if (it.k === 'c') {
       g.fillStyle = '#c98b4a'; g.beginPath(); g.arc(x, yy, r * 0.75, 0, 7); g.fill();
       g.fillStyle = '#5a3418'; g.beginPath(); g.arc(x - r * 0.25, yy - r * 0.2, r * 0.13, 0, 7); g.arc(x + r * 0.3, yy + r * 0.05, r * 0.13, 0, 7); g.arc(x - r * 0.05, yy + r * 0.35, r * 0.11, 0, 7); g.fill();
@@ -1275,9 +1367,10 @@ function chDraw(now) {
     }
   });
   chDrawRudi(g, c.rudiX, c.rudiY, lw * 0.34);
-  if (c.scene === 2) { g.fillStyle = 'rgba(255,240,170,.22)'; g.beginPath(); g.moveTo(c.carX - c.cw * 0.4, c.carY); g.lineTo(c.carX - c.cw * 1.3, c.carY - c.ch * 1.8); g.lineTo(c.carX + c.cw * 1.3, c.carY - c.ch * 1.8); g.lineTo(c.carX + c.cw * 0.4, c.carY); g.fill(); }
+  if (c.scene === 2 && !c.V.fly) { g.fillStyle = 'rgba(255,240,170,.22)'; g.beginPath(); g.moveTo(c.carX - c.cw * 0.4, c.carY); g.lineTo(c.carX - c.cw * 1.3, c.carY - c.ch * 1.8); g.lineTo(c.carX + c.cw * 1.3, c.carY - c.ch * 1.8); g.lineTo(c.carX + c.cw * 0.4, c.carY); g.fill(); }
   if (c.boost > 0) { g.fillStyle = 'rgba(61,139,255,' + (0.18 + 0.12 * Math.sin(now / 90)) + ')'; g.beginPath(); g.arc(c.carX, c.carY + c.ch / 2, c.ch * 0.85, 0, 7); g.fill(); }
-  chDrawCar(g, c.carX + (c.wobble > 0 ? Math.sin(now / 40) * 4 : 0), c.carY, c.cw, c.ch, now);
+  chDrawVeh(g, c.V, c.carX + (c.wobble > 0 ? Math.sin(now / 40) * 4 : 0), c.carY, c.cw, c.ch, now);
+  if (c.scene === 4) { g.fillStyle = 'rgba(255,255,255,.85)'; for (i = 0; i < 40; i++) { var fx = (i * 97.3 + Math.sin(now / 900 + i) * 14) % w, fy = (i * 53.7 + now / 22 * (0.6 + (i % 3) * 0.2)) % h; g.fillRect(fx, fy, 3, 3); } }
   c.pops.forEach(function (p) { g.globalAlpha = Math.min(1, p.t * 2); g.fillStyle = p.col; g.font = '800 22px "Baloo 2", sans-serif'; g.textAlign = 'center'; g.fillText(p.text, p.x, p.y); g.globalAlpha = 1; });
   if (c.msgT > 0) {
     g.font = '800 ' + (c.phase === 'caught' ? 44 : 22) + 'px "Baloo 2", sans-serif'; g.textAlign = 'center';
@@ -1293,6 +1386,7 @@ function chHouse(g, x, y, s, wall, roof, lit) {
 function chTree(g, x, y, s, col) { g.fillStyle = '#5a3a22'; g.fillRect(x - s * 0.15, y + s * 0.3, s * 0.3, s * 0.6); g.fillStyle = col; g.beginPath(); g.arc(x, y, s * 0.7, 0, 7); g.fill(); }
 function chDrawScene(g, c, w, h, lw) {
   var sc = c.scene, night = sc === 2, i, y, side = c.rx, s = Math.min(side * 0.36, 34);
+  if (sc === 3 || sc === 4) { chDrawScene2(g, c, w, h, lw, side, s); return; }
   g.fillStyle = sc === 1 ? '#8fd16f' : night ? '#2c5238' : '#7cc46a'; g.fillRect(0, 0, w, h);
   var nn = Math.ceil((h + 150) / 150), per = nn * 150;
   for (i = 0; i < nn && side > 24; i++) {
@@ -1323,6 +1417,87 @@ function chDrawScene(g, c, w, h, lw) {
       });
     }
   }
+}
+function chLanes(g, c, h, lw, col) {
+  g.fillStyle = col; var off = c.scroll % 60, i, y;
+  for (i = 1; i < 3; i++) for (y = -60 + off; y < h; y += 60) g.fillRect(c.rx + lw * i - 2, y, 4, 30);
+}
+function chDrawScene2(g, c, w, h, lw, side, s) {
+  var beach = c.scene === 3, i, y, nn = Math.ceil((h + 150) / 150), per = nn * 150, lx = side / 2, sx = w - side / 2;
+  if (beach) {
+    g.fillStyle = '#f1d9a0'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#4fb3e8'; g.fillRect(0, 0, side * 0.62, h);
+    g.fillStyle = 'rgba(255,255,255,.7)'; for (y = -40 + (c.scroll * 0.6) % 40; y < h; y += 40) g.fillRect(side * 0.62 - 6, y, 6, 22);
+    g.strokeStyle = 'rgba(255,255,255,.5)'; g.lineWidth = 2;
+    for (y = -70 + (c.scroll * 0.5) % 70; y < h; y += 70) { g.beginPath(); g.moveTo(side * 0.1, y); g.quadraticCurveTo(side * 0.2, y - 6, side * 0.3, y); g.stroke(); }
+    for (i = 0; i < nn && side > 24; i++) {
+      y = ((i * 150 + 75 + c.scroll) % per) - 75;
+      if (i % 2) { g.fillStyle = '#7a5130'; g.fillRect(sx - 2, y - s * 0.2, 4, s * 1.1); var cc = ['#d64541', '#2f6fd6', '#ffd23f'][i % 3]; g.fillStyle = cc; g.beginPath(); g.arc(sx, y - s * 0.2, s * 0.75, Math.PI, 0); g.fill(); g.fillStyle = '#fff'; g.beginPath(); g.moveTo(sx, y - s * 0.2); g.lineTo(sx - s * 0.25, y - s * 0.9); g.lineTo(sx + s * 0.25, y - s * 0.9); g.fill(); }
+      else { g.fillStyle = '#8a5a2b'; g.fillRect(sx - 3, y - s * 0.3, 6, s * 1.2); g.fillStyle = '#2f8a46'; for (var a = 0; a < 5; a++) { g.beginPath(); g.ellipse ? g.ellipse(sx + Math.cos(a * 1.26) * s * 0.4, y - s * 0.35 + Math.sin(a * 1.26) * s * 0.25, s * 0.45, s * 0.15, a * 1.26, 0, 7) : g.arc(sx, y - s * 0.35, s * 0.4, 0, 7); g.fill(); } }
+    }
+    g.fillStyle = '#9b927f'; g.fillRect(c.rx, 0, c.road, h);
+    g.fillStyle = '#f4f4f4'; g.fillRect(c.rx + 3, 0, 4, h); g.fillRect(c.rx + c.road - 7, 0, 4, h);
+    chLanes(g, c, h, lw, 'rgba(255,255,255,.75)');
+  } else {
+    g.fillStyle = '#eef4fa'; g.fillRect(0, 0, w, h);
+    for (i = 0; i < nn && side > 24; i++) {
+      y = ((i * 150 + c.scroll) % per) - 75;
+      var y2 = ((i * 150 + 75 + c.scroll) % per) - 75;
+      [[lx, y, i % 2], [sx, y2, (i + 1) % 2]].forEach(function (p) {
+        var px = p[0], py = p[1];
+        if (p[2]) { chHouse(g, px, py, s, '#d9c3a0', '#7a4d30', true); g.fillStyle = '#fff'; g.beginPath(); g.moveTo(px - s * 0.85, py - s * 0.35); g.lineTo(px, py - s * 1.05); g.lineTo(px + s * 0.85, py - s * 0.35); g.lineTo(px + s * 0.6, py - s * 0.45); g.lineTo(px, py - s * 0.85); g.lineTo(px - s * 0.6, py - s * 0.45); g.fill(); }
+        else { g.fillStyle = '#5a3a22'; g.fillRect(px - s * 0.12, py + s * 0.5, s * 0.24, s * 0.4); for (var t = 0; t < 3; t++) { var ty = py + s * 0.55 - t * s * 0.45, tw = s * (0.8 - t * 0.2); g.fillStyle = '#1f6b3e'; g.beginPath(); g.moveTo(px - tw, ty); g.lineTo(px, ty - s * 0.6); g.lineTo(px + tw, ty); g.fill(); g.fillStyle = '#fff'; g.beginPath(); g.moveTo(px - tw * 0.4, ty - s * 0.36); g.lineTo(px, ty - s * 0.6); g.lineTo(px + tw * 0.4, ty - s * 0.36); g.fill(); } }
+      });
+    }
+    g.fillStyle = '#7d8792'; g.fillRect(c.rx, 0, c.road, h);
+    g.fillStyle = '#fff'; g.fillRect(c.rx, 0, 9, h); g.fillRect(c.rx + c.road - 9, 0, 9, h);
+    chLanes(g, c, h, lw, 'rgba(255,255,255,.6)');
+  }
+}
+function chDrawVeh(g, v, x, y, cw, ch, now) {
+  if (v.id === 'moto') chDrawMoto(g, x, y, cw, ch, now);
+  else if (v.id === 'rad') chDrawRad(g, x, y, cw, ch, now);
+  else if (v.id === 'heli') chDrawHeli(g, x, y, cw, ch, now);
+  else chDrawCar(g, x, y, cw, ch, now);
+}
+function chDrawMoto(g, x, y, cw, ch, now) {
+  var on = Math.floor(now / 220) % 2;
+  g.fillStyle = 'rgba(0,0,0,.18)'; g.beginPath(); g.ellipse ? g.ellipse(x + 4, y + ch * 0.55, cw * 0.55, ch * 0.5, 0, 0, 7) : g.arc(x + 4, y + ch * 0.55, cw * 0.5, 0, 7); g.fill();
+  g.fillStyle = '#111'; roundRect(g, x - cw * 0.18, y, cw * 0.36, ch * 0.26, cw * 0.15); g.fill(); roundRect(g, x - cw * 0.2, y + ch * 0.74, cw * 0.4, ch * 0.26, cw * 0.15); g.fill();
+  g.fillStyle = '#f4f6f8'; roundRect(g, x - cw * 0.4, y + ch * 0.2, cw * 0.8, ch * 0.6, cw * 0.3); g.fill();
+  g.fillStyle = '#1d4f9c'; g.fillRect(x - cw * 0.4, y + ch * 0.48, cw * 0.8, ch * 0.08);
+  g.strokeStyle = '#333'; g.lineWidth = 3; g.beginPath(); g.moveTo(x - cw * 0.55, y + ch * 0.27); g.lineTo(x + cw * 0.55, y + ch * 0.27); g.stroke();
+  g.fillStyle = '#1d4f9c'; g.beginPath(); g.arc(x, y + ch * 0.42, cw * 0.3, 0, 7); g.fill();
+  g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y + ch * 0.38, cw * 0.27, 0, 7); g.fill(); g.fillStyle = '#1d4f9c'; g.fillRect(x - cw * 0.05, y + ch * 0.25, cw * 0.1, ch * 0.24);
+  g.fillStyle = on ? '#3d8bff' : '#9cc3ff'; g.fillRect(x - cw * 0.38, y + ch * 0.68, cw * 0.28, ch * 0.06);
+  g.fillStyle = on ? '#9cc3ff' : '#3d8bff'; g.fillRect(x + cw * 0.1, y + ch * 0.68, cw * 0.28, ch * 0.06);
+  g.fillStyle = '#fff6b0'; g.fillRect(x - cw * 0.12, y - 3, cw * 0.24, 4);
+}
+function chDrawRad(g, x, y, cw, ch, now) {
+  var on = Math.floor(now / 260) % 2;
+  g.fillStyle = 'rgba(0,0,0,.15)'; g.fillRect(x - cw * 0.4 + 4, y + ch * 0.1, cw * 0.8, ch * 0.85);
+  g.fillStyle = '#111'; roundRect(g, x - cw * 0.1, y, cw * 0.2, ch * 0.3, cw * 0.1); g.fill(); roundRect(g, x - cw * 0.1, y + ch * 0.7, cw * 0.2, ch * 0.3, cw * 0.1); g.fill();
+  g.strokeStyle = '#1d4f9c'; g.lineWidth = 3; g.beginPath(); g.moveTo(x, y + ch * 0.2); g.lineTo(x, y + ch * 0.8); g.stroke();
+  g.strokeStyle = '#333'; g.beginPath(); g.moveTo(x - cw * 0.6, y + ch * 0.22); g.lineTo(x + cw * 0.6, y + ch * 0.22); g.stroke();
+  g.fillStyle = '#d7f24a'; roundRect(g, x - cw * 0.55, y + ch * 0.32, cw * 1.1, ch * 0.3, cw * 0.3); g.fill();
+  g.strokeStyle = '#d7f24a'; g.lineWidth = 4; g.beginPath(); g.moveTo(x - cw * 0.45, y + ch * 0.38); g.lineTo(x - cw * 0.55, y + ch * 0.23); g.moveTo(x + cw * 0.45, y + ch * 0.38); g.lineTo(x + cw * 0.55, y + ch * 0.23); g.stroke();
+  g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y + ch * 0.4, cw * 0.36, 0, 7); g.fill(); g.fillStyle = '#1d4f9c'; g.fillRect(x - cw * 0.07, y + ch * 0.3, cw * 0.14, ch * 0.2);
+  g.fillStyle = on ? '#3d8bff' : '#9cc3ff'; g.beginPath(); g.arc(x, y + ch * 0.86, cw * 0.14, 0, 7); g.fill();
+}
+function chDrawHeli(g, x, y, cw, ch, now) {
+  var on = Math.floor(now / 220) % 2, a = now / 60;
+  g.fillStyle = 'rgba(0,0,0,.14)'; g.beginPath(); g.ellipse ? g.ellipse(x + 14, y + ch * 0.55 + 12, cw * 0.5, ch * 0.4, 0, 0, 7) : g.arc(x + 14, y + ch * 0.55, cw * 0.45, 0, 7); g.fill();
+  g.fillStyle = '#f4f6f8'; g.fillRect(x - cw * 0.08, y + ch * 0.55, cw * 0.16, ch * 0.42);
+  g.fillStyle = '#1d4f9c'; g.fillRect(x - cw * 0.3, y + ch * 0.9, cw * 0.6, ch * 0.06);
+  g.fillStyle = '#f4f6f8'; g.beginPath(); g.ellipse ? g.ellipse(x, y + ch * 0.35, cw * 0.45, ch * 0.32, 0, 0, 7) : g.arc(x, y + ch * 0.35, cw * 0.45, 0, 7); g.fill();
+  g.fillStyle = '#1d4f9c'; g.fillRect(x - cw * 0.45, y + ch * 0.42, cw * 0.9, ch * 0.07);
+  g.fillStyle = '#26303d'; g.beginPath(); g.ellipse ? g.ellipse(x, y + ch * 0.17, cw * 0.3, ch * 0.12, 0, 0, 7) : g.arc(x, y + ch * 0.17, cw * 0.3, 0, 7); g.fill();
+  g.fillStyle = on ? '#3d8bff' : '#9cc3ff'; g.beginPath(); g.arc(x - cw * 0.25, y + ch * 0.55, 4, 0, 7); g.fill();
+  g.fillStyle = on ? '#9cc3ff' : '#3d8bff'; g.beginPath(); g.arc(x + cw * 0.25, y + ch * 0.55, 4, 0, 7); g.fill();
+  g.strokeStyle = 'rgba(40,40,40,.75)'; g.lineWidth = 4; g.lineCap = 'round'; var R = cw * 0.95, cy = y + ch * 0.35;
+  g.beginPath(); g.moveTo(x - Math.cos(a) * R, cy - Math.sin(a) * R); g.lineTo(x + Math.cos(a) * R, cy + Math.sin(a) * R);
+  g.moveTo(x - Math.cos(a + 1.57) * R, cy - Math.sin(a + 1.57) * R); g.lineTo(x + Math.cos(a + 1.57) * R, cy + Math.sin(a + 1.57) * R); g.stroke(); g.lineCap = 'butt';
+  g.fillStyle = '#333'; g.beginPath(); g.arc(x, cy, 4, 0, 7); g.fill();
 }
 function chDrawCar(g, x, y, cw, ch, now) {
   var l = x - cw / 2;
@@ -1370,16 +1545,31 @@ function chEnd(won) {
     $('chEndTitle').textContent = 'Erwischt!';
     $('chEndText').innerHTML = 'Rudi gibt alle Kekse zurück: <em>„Entschuldigung! Die haben so lecker gerochen.“</em> Zur Wiedergutmachung ' + CH_HELP[(S.best.caught - 1) % CH_HELP.length] + '.' +
       '<br><br>Du hast ihn nach <b>' + secs + ' Sekunden</b> eingeholt' + (rec && S.best.caught > 1 ? ', so schnell wie noch nie!' : '.') + ' Rudi wurde schon <b>' + S.best.caught + '-mal</b> erwischt.';
-    celebrate();
+    celebrate(); chAgainBtn();
   } else {
     save();
     $('chEndPic').innerHTML = rudiSVG('cheeky');
     $('chEndTitle').textContent = 'Rudi ist entwischt!';
+    chAgainBtn();
     $('chEndText').innerHTML = 'Er war schnell, aber er hat Krümel verloren. Sammle beim nächsten Mal ' + c.need + ' Krümel, dann holst du ihn ein!';
   }
   setTimeout(function () { checkBadges(); }, 400);
 }
 
+function chEndRekord() {
+  var c = CH, n = c.crumbs; stopGame();
+  $('chWrap').hidden = true; $('chEnd').hidden = false;
+  var old = S.best.crumbs || 0, rec = n > old; if (rec) S.best.crumbs = n;
+  save();
+  $('chEndPic').innerHTML = rudiSVG('cheeky');
+  $('chEndTitle').textContent = n + ' Krümel gesammelt!';
+  $('chEndText').innerHTML = (rec && old ? '<b>Neuer Rekord!</b> Vorher waren es ' + old + ' Krümel. ' : rec ? '<b>Dein erster Rekord!</b> ' : old ? 'Dein Rekord sind <b>' + old + ' Krümel</b>. ' : '') +
+    'Rudi winkt dir zu und ruft: <em>„Die Krümel darfst du behalten. Probier es gleich nochmal!“</em>';
+  if (rec && n > 0) celebrate();
+  chAgainBtn();
+  setTimeout(function () { checkBadges(); }, 400);
+}
+function chAgainBtn() { $('chAgain').hidden = stars() < COST; }
 function stopGame() { if (CH) { cancelAnimationFrame(CH.raf); CH = null; } }
 
 /* ---------- Maskottchen: Eule Olaf ---------- */
@@ -1456,7 +1646,8 @@ var BADGES = [
   { id: 'architekt', name: 'Architekt', desc: 'Vier Bauwerke gebaut', col: '#5e3c26', sym: '♜', test: function () { return buildPos().idx >= 4; } },
   { id: 'stadtplaner', name: 'Stadtplaner', desc: 'Alle acht Bauwerke gebaut', col: '#d68a1e', sym: '8', test: function () { return buildPos().idx >= 8; } },
   { id: 'polizei', name: 'Polizeiabzeichen', desc: 'Waschbär Rudi bei der Keks-Jagd eingeholt', col: '#1d4f9c', sym: '★', test: function () { return (S.best.caught || 0) >= 1; } },
-  { id: 'spuernase', name: 'Spürnase', desc: 'Rudi 5-mal erwischt', col: '#2f8f8f', sym: '5', test: function () { return (S.best.caught || 0) >= 5; } }
+  { id: 'spuernase', name: 'Spürnase', desc: 'Rudi 5-mal erwischt', col: '#2f8f8f', sym: '5', test: function () { return (S.best.caught || 0) >= 5; } },
+  { id: 'kruemelprofi', name: 'Krümel-Profi', desc: '40 Krümel beim Krümel-Rekord', col: '#a8740f', sym: '40', test: function () { return (S.best.crumbs || 0) >= 40; } }
 ];
 function badgeSVG(b) {
   var fs = b.sym.length > 2 ? 18 : b.sym.length === 2 ? 22 : 28;
@@ -2303,7 +2494,7 @@ function renderParents() {
   $('rewardNow').innerHTML = rw ? 'Aktuell: <strong>' + esc(rw.text) + '</strong> bei ' + rw.goal + ' Sternen · ' + rw.have + ' verdient' + (rw.done ? ' · <strong>erreicht!</strong>' : '') : 'Noch keine Belohnung festgelegt.';
   $('rewDone').hidden = !rw;
   $('nameIn').value = S.name; $('codeIn').value = SYNC.code; $('silbenIn').checked = S.silben !== false; showSync();
-  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Rudi erwischt</span><strong>' + (S.best.caught || 0) + '×</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Schnellste Keks-Jagd</span><strong>' + (S.best.chase ? S.best.chase + ' s' : '–') + '</strong></div></div></div>';
+  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Rudi erwischt</span><strong>' + (S.best.caught || 0) + '×</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Schnellste Keks-Jagd</span><strong>' + (S.best.chase ? S.best.chase + ' s' : '–') + '</strong></div><div><span>Krümel-Rekord</span><strong>' + (S.best.crumbs || '–') + '</strong></div></div></div>';
   Object.keys(THEMES).forEach(function (k) {
     var T = THEMES[k], hist = S.history.filter(function (x) { return x.theme === k; }), last5 = hist.slice(-5);
     var rate = last5.length ? Math.round(last5.reduce(function (s, x) { return s + x.score; }, 0) / (last5.length * ROUND) * 100) + ' %' : '–';
