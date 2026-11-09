@@ -265,6 +265,26 @@ body.testing .wrap { padding-bottom: 90px; }
 .zone.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .zone .isl, .photos .isl { border-width: 1px; border-radius: 6px; pointer-events: none; }
 .zone .animal { animation: none; }
+.isl.z-dorf::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath d='M0 100V65q70-35 150-5t130-10t120 15v35z' fill='%239bd394'/%3E%3Cg fill='%23c9b79c'%3E%3Crect x='60' y='52' width='22' height='18'/%3E%3Crect x='250' y='48' width='26' height='20'/%3E%3Crect x='320' y='58' width='18' height='14'/%3E%3C/g%3E%3Cg fill='%23b5735a'%3E%3Cpath d='M56 54l15-14 15 14zM246 50l17-15 17 15zM317 60l12-11 12 11z'/%3E%3C/g%3E%3Crect x='160' y='30' width='12' height='40' fill='%23d8cbb4'/%3E%3Cpath d='M157 32l9-24 9 24z' fill='%238aa4c8'/%3E%3C/svg%3E"); }
+.isl.z-hafen::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 100' preserveAspectRatio='none'%3E%3Cpath d='M0 100V88h400v12z' fill='%237cc2ea'/%3E%3Cpath d='M40 88V20h6v68zM46 22h60v5H46z' fill='%23c9a24a'/%3E%3Cpath d='M100 27v20' stroke='%238e969f' stroke-width='2'/%3E%3Crect x='94' y='47' width='12' height='10' fill='%23d64541'/%3E%3Cpath d='M230 88l10-14h110l-14 14z' fill='%238e969f'/%3E%3Crect x='260' y='56' width='60' height='18' fill='%23c9ced6'/%3E%3Crect x='300' y='40' width='10' height='16' fill='%23d64541'/%3E%3Cpath d='M150 88l8-8h40l-6 8z' fill='%23b0bac6'/%3E%3Cpath d='M176 80V58l14 18z' fill='%23fff'/%3E%3C/svg%3E"); }
+@media (min-width: 720px) { .zones { grid-template-columns: repeat(4, 1fr); } }
+.c.has-bld { z-index: 1; }
+.bld { position: absolute; left: 0; bottom: 0; }
+.bld svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.isl.night .bld .wl { fill: #ffd96b; }
+.spin { animation: spin 18s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.animal.still { animation: none; }
+.animal.veh { animation: rumble 1.2s ease-in-out infinite; inset: 4% 0 0; }
+@keyframes rumble { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3%); } }
+.zone .bld .spin, .photos .bld .spin, .mat .spin { animation: none; }
+.t-ø { background: linear-gradient(#fff 0 0) 25% 55% / 50% 7% no-repeat, linear-gradient(#4a525e 0 18%, #3b4252 18%); box-shadow: inset 0 3px 0 #8e969f; }
+.t-û { background: linear-gradient(90deg, #c9ced6 0 46%, #a3abb5 46% 50%, #c9ced6 50% 96%, #a3abb5 96%), #c9ced6; box-shadow: inset 0 3px 0 #9aa3ad; }
+.t-ù { background: repeating-linear-gradient(90deg, #fff 0 16%, #4a525e 16% 33%); box-shadow: inset 0 3px 0 #8e969f; }
+.t-ú { background: linear-gradient(#b5bcc4 0 0) 0 14% / 100% 9% no-repeat, repeating-linear-gradient(90deg, #7a4d30 0 18%, transparent 18% 50%) 0 24% / 100% 16% no-repeat, #a89a82; }
+.t-ý { background: linear-gradient(#b5bcc4 0 0) 0 14% / 100% 9% no-repeat, #4a525e; box-shadow: inset 0 -3px 0 #ffd23f; }
+.sw.t-ø, .sw.t-û, .sw.t-ù, .sw.t-ú, .sw.t-ý { border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { .spin, .animal.veh { animation: none; } }
 .m-0, .m-T, .m-U, .m-V { background-size: 100% 100%; background-repeat: no-repeat; }
 .m-0 { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cellipse cx='20' cy='35' rx='17' ry='5' fill='%239aa3ad'/%3E%3Cellipse cx='20' cy='33' rx='15' ry='3.5' fill='%235ab8ec'/%3E%3Crect x='17' y='18' width='6' height='15' fill='%23b5bcc4'/%3E%3Cellipse cx='20' cy='18' rx='9' ry='2.5' fill='%239aa3ad'/%3E%3Cpath d='M20 16q-2-10-10-6q5 1 7 9M20 16q2-10 10-6q-5 1-7 9M20 16v-12' stroke='%238fd3f7' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='20' cy='4' r='2' fill='%23c6ecff'/%3E%3C/svg%3E"); }
 .m-T { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='4' y='18' width='32' height='20' rx='2' fill='%239c6a39'/%3E%3Cpath d='M4 18q0-12 16-12t16 12z' fill='%23b57d47'/%3E%3Cpath d='M4 18h32M4 30h32M12 6v32M28 6v32' stroke='%23ffd23f' stroke-width='2.5'/%3E%3Crect x='17' y='16' width='6' height='7' rx='1' fill='%23ffd23f'/%3E%3Ccircle cx='20' cy='19.5' r='1.3' fill='%235e3c26'/%3E%3Ccircle cx='9' cy='4' r='1.6' fill='%23fff6c2'/%3E%3Ccircle cx='33' cy='8' r='1.3' fill='%23fff6c2'/%3E%3C/svg%3E"); }
@@ -359,7 +379,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <button class="topic play" id="playIsland">
       <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M0 46L16 22L30 40L42 26L64 50V64H0z" fill="#9aa7b8"/><path d="M12 28L16 22L20 28L16 26zM38 32L42 26L46 31L42 29z" fill="#fff"/><rect x="0" y="48" width="64" height="16" rx="4" fill="#5cc15f"/><path d="M40 64v-6q12-6 24 0v6z" fill="#3fa7e0"/><rect x="14" y="34" width="20" height="16" fill="#b07a45"/><path d="M10 36L24 20L38 36z" fill="#c4302b"/><rect x="21" y="40" width="7" height="10" fill="#6b4329"/><path d="M50 50L56 30L62 50z" fill="#1f7a45"/><rect x="55" y="48" width="2" height="4" fill="#7a4d30"/></svg>
       <h3>Olafs Land</h3>
-      <p class="level">Bau, was du willst: Insel, Bauernhof, Wald, Berge, Wüste und Stadt</p>
+      <p class="level">Bau, was du willst: Häuser, Straßen, Tiere und mehr in acht Gebieten</p>
       <span class="badge" id="islandBadge">Kreativ bauen</span>
     </button>
   </div>
@@ -1407,7 +1427,7 @@ $('toBadges').addEventListener('click', function () { go('badges'); renderBadges
 // Der Speicherstand heißt weiter S.island: g ist das Gebiet „Insel“ (wie früher), z hält die übrigen Gebiete.
 // So laufen alte Spielstände und der Abgleich mit der Synology unverändert weiter.
 var IW = 16, IROWS = 8, ROOFS = 'dijymx';
-var LCATS = [{ k: 'bau', name: 'Bausteine' }, { k: 'dach', name: 'Dächer' }, { k: 'haus', name: 'Haus & Garten' }, { k: 'natur', name: 'Natur' }, { k: 'tier', name: 'Tiere' }, { k: 'schatz', name: 'Schätze ✨' }];
+var LCATS = [{ k: 'bau', name: 'Bausteine' }, { k: 'dach', name: 'Dächer' }, { k: 'haus', name: 'Haus & Garten' }, { k: 'natur', name: 'Natur' }, { k: 'tier', name: 'Tiere' }, { k: 'gebaeude', name: 'Gebäude' }, { k: 'verkehr', name: 'Straße & Verkehr' }, { k: 'schatz', name: 'Schätze ✨' }];
 var ANIM = {
   M: { name: 'Hase', art: 'Ein Hase', svg: '<svg viewBox="0 0 40 40"><ellipse cx="20" cy="30" rx="11" ry="9" fill="#d9d2c5"/><circle cx="20" cy="19" r="7" fill="#e8e2d6"/><ellipse cx="16" cy="8" rx="2.5" ry="7" fill="#e8e2d6"/><ellipse cx="24" cy="8" rx="2.5" ry="7" fill="#e8e2d6"/><ellipse cx="16" cy="8" rx="1.2" ry="5" fill="#f2b8c6"/><ellipse cx="24" cy="8" rx="1.2" ry="5" fill="#f2b8c6"/><circle cx="17.5" cy="18" r="1.3" fill="#1f2a44"/><circle cx="22.5" cy="18" r="1.3" fill="#1f2a44"/><circle cx="20" cy="21" r="1.2" fill="#e57a95"/></svg>' },
   N: { name: 'Katze', art: 'Eine Katze', laut: 'Miau', svg: '<svg viewBox="0 0 40 40"><path d="M30 30q8-2 6-12" stroke="#f08a24" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="20" cy="31" rx="10" ry="8" fill="#f08a24"/><circle cx="20" cy="19" r="8" fill="#f5a04a"/><path d="M13 15l1-8 5 5zM27 15l-1-8-5 5z" fill="#f5a04a"/><circle cx="17" cy="18" r="1.4" fill="#1f2a44"/><circle cx="23" cy="18" r="1.4" fill="#1f2a44"/><path d="M18.5 21.5l1.5 1 1.5-1" stroke="#1f2a44" stroke-width="1" fill="none"/></svg>' },
@@ -1429,6 +1449,45 @@ var ANIM = {
   L: { name: 'Schmetterling', art: 'Ein Schmetterling', svg: '<svg viewBox="0 0 40 40"><path d="M20 14q-3-8-6-10M20 14q3-8 6-10" stroke="#1f2a44" stroke-width="1.2" fill="none"/><ellipse cx="12" cy="17" rx="8" ry="7" fill="#a77ee8"/><ellipse cx="28" cy="17" rx="8" ry="7" fill="#a77ee8"/><ellipse cx="13" cy="28" rx="6" ry="5.5" fill="#ef5b8a"/><ellipse cx="27" cy="28" rx="6" ry="5.5" fill="#ef5b8a"/><circle cx="11" cy="17" r="2.6" fill="#ffd23f"/><circle cx="29" cy="17" r="2.6" fill="#ffd23f"/><circle cx="13" cy="28" r="1.8" fill="#fff"/><circle cx="27" cy="28" r="1.8" fill="#fff"/><rect x="18.5" y="13" width="3" height="22" rx="1.5" fill="#1f2a44"/></svg>' },
   S: { name: 'Einhorn', art: 'Ein Einhorn', svg: '<svg viewBox="0 0 40 40"><path d="M34 22q6 4 3 12" stroke="#a77ee8" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="15" y="28" width="3.5" height="12" fill="#f2eef8"/><rect x="20" y="29" width="3.5" height="11" fill="#e4dcf0"/><rect x="28" y="28" width="3.5" height="12" fill="#f2eef8"/><ellipse cx="24" cy="25" rx="11" ry="7" fill="#fff" stroke="#d9d0ea"/><path d="M12 25l3-14 8 5-4 10z" fill="#fff"/><ellipse cx="9" cy="12" rx="4.5" ry="8" fill="#fff" stroke="#d9d0ea" transform="rotate(-35 9 12)"/><path d="M11 6l3-6 1 7z" fill="#ffd23f"/><path d="M15 5q3 2 4 6" stroke="#ef5b8a" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M16 8q4 3 5 8" stroke="#f7b733" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M17 12q4 3 5 8" stroke="#3fa7e0" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="10" cy="10" r="1.3" fill="#1f2a44"/><circle cx="5" cy="16" r="1" fill="#f2a0b4"/></svg>' }
 };
+// Fertige Gebäude: belegen mehrere Felder. Im Raster steht unten links das Gebäude-Zeichen, die übrigen Felder sind '#'.
+var BLD = {
+  'ä': { name: 'Haus', w: 2, h: 2, svg: '<rect x="54" y="8" width="9" height="18" fill="#8f3220"/><rect x="6" y="34" width="68" height="46" fill="#f4e1b8"/><path d="M0 38L40 4L80 38z" fill="#c4302b"/><path d="M14 30h52M24 21h32" stroke="#8f2420" stroke-width="2"/><rect x="33" y="52" width="14" height="28" rx="2" fill="#8a5a3b"/><circle cx="44" cy="67" r="1.5" fill="#ffd23f"/><rect class="wl" x="12" y="45" width="15" height="13" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"/><rect class="wl" x="53" y="45" width="15" height="13" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"/>' },
+  'ç': { name: 'Scheune', w: 3, h: 2, svg: '<rect x="8" y="30" width="104" height="50" fill="#c4302b"/><path d="M0 34L28 6H92L120 34z" fill="#8f2420"/><rect x="42" y="42" width="36" height="38" fill="#f4f4f4"/><path d="M42 42L78 80M78 42L42 80" stroke="#c4302b" stroke-width="3"/><rect x="42" y="42" width="36" height="38" fill="none" stroke="#fff" stroke-width="3"/><rect class="wl" x="52" y="12" width="16" height="13" fill="#f0cf5a" stroke="#fff" stroke-width="2"/><path d="M14 40h20M86 40h20M14 52h20M86 52h20M14 64h20M86 64h20" stroke="#9e2f2c" stroke-width="2"/>' },
+  'è': { name: 'Iglu', w: 2, h: 1, svg: '<path d="M4 40A36 36 0 0 1 76 40z" fill="#fff" stroke="#b8c4d0" stroke-width="1.5"/><path d="M10 28h60M19 16h42M28 40v-12M52 40v-12M40 28v-12M30 16l-3 12M50 16l3 12" stroke="#c9d6e3" stroke-width="1.5"/><path d="M28 40a12 12 0 0 1 24 0z" fill="#5b6782"/>' },
+  'ö': { name: 'Laden', w: 3, h: 2, svg: '<rect x="4" y="24" width="112" height="56" fill="#fff" stroke="#cfd9e6" stroke-width="2"/><rect x="28" y="2" width="64" height="18" rx="4" fill="#2f6fd6"/><text x="60" y="15.5" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="12" fill="#fff">LADEN</text><g fill="#d64541"><rect x="4" y="24" width="16" height="12"/><rect x="36" y="24" width="16" height="12"/><rect x="68" y="24" width="16" height="12"/><rect x="100" y="24" width="16" height="12"/></g><rect class="wl" x="12" y="44" width="42" height="26" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"/><circle cx="24" cy="62" r="5" fill="#d9a066"/><circle cx="38" cy="63" r="4" fill="#f08a24"/><rect x="66" y="44" width="18" height="36" fill="#8a5a3b"/><rect class="wl" x="92" y="44" width="18" height="26" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"/>' },
+  'ã': { name: 'Leuchtturm', w: 1, h: 4, svg: '<path d="M10 160H30L26 40H14z" fill="#fff" stroke="#c9ced6"/><path d="M13.3 60H26.7L27.3 80H12.7zM12 100H28L28.7 120H11.3zM10.7 140H29.3L30 160H10z" fill="#d64541"/><rect x="9" y="38" width="22" height="4" fill="#3b4252"/><rect class="wl" x="12" y="24" width="16" height="14" fill="#fff6c2" stroke="#3b4252" stroke-width="1.5"/><path d="M10 26L20 8L30 26z" fill="#d64541"/><rect x="16" y="146" width="8" height="14" fill="#6b4329"/>' },
+  'é': { name: 'Windmühle', w: 2, h: 4, svg: '<path d="M22 160H58L52 62H28z" fill="#f6f1e7" stroke="#d6cdbb"/><path d="M24 64L40 44L56 64z" fill="#8f3220"/><rect x="34" y="136" width="12" height="24" rx="5" fill="#8a5a3b"/><rect class="wl" x="35" y="92" width="10" height="12" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="1.5"/><g class="spin" style="transform-origin:40px 54px"><rect x="37" y="16" width="6" height="38" fill="#c98b4a"/><rect x="37" y="54" width="6" height="38" fill="#c98b4a"/><rect x="2" y="51" width="38" height="6" fill="#c98b4a"/><rect x="40" y="51" width="38" height="6" fill="#c98b4a"/><rect x="43" y="18" width="9" height="32" fill="#f4ead8" opacity=".85"/><rect x="28" y="58" width="9" height="32" fill="#f4ead8" opacity=".85"/><rect x="6" y="42" width="32" height="9" fill="#f4ead8" opacity=".85"/><rect x="42" y="57" width="32" height="9" fill="#f4ead8" opacity=".85"/></g><circle cx="40" cy="54" r="4" fill="#5e3c26"/>' },
+  'ü': { name: 'Schule', w: 4, h: 3, svg: '<rect x="10" y="42" width="140" height="78" fill="#f0b84a"/><rect x="64" y="14" width="32" height="34" fill="#e0a43a"/><path d="M60 16L80 0L100 16z" fill="#c4302b"/><circle cx="80" cy="30" r="9" fill="#fff" stroke="#3b4252" stroke-width="1.5"/><path d="M80 30V24M80 30h5" stroke="#3b4252" stroke-width="1.6"/><rect x="4" y="38" width="152" height="8" fill="#c4302b"/><g class="wl" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"><rect x="20" y="54" width="18" height="18"/><rect x="46" y="54" width="18" height="18"/><rect x="96" y="54" width="18" height="18"/><rect x="122" y="54" width="18" height="18"/><rect x="20" y="84" width="18" height="18"/><rect x="46" y="84" width="18" height="18"/><rect x="96" y="84" width="18" height="18"/><rect x="122" y="84" width="18" height="18"/></g><rect x="68" y="84" width="24" height="36" rx="3" fill="#8a5a3b"/><rect x="66" y="58" width="28" height="12" rx="2" fill="#fff"/><text x="80" y="67.5" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="8" fill="#1f2a44">SCHULE</text>' },
+  'ß': { name: 'Feuerwehr', w: 3, h: 3, svg: '<rect x="86" y="4" width="26" height="30" fill="#c4302b"/><rect class="wl" x="93" y="10" width="12" height="12" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="1.5"/><rect x="4" y="30" width="112" height="90" fill="#d64541"/><rect x="0" y="24" width="120" height="10" fill="#9e2f2c"/><g class="wl" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="2"><rect x="16" y="42" width="16" height="14"/><rect x="52" y="42" width="16" height="14"/><rect x="88" y="42" width="16" height="14"/></g><rect x="14" y="60" width="92" height="12" rx="2" fill="#fff"/><text x="60" y="69.5" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="9" fill="#d64541">FEUERWEHR</text><g fill="#f4f4f4" stroke="#b9b9b9"><rect x="12" y="78" width="44" height="42"/><rect x="64" y="78" width="44" height="42"/></g><path d="M12 88h44M12 98h44M12 108h44M64 88h44M64 98h44M64 108h44" stroke="#c9c9c9" stroke-width="1.5"/>' },
+  'à': { name: 'Bahnhof', w: 4, h: 2, svg: '<rect x="8" y="28" width="144" height="52" fill="#e8c67f"/><path d="M0 32L20 10H140L160 32z" fill="#2f6fd6"/><circle cx="80" cy="20" r="8" fill="#fff" stroke="#1d4b99" stroke-width="1.5"/><path d="M80 20V15M80 20h4" stroke="#1f2a44" stroke-width="1.5"/><rect x="50" y="34" width="60" height="12" rx="2" fill="#fff"/><text x="80" y="43.5" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="9" fill="#1d4b99">BAHNHOF</text><g fill="#6b4329"><path d="M20 80V58a9 9 0 0 1 18 0V80z"/><path d="M71 80V58a9 9 0 0 1 18 0V80z"/><path d="M122 80V58a9 9 0 0 1 18 0V80z"/></g><g class="wl" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="1.5"><rect x="46" y="54" width="14" height="14"/><rect x="100" y="54" width="14" height="14"/></g>' },
+  'á': { name: 'Kirche', w: 2, h: 4, svg: '<rect x="30" y="84" width="46" height="76" fill="#f6f1e7" stroke="#d6cdbb"/><path d="M26 86L53 60L80 86z" fill="#8f3220"/><rect x="4" y="44" width="30" height="116" fill="#ece4d4" stroke="#d6cdbb"/><path d="M2 46L19 2L36 46z" fill="#2f6fd6"/><circle cx="19" cy="4" r="2.5" fill="#ffd23f"/><circle cx="19" cy="62" r="7" fill="#fff" stroke="#3b4252" stroke-width="1.2"/><path d="M19 62V58M19 62h3" stroke="#3b4252" stroke-width="1.2"/><path d="M11 160V140a8 8 0 0 1 16 0V160z" fill="#8a5a3b"/><circle class="wl" cx="53" cy="100" r="8" fill="#a77ee8" stroke="#7d8fa0" stroke-width="1.5"/><g class="wl" fill="#a8dcf5" stroke="#7d8fa0" stroke-width="1.5"><path d="M40 146V124a5 5 0 0 1 10 0V146z"/><path d="M57 146V124a5 5 0 0 1 10 0V146z"/><path d="M14 104V90a5 5 0 0 1 10 0V104z"/></g>' },
+  'â': { name: 'Hochhaus', w: 2, h: 5, svg: '<rect x="22" y="2" width="36" height="14" fill="#6b737c"/><rect x="38" y="0" width="3" height="4" fill="#d64541"/><rect x="6" y="14" width="68" height="186" fill="#9aa7b8"/><g class="wl" fill="#a8dcf5" stroke="#6b7a8c" stroke-width="1.5"><rect x="14" y="24" width="13" height="14"/><rect x="34" y="24" width="13" height="14"/><rect x="54" y="24" width="13" height="14"/><rect x="14" y="46" width="13" height="14"/><rect x="34" y="46" width="13" height="14"/><rect x="54" y="46" width="13" height="14"/><rect x="14" y="68" width="13" height="14"/><rect x="34" y="68" width="13" height="14"/><rect x="54" y="68" width="13" height="14"/><rect x="14" y="90" width="13" height="14"/><rect x="34" y="90" width="13" height="14"/><rect x="54" y="90" width="13" height="14"/><rect x="14" y="112" width="13" height="14"/><rect x="34" y="112" width="13" height="14"/><rect x="54" y="112" width="13" height="14"/><rect x="14" y="134" width="13" height="14"/><rect x="34" y="134" width="13" height="14"/><rect x="54" y="134" width="13" height="14"/><rect x="14" y="156" width="13" height="14"/><rect x="54" y="156" width="13" height="14"/></g><rect x="28" y="172" width="24" height="28" fill="#3b4252"/><rect x="31" y="175" width="18" height="25" fill="#a8dcf5" opacity=".6"/>' },
+  'å': { name: 'Riesenrad', w: 3, h: 3, svg: '<path d="M60 56L30 118M60 56L90 118" stroke="#3b4252" stroke-width="5"/><rect x="22" y="114" width="76" height="6" rx="2" fill="#3b4252"/><g class="spin" style="transform-origin:60px 56px"><circle cx="60" cy="56" r="46" fill="none" stroke="#2f6fd6" stroke-width="4"/><path d="M60 10V102M14 56H106M27.5 23.5L92.5 88.5M92.5 23.5L27.5 88.5" stroke="#6c9be6" stroke-width="2"/><g><rect x="54" y="4" width="12" height="10" rx="3" fill="#d64541"/><rect x="54" y="98" width="12" height="10" rx="3" fill="#ffd23f"/><rect x="8" y="51" width="12" height="10" rx="3" fill="#2f9e5b"/><rect x="100" y="51" width="12" height="10" rx="3" fill="#a77ee8"/><rect x="21" y="18" width="12" height="10" rx="3" fill="#f08a24"/><rect x="87" y="18" width="12" height="10" rx="3" fill="#3fa7e0"/><rect x="21" y="84" width="12" height="10" rx="3" fill="#ef5b8a"/><rect x="87" y="84" width="12" height="10" rx="3" fill="#59c27a"/></g></g><circle cx="60" cy="56" r="6" fill="#ffd23f" stroke="#3b4252" stroke-width="2"/>' },
+  'æ': { name: 'Burg', w: 4, h: 4, svg: '<rect x="20" y="76" width="120" height="84" fill="#9aa3ad"/><g fill="#9aa3ad"><rect x="40" y="66" width="14" height="12"/><rect x="66" y="66" width="14" height="12"/><rect x="92" y="66" width="14" height="12"/></g><rect x="0" y="44" width="38" height="116" fill="#8e969f"/><rect x="122" y="44" width="38" height="116" fill="#8e969f"/><path d="M-2 46L19 6L40 46zM120 46L141 6L162 46z" fill="#2f6fd6"/><path d="M19 6V-6M141 6V-6" stroke="#5e3c26" stroke-width="2"/><path d="M19 0h12l-4 4 4 4H19zM141 0h12l-4 4 4 4H141z" fill="#ffd23f"/><path d="M60 160V122a20 20 0 0 1 40 0V160z" fill="#6b4329"/><path d="M60 128h40M60 138h40M60 148h40" stroke="#4d2f1c" stroke-width="2"/><g class="wl" fill="#ffd96b" stroke="#6b737c" stroke-width="1.5"><path d="M13 90V74a6 6 0 0 1 12 0V90z"/><path d="M135 90V74a6 6 0 0 1 12 0V90z"/><path d="M38 108V96a5 5 0 0 1 10 0V108z"/><path d="M112 108V96a5 5 0 0 1 10 0V108z"/></g><path d="M20 100h18M122 120h18M20 140h18M138 100h-10" stroke="#7d858e" stroke-width="1.5"/>' }
+};
+// Fahrzeuge und Straßenmöbel (ein Feld), werden wie Tiere als kleines Bild gezeigt.
+var SPR = {
+  'W': { name: 'Auto', art: 'Das Auto', veh: 1, svg: '<svg viewBox="0 0 40 40"><path d="M3 33v-9q0-4 4-4h5l6-7h10l6 7q3 0 3 4v9z" fill="#d64541"/><path d="M14 20l5-5h4v5zM25 20v-5h3l4 5z" fill="#a8dcf5"/><rect x="3" y="26" width="4" height="3" fill="#ffd23f"/><circle cx="11" cy="33" r="5" fill="#1f2a44"/><circle cx="11" cy="33" r="2" fill="#c9ced6"/><circle cx="29" cy="33" r="5" fill="#1f2a44"/><circle cx="29" cy="33" r="2" fill="#c9ced6"/></svg>' },
+  'ï': { name: 'Polizeiauto', art: 'Das Polizeiauto', veh: 1, svg: '<svg viewBox="0 0 40 40"><rect x="17" y="9" width="6" height="4" rx="1" fill="#2f6fd6"/><path d="M3 33v-9q0-4 4-4h5l6-7h10l6 7q3 0 3 4v9z" fill="#fff" stroke="#c9ced6"/><rect x="3" y="25" width="34" height="4" fill="#2f6fd6"/><path d="M14 20l5-5h4v5zM25 20v-5h3l4 5z" fill="#a8dcf5"/><circle cx="11" cy="33" r="5" fill="#1f2a44"/><circle cx="11" cy="33" r="2" fill="#c9ced6"/><circle cx="29" cy="33" r="5" fill="#1f2a44"/><circle cx="29" cy="33" r="2" fill="#c9ced6"/></svg>' },
+  'X': { name: 'Bus', art: 'Der Bus', veh: 1, svg: '<svg viewBox="0 0 40 40"><rect x="1" y="10" width="38" height="23" rx="4" fill="#ffd23f"/><g fill="#a8dcf5"><rect x="4" y="14" width="7" height="8" rx="1"/><rect x="13" y="14" width="7" height="8" rx="1"/><rect x="22" y="14" width="7" height="8" rx="1"/><rect x="31" y="14" width="6" height="12" rx="1"/></g><rect x="1" y="25" width="30" height="3" fill="#2f9e5b"/><circle cx="9" cy="33" r="4.5" fill="#1f2a44"/><circle cx="9" cy="33" r="1.8" fill="#c9ced6"/><circle cx="30" cy="33" r="4.5" fill="#1f2a44"/><circle cx="30" cy="33" r="1.8" fill="#c9ced6"/></svg>' },
+  'ñ': { name: 'Eiswagen', art: 'Der Eiswagen', veh: 1, svg: '<svg viewBox="0 0 40 40"><path d="M14 4l3 8h-6z" fill="#e0a43a"/><circle cx="14" cy="5" r="3.5" fill="#f2a0b4"/><rect x="2" y="12" width="26" height="21" rx="3" fill="#f6c3d2"/><rect x="5" y="16" width="18" height="8" rx="1" fill="#fff"/><path d="M28 18h5l4 6v9H28z" fill="#ef5b8a"/><rect x="30" y="20" width="4" height="4" fill="#a8dcf5"/><circle cx="10" cy="33" r="4.5" fill="#1f2a44"/><circle cx="31" cy="33" r="4.5" fill="#1f2a44"/></svg>' },
+  'Y': { name: 'Feuerwehrauto', art: 'Das Feuerwehrauto', veh: 1, svg: '<svg viewBox="0 0 40 40"><rect x="25" y="12" width="5" height="3" rx="1" fill="#3fa7e0"/><path d="M2 12h20" stroke="#c9ced6" stroke-width="2"/><path d="M4 9v6M9 9v6M14 9v6M19 9v6" stroke="#c9ced6" stroke-width="1.5"/><rect x="1" y="15" width="24" height="18" rx="2" fill="#d64541"/><path d="M25 15h7l6 8v10H25z" fill="#d64541"/><path d="M27 17h5l4 6h-9z" fill="#a8dcf5"/><rect x="4" y="22" width="18" height="2" fill="#fff"/><circle cx="9" cy="33" r="4.5" fill="#1f2a44"/><circle cx="31" cy="33" r="4.5" fill="#1f2a44"/></svg>' },
+  'Z': { name: 'Traktor', art: 'Der Traktor', veh: 1, svg: '<svg viewBox="0 0 40 40"><rect x="27" y="8" width="3" height="10" fill="#3b4252"/><path d="M4 30V18h18V8h4v22z" fill="#2f9e5b"/><path d="M22 18h14v12H22z" fill="#2f9e5b"/><rect x="7" y="11" width="13" height="8" fill="#a8dcf5" stroke="#1e6b3c" stroke-width="1.5"/><circle cx="12" cy="29" r="9" fill="#1f2a44"/><circle cx="12" cy="29" r="4" fill="#ffd23f"/><circle cx="32" cy="33" r="5" fill="#1f2a44"/><circle cx="32" cy="33" r="2" fill="#ffd23f"/></svg>' },
+  'ê': { name: 'Fahrrad', art: 'Das Fahrrad', veh: 1, svg: '<svg viewBox="0 0 40 40"><circle cx="10" cy="29" r="7" fill="none" stroke="#1f2a44" stroke-width="2.5"/><circle cx="30" cy="29" r="7" fill="none" stroke="#1f2a44" stroke-width="2.5"/><path d="M10 29l8-12h10l2 12M18 17l2 12h-10M28 17l-2-5h4M18 17l-2-4h-3" stroke="#2f6fd6" stroke-width="2.5" fill="none" stroke-linejoin="round"/></svg>' },
+  'ë': { name: 'Lok', art: 'Die Lok', veh: 1, svg: '<svg viewBox="0 0 40 40"><circle cx="10" cy="5" r="3" fill="#dde1e7"/><circle cx="6" cy="2" r="2" fill="#dde1e7"/><rect x="7" y="8" width="6" height="8" fill="#1f2a44"/><rect x="2" y="15" width="22" height="13" rx="3" fill="#2f9e5b"/><rect x="22" y="8" width="16" height="20" fill="#1e6b3c"/><rect x="26" y="11" width="9" height="7" fill="#a8dcf5"/><rect x="0" y="27" width="40" height="3" fill="#3b4252"/><circle cx="8" cy="33" r="4.5" fill="#d64541" stroke="#1f2a44" stroke-width="2"/><circle cx="20" cy="33" r="4.5" fill="#d64541" stroke="#1f2a44" stroke-width="2"/><circle cx="32" cy="33" r="4.5" fill="#d64541" stroke="#1f2a44" stroke-width="2"/></svg>' },
+  'ì': { name: 'Waggon', art: 'Der Waggon', veh: 1, svg: '<svg viewBox="0 0 40 40"><rect x="2" y="10" width="36" height="18" rx="2" fill="#2f6fd6"/><g fill="#a8dcf5"><rect x="6" y="13" width="7" height="7"/><rect x="16.5" y="13" width="7" height="7"/><rect x="27" y="13" width="7" height="7"/></g><rect x="0" y="27" width="40" height="3" fill="#3b4252"/><circle cx="10" cy="33" r="4" fill="#1f2a44"/><circle cx="30" cy="33" r="4" fill="#1f2a44"/></svg>' },
+  'í': { name: 'Boot', art: 'Das Boot', veh: 1, svg: '<svg viewBox="0 0 40 40"><path d="M20 4v24" stroke="#5e3c26" stroke-width="2"/><path d="M21 5l13 20H21z" fill="#fff" stroke="#c9ced6"/><path d="M19 9L8 25h11z" fill="#d64541"/><path d="M2 28h36l-6 9H8z" fill="#8a5a3b"/><path d="M5 31h30" stroke="#ffd23f" stroke-width="2"/></svg>' },
+  'î': { name: 'Heißluftballon', art: 'Der Heißluftballon', veh: 1, svg: '<svg viewBox="0 0 40 40"><path d="M20 2C8 2 4 10 4 16c0 8 10 14 12 18h8c2-4 12-10 12-18c0-6-4-14-16-14z" fill="#ef5b5b"/><path d="M20 2c-5 0-7 8-7 14s3 14 3 18M20 2c5 0 7 8 7 14s-3 14-3 18" fill="none" stroke="#ffd23f" stroke-width="3"/><path d="M4 16h32" stroke="#2f6fd6" stroke-width="2.5"/><path d="M16 34l1 2M24 34l-1 2" stroke="#5e3c26" stroke-width="1"/><rect x="15" y="35" width="10" height="5" rx="1" fill="#9c6a39"/></svg>' },
+  'ò': { name: 'Ampel', svg: '<svg viewBox="0 0 40 40"><rect x="18" y="20" width="4" height="20" fill="#3b4252"/><rect x="13" y="1" width="14" height="24" rx="3" fill="#1f2a44"/><circle cx="20" cy="6" r="3" fill="#ef5b5b"/><circle cx="20" cy="13" r="3" fill="#f7b733"/><circle cx="20" cy="20" r="3" fill="#59c27a"/></svg>' },
+  'ó': { name: 'Schild', svg: '<svg viewBox="0 0 40 40"><rect x="18" y="18" width="4" height="22" fill="#9aa3ad"/><circle cx="20" cy="12" r="10" fill="#fff" stroke="#d64541" stroke-width="3"/><text x="20" y="16" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="11" fill="#1f2a44">30</text></svg>' },
+  'ô': { name: 'Bushaltestelle', svg: '<svg viewBox="0 0 40 40"><rect x="8" y="10" width="3" height="30" fill="#9aa3ad"/><circle cx="9.5" cy="9" r="7" fill="#ffd23f" stroke="#2f9e5b" stroke-width="2"/><text x="9.5" y="12.5" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="9" fill="#2f9e5b">H</text><path d="M16 14h22v3H16z" fill="#3b4252"/><rect x="17" y="17" width="20" height="16" fill="#a8dcf5" opacity=".6"/><rect x="19" y="30" width="16" height="3" fill="#b57d47"/><path d="M21 33v7M33 33v7" stroke="#3b4252" stroke-width="2"/></svg>' },
+  'õ': { name: 'Schranke', svg: '<svg viewBox="0 0 40 40"><rect x="2" y="16" width="6" height="24" fill="#3b4252"/><rect x="5" y="17" width="35" height="5" fill="#fff" stroke="#c9ced6"/><g fill="#d64541"><rect x="9" y="17" width="6" height="5"/><rect x="21" y="17" width="6" height="5"/><rect x="33" y="17" width="6" height="5"/></g><circle cx="5" cy="12" r="3" fill="#ef5b5b"/></svg>' }
+};
+// Boden-Teile liegen auf der obersten Bodenreihe (eigene Ebene S.island.t), darüber kann man weiterbauen.
+var GROUND = { 'ø': 'Straße', 'û': 'Gehweg', 'ù': 'Zebrastreifen', 'ú': 'Schienen', 'ý': 'Bahnübergang' };
+function bldSVG(k) { var B = BLD[k]; return '<svg viewBox="0 0 ' + B.w * 40 + ' ' + B.h * 40 + '" overflow="visible">' + B.svg + '</svg>'; }
+function bldCells(k, anchor) { var B = BLD[k], r = Math.floor(anchor / IW), c = anchor % IW, out = []; for (var rr = r - B.h + 1; rr <= r; rr++) for (var cc = c; cc < c + B.w; cc++) out.push(rr * IW + cc); return out; }
+function bldAt(g, i) { for (var j = 0; j < g.length; j++) if (BLD[g[j]] && bldCells(g[j], j).indexOf(i) >= 0) return j; return -1; }
 var MATS = [
   { k: 'w', name: 'Holz', cat: 'bau' }, { k: 's', name: 'Stein', cat: 'bau' }, { k: 'z', name: 'Ziegel', cat: 'bau' }, { k: 'h', name: 'Stroh', cat: 'bau' },
   { k: 'c', name: 'Putz', cat: 'bau' }, { k: 'u', name: 'Sandstein', cat: 'bau' }, { k: 'e', name: 'Eisblock', cat: 'bau' }, { k: 'o', name: 'Gold', cat: 'bau' }, { k: 'g', name: 'Fenster', cat: 'bau' },
@@ -1439,10 +1498,16 @@ var MATS = [
 ];
 'ABCDEFGHIJKLMNOPQR'.split('').forEach(function (k) { MATS.push({ k: k, name: ANIM[k].name, cat: 'tier' }); });
 MATS.push({ k: '9', name: 'Diamant', cat: 'schatz' }, { k: '0', name: 'Springbrunnen', cat: 'schatz' }, { k: 'T', name: 'Schatztruhe', cat: 'schatz' }, { k: 'U', name: 'Regenbogen', cat: 'schatz' }, { k: 'S', name: 'Einhorn', cat: 'schatz' }, { k: 'V', name: 'Olaf-Statue', cat: 'schatz' });
+Object.keys(BLD).forEach(function (k) { MATS.push({ k: k, name: BLD[k].name, cat: 'gebaeude' }); });
+Object.keys(GROUND).forEach(function (k) { MATS.push({ k: k, name: GROUND[k], cat: 'verkehr', ground: true }); });
+Object.keys(SPR).forEach(function (k) { MATS.push({ k: k, name: SPR[k].name, cat: 'verkehr' }); });
 // Preise in Sternen pro Stück: Grundbausteine billig, Besonderes teurer, Schätze zum Sparen.
 var PRICE = { '9': 15, '0': 20, T: 20, U: 25, S: 30, V: 40, o: 10, x: 10, m: 10, B: 8, F: 8, H: 8, G: 8, J: 15, K: 15, R: 15 };
 'gtilkfvre48 36'.replace(/ /g, '').split('').forEach(function (k) { PRICE[k] = 3; });
 'ANMEPDCIOQL'.split('').forEach(function (k) { PRICE[k] = 5; });
+var PRICE2 = { 'ä': 8, 'è': 10, 'ç': 12, 'ö': 15, 'ã': 20, 'é': 20, 'ü': 25, 'ß': 25, 'à': 25, 'á': 25, 'â': 30, 'å': 40, 'æ': 50,
+  'ù': 2, 'ú': 2, 'ý': 3, 'ó': 2, 'ò': 3, 'ô': 3, 'õ': 3, 'ê': 5, W: 8, 'ì': 8, Z: 10, 'í': 10, X: 12, 'ï': 12, 'ñ': 12, Y: 15, 'ë': 15, 'î': 25 };
+for (var pk in PRICE2) PRICE[pk] = PRICE2[pk];
 MATS.forEach(function (m) { m.p = PRICE[m.k] || 1; });
 var ZONES = [
   { id: 'insel', name: 'Insel', terrain: ['WWSGGGGGGGGGGSWW', 'WWWEEEEEEEEEEWWW'], res: 'MNOPRQ', water: 'P', hi: 'Hier hat alles angefangen. Ein Haus mit Tür und Dach lockt Tiere an.' },
@@ -1450,9 +1515,11 @@ var ZONES = [
   { id: 'wald', name: 'Wald', terrain: ['DDDDDDDDDDDDDDDD', 'EEEEEEEEEEEEEEEE'], res: 'GHQOML', water: 'I', hi: 'Im Wald leben Fuchs, Reh und Eichhörnchen. Ein Teich lockt einen Frosch an.' },
   { id: 'berg', name: 'Schneeberge', terrain: ['XXXXXXXXXXXXXXXX', 'KKKKKKKKKKKKKKKK'], res: 'JMHAFN', water: 'J', hi: 'Brrr, hier ist es kalt! Bau eine Hütte mit Tür und Dach. Im Wasser badet ein Pinguin.' },
   { id: 'wueste', name: 'Wüste', terrain: ['SSSSSSWWWWSSSSSS', 'SSSSSSSSSSSSSSSS'], res: 'KLMEAN', water: 'P', hi: 'In der Wüste ist es heiß. Kakteen und Palmen passen gut hierher, und ein Kamel sucht ein Zuhause.' },
+  { id: 'dorf', name: 'Dorf', terrain: ['GGGGGGGGGGGGGGGG', 'EEEEEEEEEEEEEEEE'], res: 'ANMEQL', water: 'P', hi: 'Im Dorf ist Platz für Häuser, einen Laden, die Schule und eine Straße mit Bushaltestelle. Straßen kommen auf die oberste Bodenreihe.' },
+  { id: 'hafen', name: 'Hafen', terrain: ['PPPPPPPWWWWWWWWW', 'KKKKKKKWWWWWWWWW'], res: 'ANRMEP', water: 'P', hi: 'Am Hafen legen Boote an. Stell einen Leuchtturm auf und setz ein Boot aufs Wasser.' },
   { id: 'stadt', name: 'Stadt', terrain: ['PPPPPPPPPPPPPPPP', 'RRRRRRRRRRRRRRRR'], res: 'ANRLME', water: 'P', hi: 'Bau eine Stadt mit hohen Häusern, Türmen und Lampen. Mit Gold wird es richtig schick.' }
 ];
-var IV = { tool: 'build', sel: 'w', cat: 'bau', zone: 0, night: false, fresh: -1, residents: -1, gift: false };
+var IV = { tool: 'build', sel: 'w', cat: 'bau', zone: 0, night: false, fresh: -1, residents: -1, gift: false, gift3: false };
 function emptyGrid() { return new Array(IW * IROWS + 1).join('.'); }
 function islandEnsure() {
   if (!S.island || typeof S.island.g !== 'string' || S.island.g.length !== IW * IROWS) {
@@ -1470,7 +1537,16 @@ function islandEnsure() {
     for (var k in gift) I.inv[k] = (I.inv[k] || 0) + gift[k];
     I.v = 2; IV.gift = true; S.at.island = Date.now(); save();
   }
+  if (!I.t || typeof I.t !== 'object') I.t = {};
+  ZONES.forEach(function (Z) { if (typeof I.t[Z.id] !== 'string' || I.t[Z.id].length !== IW) I.t[Z.id] = new Array(IW + 1).join('.'); });
+  if (!(I.v >= 3)) {
+    // Geschenk zu Gebäuden und Straßen (einmalig)
+    var gift3 = { 'ä': 1, 'ø': 4, W: 1 };
+    for (var k3 in gift3) I.inv[k3] = (I.inv[k3] || 0) + gift3[k3];
+    I.v = 3; IV.gift3 = true; S.at.island = Date.now(); save();
+  }
 }
+function landGround(zi) { return S.island.t[ZONES[zi].id]; }
 function landGrid(zi) { return zi ? S.island.z[ZONES[zi].id] : S.island.g; }
 function islandResidents(g) {
   var out = [];
@@ -1487,17 +1563,25 @@ function islandResidents(g) {
   return out;
 }
 function animalDiv(k, n) { return '<div class="animal" style="animation-delay:' + ((n * .37) % 1.6).toFixed(2) + 's">' + ANIM[k].svg + '</div>'; }
-function islandHTML(g, night, interactive, freshIdx, zi) {
-  var Z = ZONES[zi || 0], res = islandResidents(g), wat = g.indexOf('q');
+function sprDiv(k, n) { return '<div class="animal' + (SPR[k].veh ? ' veh' : ' still') + '" style="animation-delay:' + ((n * .37) % 1.6).toFixed(2) + 's">' + SPR[k].svg + '</div>'; }
+function islandHTML(g, night, interactive, freshIdx, zi, t) {
+  var Z = ZONES[zi || 0], res = islandResidents(g), wat = g.indexOf('q'), gsel = interactive && IV.tool === 'build' && matOf(IV.sel).ground;
   var h = '<div class="isl z-' + Z.id + (night ? ' night' : '') + '"' + (interactive ? ' id="isl"' : '') + '>';
   for (var i = 0; i < g.length; i++) {
     var ch = g[i], ri = res.indexOf(i), inner = '';
     if (ANIM[ch]) inner = animalDiv(ch, i);
+    else if (SPR[ch]) inner = sprDiv(ch, i);
+    else if (BLD[ch]) inner = '<div class="bld" style="width:' + BLD[ch].w * 100 + '%;height:' + BLD[ch].h * 100 + '%">' + bldSVG(ch) + '</div>';
     else if (ri >= 0) inner = animalDiv(Z.res[ri % Z.res.length], ri);
     else if (i === wat) inner = animalDiv(Z.water, 0);
-    h += '<div class="c' + (ch === '.' ? (interactive ? ' free' : '') : ' m-' + ch) + (i === freshIdx ? ' fresh' : '') + '" data-i="' + i + '">' + inner + '</div>';
+    h += '<div class="c' + (ch === '.' ? (interactive && !gsel ? ' free' : '') : BLD[ch] ? ' has-bld' : ch === '#' ? '' : ' m-' + ch) + (i === freshIdx ? ' fresh' : '') + '" data-i="' + i + '">' + inner + '</div>';
   }
-  Z.terrain.forEach(function (row) { for (var c = 0; c < IW; c++) h += '<div class="c t-' + row[c] + '"></div>'; });
+  Z.terrain.forEach(function (row, r) {
+    for (var c = 0; c < IW; c++) {
+      var tc = r === 0 && t && t[c] !== '.' ? t[c] : row[c];
+      h += '<div class="c t-' + tc + (r === 0 && gsel && tc === row[c] && tc !== 'W' ? ' free' : '') + '"' + (r === 0 && interactive ? ' data-t="' + c + '"' : '') + '></div>';
+    }
+  });
   return h + '</div>';
 }
 function islandSay(t) { $('iBubble').textContent = t; }
@@ -1507,22 +1591,23 @@ function renderIsland() {
   var I = S.island, st = stars(), zi = IV.zone, Z = ZONES[zi], g = landGrid(zi);
   $('iStars').textContent = st;
   $('iZone').textContent = Z.name;
-  var wrap = $('isl').parentNode; wrap.innerHTML = islandHTML(g, IV.night, true, IV.fresh, zi); IV.fresh = -1;
+  var wrap = $('isl').parentNode; wrap.innerHTML = islandHTML(g, IV.night, true, IV.fresh, zi, landGround(zi)); IV.fresh = -1;
   $('iBuild').className = 'btn' + (IV.tool === 'build' ? '' : ' ghost');
   $('iRemove').className = 'btn' + (IV.tool === 'remove' ? '' : ' ghost');
   $('iNight').textContent = IV.night ? 'Tag' : 'Nacht';
   $('iCats').innerHTML = LCATS.map(function (c) { return '<button class="' + (IV.cat === c.k ? 'on' : '') + '" data-cat="' + c.k + '">' + c.name + '</button>'; }).join('');
   $('iMats').innerHTML = MATS.filter(function (m) { return m.cat === IV.cat; }).map(function (m) {
-    var n = I.inv[m.k] || 0, a = ANIM[m.k];
-    return '<button class="mat' + (IV.sel === m.k ? ' on' : '') + (n ? '' : ' empty') + (m.p >= 10 ? ' rare' : '') + '" data-m="' + m.k + '">' + (a ? '<div class="sw">' + a.svg + '</div>' : '<div class="sw m-' + m.k + '"></div>') + '<b>' + m.name + '</b><span>' + n + ' Stück</span><span class="price">' + m.p + ' ★</span></button>';
+    var n = I.inv[m.k] || 0, a = ANIM[m.k] || SPR[m.k];
+    var sw = a ? '<div class="sw">' + a.svg + '</div>' : BLD[m.k] ? '<div class="sw">' + bldSVG(m.k) + '</div>' : m.ground ? '<div class="sw t-' + m.k + '"></div>' : '<div class="sw m-' + m.k + '"></div>';
+    return '<button class="mat' + (IV.sel === m.k ? ' on' : '') + (n ? '' : ' empty') + (m.p >= 10 ? ' rare' : '') + '" data-m="' + m.k + '">' + sw + '<b>' + m.name + '</b><span>' + n + ' Stück</span><span class="price">' + m.p + ' ★</span></button>';
   }).join('');
   var sel = matOf(IV.sel), miss = sel.p - st;
   $('iBuy').textContent = sel.name + ' kaufen · ' + sel.p + ' ★'; $('iBuy').disabled = miss > 0;
   $('iBuyHint').textContent = miss > 0 ? 'Dir fehlen noch ' + miss + (miss === 1 ? ' Stern' : ' Sterne') + '. Rechne weiter und spar darauf!' : '';
-  $('iZones').innerHTML = ZONES.map(function (Zx, k) { return '<button class="zone' + (k === zi ? ' on' : '') + '" data-z="' + k + '">' + islandHTML(landGrid(k), IV.night, false, -1, k) + Zx.name + '</button>'; }).join('');
+  $('iZones').innerHTML = ZONES.map(function (Zx, k) { return '<button class="zone' + (k === zi ? ' on' : '') + '" data-z="' + k + '">' + islandHTML(landGrid(k), IV.night, false, -1, k, landGround(k)) + Zx.name + '</button>'; }).join('');
   var ph = I.photos || [];
   $('iPhotosWrap').hidden = !ph.length;
-  $('iPhotos').innerHTML = ph.map(function (x) { return '<figure>' + islandHTML(x.g, x.n, false, -1, x.z || 0) + '<figcaption>' + (ZONES[x.z || 0] || ZONES[0]).name + ' · ' + new Date(x.d).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + '</figcaption></figure>'; }).join('');
+  $('iPhotos').innerHTML = ph.map(function (x) { return '<figure>' + islandHTML(x.g, x.n, false, -1, x.z || 0, x.t) + '<figcaption>' + (ZONES[x.z || 0] || ZONES[0]).name + ' · ' + new Date(x.d).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + '</figcaption></figure>'; }).join('');
   var nres = islandResidents(g).length;
   if (IV.residents >= 0 && nres > IV.residents) islandSay(ANIM[Z.res[(nres - 1) % Z.res.length]].art + ' ist in dein Haus eingezogen! Häuser mit Tür und Dach gefallen den Tieren.');
   IV.residents = nres;
@@ -1540,24 +1625,56 @@ function landGo(zi) {
 $('playIsland').addEventListener('click', function () {
   islandEnsure(); IV.residents = -1; go('island');
   $('iMascot').innerHTML = owlSVG('happy');
-  var tips = ['Ein Haus mit Tür und Dach lockt Tiere an.', 'Mit „Dach links“ und „Dach rechts“ baust du ein spitzes Dach.', 'Oben bei den Pfeilen kommst du in andere Gebiete: Bauernhof, Wald, Berge, Wüste und Stadt.', 'Bei „Tiere“ kannst du Tiere kaufen und überall hinsetzen.', 'Bei „Schätze“ gibt es ganz besondere Sachen wie ein Einhorn oder eine Olaf-Statue. Dafür musst du sparen!', 'Bau einen Teich aus Wasser, dann kommt ein Tier zum Schwimmen.', 'Schalte auf Nacht: Lampen und Fenster leuchten.', 'Mach ein Foto, wenn dir dein Bau gefällt.'];
-  if (IV.gift) { IV.gift = false; islandSay('Willkommen in Olafs Land, ' + S.name + '! Meine Insel ist jetzt viel größer: Es gibt einen Bauernhof, einen Wald, Schneeberge, eine Wüste und eine Stadt. Als Geschenk bekommst du Spitzdächer, Tannen und ein paar Tiere!'); }
+  var tips = ['Ein Haus mit Tür und Dach lockt Tiere an.', 'Mit „Dach links“ und „Dach rechts“ baust du ein spitzes Dach.', 'Oben bei den Pfeilen kommst du in andere Gebiete: Bauernhof, Wald, Berge, Wüste, Dorf, Hafen und Stadt.', 'Bei „Gebäude“ gibt es fertige Häuser, eine Schule, die Feuerwehr, einen Bahnhof und sogar ein Riesenrad.', 'Straßen und Schienen legst du auf die oberste Bodenreihe. Dann können Autos und Züge darauf stehen.', 'Bei „Tiere“ kannst du Tiere kaufen und überall hinsetzen.', 'Bei „Schätze“ gibt es ganz besondere Sachen wie ein Einhorn oder eine Olaf-Statue. Dafür musst du sparen!', 'Bau einen Teich aus Wasser, dann kommt ein Tier zum Schwimmen.', 'Schalte auf Nacht: Lampen und Fenster leuchten.', 'Mach ein Foto, wenn dir dein Bau gefällt.'];
+  if (IV.gift) { IV.gift = false; islandSay('Willkommen in Olafs Land, ' + S.name + '! Meine Insel ist jetzt viel größer: Es gibt einen Bauernhof, einen Wald, Schneeberge, eine Wüste, ein Dorf, einen Hafen und eine Stadt. Als Geschenk bekommst du Spitzdächer, Tannen, ein paar Tiere, ein Haus, ein Auto und Straßen!'); IV.gift3 = false; }
+  else if (IV.gift3) { IV.gift3 = false; islandSay('Neu in Olafs Land: fertige Gebäude, Straßen, Schienen und Fahrzeuge, dazu ein Dorf und ein Hafen! Ich schenke dir ein Haus, ein Auto und vier Straßenstücke. Straßen kommen auf die oberste Bodenreihe.'); }
   else islandSay('Willkommen in Olafs Land, ' + S.name + '! Wähle unten ein Material und tippe auf einen freien Platz. Tipp: ' + pick(tips));
   renderIsland();
 });
 document.addEventListener('click', function (e) {
   if ($('v-island').hidden) return;
+  var tcell = e.target.closest('#isl .c[data-t]');
+  if (tcell) {
+    var tc = +tcell.getAttribute('data-t'), Zt = ZONES[IV.zone], tg = landGround(IV.zone), tinv = S.island.inv, tm = matOf(IV.sel);
+    var tset = function (ch) { S.island.t[Zt.id] = tg.slice(0, tc) + ch + tg.slice(tc + 1); S.at.island = Date.now(); save(); renderIsland(); };
+    if (IV.tool === 'build') {
+      if (!tm.ground) { islandSay('Auf den Boden kommen nur Straße, Gehweg, Zebrastreifen und Schienen. Darüber kannst du bauen.'); return; }
+      if (tg[tc] !== '.') { islandSay('Da liegt schon etwas. Mit „Abreißen“ kannst du es wegnehmen.'); return; }
+      if (Zt.terrain[0][tc] === 'W') { islandSay('Auf dem Wasser geht das nicht. Bau lieber eine Brücke darüber.'); return; }
+      if (!(tinv[IV.sel] > 0)) { islandSay('Du hast keine ' + tm.name + ' mehr. Unten kannst du neue kaufen.'); return; }
+      tinv[IV.sel]--; tset(IV.sel);
+    } else if (tg[tc] !== '.') { tinv[tg[tc]] = (tinv[tg[tc]] || 0) + 1; tset('.'); }
+    return;
+  }
   var cell = e.target.closest('#isl .c[data-i]');
   if (cell) {
-    var i = +cell.getAttribute('data-i'), g = landGrid(IV.zone), ch = g[i], inv = S.island.inv;
+    var i = +cell.getAttribute('data-i'), g = landGrid(IV.zone), ch = g[i], inv = S.island.inv, sm = matOf(IV.sel);
     if (IV.tool === 'build') {
+      if (sm.ground) { islandSay(sm.name + ' kommt auf den Boden. Tippe auf die oberste Bodenreihe.'); return; }
       if (ch !== '.') { islandSay('Da ist schon etwas. Mit „Abreißen“ kannst du Platz machen.'); return; }
-      if (!(inv[IV.sel] > 0)) { islandSay('Du hast kein ' + matOf(IV.sel).name + ' mehr. Unten kannst du neues kaufen.'); return; }
+      if (!(inv[IV.sel] > 0)) { islandSay('Du hast kein ' + sm.name + ' mehr. Unten kannst du neues kaufen.'); return; }
+      if (BLD[IV.sel]) {
+        var B = BLD[IV.sel], r0 = Math.max(Math.floor(i / IW), B.h - 1), c0 = Math.min(i % IW, IW - B.w), anc = r0 * IW + c0, cells = bldCells(IV.sel, anc);
+        if (cells.some(function (j) { return g[j] !== '.'; })) { islandSay(B.name + ' braucht ' + B.w + ' Felder nebeneinander und ' + B.h + ' übereinander. Such dir einen freien Platz oder reiß etwas ab.'); return; }
+        var ng = g.split(''); cells.forEach(function (j) { ng[j] = '#'; }); ng[anc] = IV.sel; ng = ng.join('');
+        if (IV.zone) S.island.z[ZONES[IV.zone].id] = ng; else S.island.g = ng;
+        inv[IV.sel]--; S.at.island = Date.now(); IV.fresh = anc; save(); renderIsland();
+        islandSay(pick(['Toll, ', 'Super, ', 'Schick, ']) + B.name + ' steht!');
+        return;
+      }
       var firstWater = IV.sel === 'q' && g.indexOf('q') < 0, a = ANIM[IV.sel];
       inv[IV.sel]--; islandSet(i, IV.sel); IV.fresh = i; save(); renderIsland();
       if (firstWater) islandSay('Platsch! ' + ANIM[ZONES[IV.zone].water].art + ' schwimmt jetzt in deinem Wasser.');
       else if (a) islandSay((a.laut ? a.laut + '! ' : 'Hallo! ') + a.art + ' wohnt jetzt hier.');
+      else if (SPR[IV.sel] && SPR[IV.sel].veh) islandSay(pick(['Brumm brumm! ', 'Tut tut! ', 'Los geht’s! ']) + SPR[IV.sel].art + ' ist da.');
     } else if (ch !== '.') {
+      var an = BLD[ch] ? i : ch === '#' ? bldAt(g, i) : -1;
+      if (an >= 0) {
+        var bk = g[an], ng2 = g.split(''); bldCells(bk, an).forEach(function (j) { ng2[j] = '.'; }); ng2 = ng2.join('');
+        if (IV.zone) S.island.z[ZONES[IV.zone].id] = ng2; else S.island.g = ng2;
+        inv[bk] = (inv[bk] || 0) + 1; S.at.island = Date.now(); save(); renderIsland(); return;
+      }
+      if (ch === '#') { islandSet(i, '.'); save(); renderIsland(); return; }
       inv[ch] = (inv[ch] || 0) + 1; islandSet(i, '.'); save(); renderIsland();
     }
     return;
@@ -1577,7 +1694,7 @@ document.addEventListener('click', function (e) {
     spendStars(bm.p); S.island.inv[IV.sel] = (S.island.inv[IV.sel] || 0) + 1; S.at.island = Date.now(); save(); renderIsland();
     if (bm.cat === 'schatz') islandSay('Wow, ' + bm.name + '! Dafür hast du richtig gespart. Such einen schönen Platz dafür.');
   } else if (e.target.closest('#iPhoto')) {
-    S.island.photos.unshift({ g: landGrid(IV.zone), n: IV.night, z: IV.zone, d: new Date().toISOString() });
+    S.island.photos.unshift({ g: landGrid(IV.zone), t: landGround(IV.zone), n: IV.night, z: IV.zone, d: new Date().toISOString() });
     S.island.photos = S.island.photos.slice(0, 6); S.at.island = Date.now(); save(); renderIsland();
     var isl = $('isl'); isl.classList.add('flash'); islandSay('Klick! Das Foto ist im Fotoalbum.');
   }
