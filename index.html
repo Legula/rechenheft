@@ -1514,7 +1514,7 @@ function renderIsland() {
   $('iCats').innerHTML = LCATS.map(function (c) { return '<button class="' + (IV.cat === c.k ? 'on' : '') + '" data-cat="' + c.k + '">' + c.name + '</button>'; }).join('');
   $('iMats').innerHTML = MATS.filter(function (m) { return m.cat === IV.cat; }).map(function (m) {
     var n = I.inv[m.k] || 0, a = ANIM[m.k];
-    return '<button class="mat' + (IV.sel === m.k ? ' on' : '') + (n ? '' : ' empty') + (m.p >= 10 ? ' rare' : '') + '" data-m="' + m.k + '">' + (a ? '<div class="sw">' + a.svg + '</div>' : '<div class="sw m-' + m.k + '"></div>') + '<b>' + m.name + '</b><span>' + n + ' Stück · <span class="price">' + m.p + ' ★</span></span></button>';
+    return '<button class="mat' + (IV.sel === m.k ? ' on' : '') + (n ? '' : ' empty') + (m.p >= 10 ? ' rare' : '') + '" data-m="' + m.k + '">' + (a ? '<div class="sw">' + a.svg + '</div>' : '<div class="sw m-' + m.k + '"></div>') + '<b>' + m.name + '</b><span>' + n + ' Stück</span><span class="price">' + m.p + ' ★</span></button>';
   }).join('');
   var sel = matOf(IV.sel), miss = sel.p - st;
   $('iBuy').textContent = sel.name + ' kaufen · ' + sel.p + ' ★'; $('iBuy').disabled = miss > 0;
