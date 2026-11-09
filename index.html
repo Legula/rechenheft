@@ -153,6 +153,32 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
 .gallery figure { margin: 0; background: var(--card); border: 2px solid var(--line); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 4px; align-items: center; text-align: center; font-size: .9rem; min-width: 0; }
 .gallery svg { width: 100%; height: auto; }
+.bpane { display: flex; flex-direction: column; gap: 14px; }
+.btabs .btn { padding: 10px 18px; font-size: 1.1rem; }
+.rank { background: var(--accent-soft); border-radius: 999px; padding: 4px 14px; font-family: var(--f-display); font-weight: 800; }
+.bwork { display: grid; grid-template-columns: minmax(0, 1fr) 130px; gap: 12px; align-items: start; }
+.bwork #bScene { cursor: pointer; padding: 10px; }
+.bplan { margin: 0; background: var(--card); border: 2px solid var(--line); border-radius: 12px; padding: 8px; text-align: center; font-family: var(--f-display); font-weight: 800; display: flex; flex-direction: column; gap: 4px; }
+.bplan svg { width: 100%; height: auto; display: block; }
+@media (max-width: 520px) { .bwork { grid-template-columns: 1fr; } .bplan { order: -1; width: 150px; justify-self: center; } }
+.tray { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+.tray button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border-radius: 12px; background: var(--card); color: var(--ink); border: 2px solid var(--line); box-shadow: 0 3px 0 var(--line); font-size: .9rem; min-width: 0; }
+.tray button.on { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent); transform: translateY(-3px); }
+.tray button:disabled { opacity: .45; }
+.tray svg { width: 52px; height: 28px; }
+.picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.bpick { display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center; padding: 12px; border-radius: 14px; background: var(--card); color: var(--ink); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); min-width: 0; font-size: .95rem; }
+.bpick b { font-family: var(--f-display); font-size: 1.2rem; }
+.bpick svg { width: 100%; max-width: 160px; height: auto; }
+.lux { color: #a77d00; font-family: inherit; }
+.tipglow { animation: tipglow .5s ease-in-out infinite alternate; }
+@keyframes tipglow { from { opacity: .2; } to { opacity: 1; } }
+.shake { animation: shake .45s; }
+@keyframes shake { 0%, 100% { transform: none; } 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
+.kbar { justify-content: space-between; font-family: var(--f-display); font-weight: 800; font-size: 1.2rem; }
+.hearts { color: #d64541; letter-spacing: 2px; }
+#kCanvas { display: block; width: 100%; max-width: 520px; height: min(60vh, 600px); margin: 8px auto 0; border-radius: 16px; border: 2px solid var(--line); touch-action: none; }
+@media (prefers-reduced-motion: reduce) { .tipglow, .shake { animation: none; } }
 #party { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
 .trophy { display: flex; justify-content: center; }
 .trophy svg { width: 140px; height: auto; animation: trophy 1.1s cubic-bezier(.3, 1.5, .5, 1) both; }
@@ -424,11 +450,32 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <button class="back" data-go="home">← Zurück</button>
     <div class="stars"><b>★</b><span id="bStars">0</span></div>
   </div>
-  <div><h2 id="bTitle"></h2><p class="muted" id="bInfo"></p></div>
-  <div class="sheet buildbox" id="bScene"></div>
-  <div class="row" id="bActions"></div>
-  <p class="muted" id="bHint"></p>
-  <div id="bGalleryWrap" hidden><h3>Deine Bauwerke</h3><div class="gallery" id="bGallery"></div></div>
+  <div class="row btabs"><button class="btn" id="bTabPlan">Bauaufträge</button><button class="btn ghost" id="bTabCrane">Kran-Turm</button></div>
+  <div id="bPlanPane" class="bpane">
+    <div class="mascot-row"><div class="mascot" id="bMascot" style="width:64px"></div><p class="bubble" id="bBubble"></p></div>
+    <div class="row" style="justify-content:space-between"><div><h2 id="bTitle"></h2><p class="muted" id="bInfo"></p></div><span class="rank" id="bRank"></span></div>
+    <div class="picks" id="bPick" hidden></div>
+    <div class="bwork" id="bWork" hidden>
+      <div class="sheet buildbox" id="bScene"></div>
+      <figure class="bplan" id="bPlanFig"><figcaption>Bauplan</figcaption><div id="bPlan"></div></figure>
+    </div>
+    <div class="tray" id="bTray"></div>
+    <div class="row" id="bActions"></div>
+    <p class="muted" id="bHint"></p>
+    <div id="bGalleryWrap" hidden><h3>Deine Bauwerke</h3><div class="gallery" id="bGallery"></div></div>
+  </div>
+  <div id="bCranePane" class="bpane" hidden>
+    <div class="sheet" id="kPanel">
+      <h2>Kran-Turm</h2>
+      <p id="kText"></p>
+      <p class="muted" id="kRec"></p>
+      <div class="row"><button class="btn" id="kGo">Spielen</button><span class="muted" id="kNeed"></span></div>
+    </div>
+    <div id="kGame" hidden>
+      <div class="row kbar"><span>Stockwerke: <b id="kFloors">0</b></span><span class="hearts" id="kHearts"></span><span>Rekord: <b id="kBest">0</b></span></div>
+      <canvas id="kCanvas" aria-label="Kran-Turm: tippen, um den Stein fallen zu lassen"></canvas>
+    </div>
+  </div>
 </section>
 
 <!-- OLAFS LAND -->
@@ -555,6 +602,7 @@ function mergeState(L, R) {
   if ((L.epoch || 0) > (R.epoch || 0)) return L;
   var o = L, Ra = R.at || {}, d;
   for (d in R.dev) { var a = o.dev[d] || { e: 0, s: 0 }, b = R.dev[d] || {}; o.dev[d] = { e: Math.max(a.e || 0, b.e || 0), s: Math.max(a.s || 0, b.s || 0), b: Math.max(a.b || 0, b.b || 0) }; }
+  mergeBuild(o, R); // Baustelle: neuerer Stand gewinnt, Kran-Rekord bleibt der höchste
   for (var k in (R.levels || {})) { var la = o.at['lv-' + k] || 0, ra = Ra['lv-' + k] || 0; if (ra > la) { o.levels[k] = R.levels[k]; o.mastered[k] = !!(R.mastered || {})[k]; o.at['lv-' + k] = ra; } }
   if ((Ra.name || 0) > (o.at.name || 0)) { o.name = R.name; o.at.name = Ra.name; }
   if ((Ra.silben || 0) > (o.at.silben || 0)) { o.silben = R.silben; o.at.silben = Ra.silben; }
@@ -1611,17 +1659,38 @@ function celebrate() {
   })(start);
 }
 
-/* ---------- Baustelle: pro Stern ein Klemmbaustein ---------- */
-var BRICK = { r: ['#d64541', '#9e2f2c'], w: ['#a8dcf5', '#5fa6cc'], d: ['#8a5a3b', '#5e3c26'], y: ['#3d4b63', '#252f40'], s: ['#9aa3ad', '#6b737c'], f: ['#f4f4f4', '#b9b9b9'], l: ['#ffd23f', '#c99a0a'], b: ['#2f6fd6', '#1d4b99'], k: ['#2f9e5b', '#1e6b3c'], o: ['#f08a24', '#b05e10'] };
+/* ---------- Baustelle: Bauaufträge nach Bauplan und Kran-Turm ---------- */
+// Pro Stern ein Klemmbaustein. Philian sucht sich einen Auftrag aus und setzt jeden Stein selbst:
+// Farbe wählen, dann den richtigen Platz antippen. Mit jedem fertigen Bauwerk steigt der Rang, und es gibt weniger Hilfe.
+// Speicher S.build: cur = Plan-ID des laufenden Auftrags ('' = keiner), set = '0'/'1' je Stein, err = Fehler im Auftrag,
+// done = fertige Plan-IDs, clean = Bauwerke ohne Fehler, tower = Rekord im Kran-Turm, tg = Kran-Spiele.
+// S.dev[…].b zählt weiter alle gesetzten Steine. Ältere Spielstände (Steine liefen der Reihe nach) werden übernommen.
+var BRICK = { r: ['#d64541', '#9e2f2c'], w: ['#a8dcf5', '#5fa6cc'], d: ['#8a5a3b', '#5e3c26'], y: ['#3d4b63', '#252f40'], s: ['#9aa3ad', '#6b737c'], f: ['#f4f4f4', '#b9b9b9'], l: ['#ffd23f', '#c99a0a'], b: ['#2f6fd6', '#1d4b99'], k: ['#2f9e5b', '#1e6b3c'], o: ['#f08a24', '#b05e10'], v: ['#8e5bd6', '#5f3a9a'], p: ['#f28dbb', '#c0567f'], g: ['#f5c518', '#a77d00', 1], e: ['#3fd6cf', '#168a83', 1] };
+// Besondere Steine kosten mehr Sterne als normale (1 Stern).
+var BPRICE = { g: 5, e: 3 };
+function bPrice(c) { return BPRICE[c] || 1; }
+function planCost(pl) { return planBricks(pl).reduce(function (t, b) { return t + bPrice(b.c); }, 0); }
+var BCOL = { r: ['Rot', 'roter'], w: ['Hellblau', 'hellblauer'], d: ['Braun', 'brauner'], y: ['Dunkelgrau', 'dunkelgrauer'], s: ['Grau', 'grauer'], f: ['Weiß', 'weißer'], l: ['Gelb', 'gelber'], b: ['Blau', 'blauer'], k: ['Grün', 'grüner'], o: ['Orange', 'oranger'], v: ['Lila', 'lila'], p: ['Rosa', 'rosa'], g: ['Gold', 'goldener'], e: ['Kristall', 'Kristall'] };
+function stoneName(c) { return c === 'e' ? 'Kristallstein' : BCOL[c][1] + ' Stein'; }
+function topDown(rows) { return rows.slice().reverse(); } // neue Baupläne werden von oben nach unten aufgeschrieben
 var PLANS = [
-  { name: 'Das rote Haus', rows: ['.rrrddrrrrr.', '.rwwddrwwrr.', '.rwwddrwwrr.', '.rrrrrrrrrr.', 'yyyyyyyyyyyy', '.yyyyyyyyyy.', '..yyyyyyyy..', '...yyyyyy...', '....yyyy....'] },
-  { name: 'Der Leuchtturm', rows: ['..ssssssss..', '....rddr....', '....rddr....', '....ffff....', '....rrrr....', '....fwwf....', '....rrrr....', '....ffff....', '...bbbbbb...', '....wllw....', '....rrrr....', '.....rr.....'] },
-  { name: 'Die Burg', rows: ['ssssssssssss', 'sswssddsswss', 'sswssddsswss', 'ssssssssssss', 'ssssssssssss', 's.s.ssss.s.s', '....swws....', '....ssss....', '....s..s....', '......bb....', '......k.....'] },
-  { name: 'Das Baumhaus', rows: ['.....dd.....', '.....dd.....', '.....dd.....', '...oooooo...', '..oowwoooo..', '..oowwoooo..', '..oooooooo..', '.kkkkkkkkkk.', '..kkkkkkkk..', '...kkkkkk...', '....kkkk....'] },
-  { name: 'Olafs Schule', rows: ['oooooddooooo', 'owwooddoowwo', 'oooooooooooo', 'owwoowwoowwo', 'oooooooooooo', 'yyyyyyyyyyyy', '.yyyyyyyyyy.', '...yyllyy...', '....yyyy....', '.....bb.....', '.....r......'] },
-  { name: 'Die Rakete', rows: ['....oooo....', '...rffffr...', '..rrffffrr..', '..r.ffff.r..', '....ffff....', '....fwwf....', '....fwwf....', '....ffff....', '....bbbb....', '....ffff....', '.....rr.....', '.....rr.....'] },
-  { name: 'Die Windmühle', rows: ['...ssddss...', '...ssddss...', '...sswwss...', '....ssss....', '....ssss....', '..f......f..', '...f.yy.f...', '....fyyf....', '...f.yy.f...', '..f..yy..f..', '.....rr.....'] },
-  { name: 'Das Schiff', rows: ['bbbbbbbbbbbb', '.rrrrrrrrrr.', '..rwrrwrrw..', '...ffffff...', '......d.....', '...fffd.....', '...fffdfff..', '....ffdff...', '.....fdf....', '......d.....', '......dll...'] }
+  { id: 'haus', name: 'Das rote Haus', who: 'Familie Igel sucht ein neues Zuhause.', rows: ['.rrrddrrrrr.', '.rwwddrwwrr.', '.rwwddrwwrr.', '.rrrrrrrrrr.', 'yyyyyyyyyyyy', '.yyyyyyyyyy.', '..yyyyyyyy..', '...yyyyyy...', '....yyyy....'] },
+  { id: 'turm', name: 'Der Leuchtturm', who: 'Die Schiffe brauchen nachts ein Licht.', rows: ['..ssssssss..', '....rddr....', '....rddr....', '....ffff....', '....rrrr....', '....fwwf....', '....rrrr....', '....ffff....', '...bbbbbb...', '....wllw....', '....rrrr....', '.....rr.....'] },
+  { id: 'burg', name: 'Die Burg', who: 'König Kunibert wünscht sich eine Burg mit Fahne.', rows: ['ssssssssssss', 'sswssddsswss', 'sswssddsswss', 'ssssssssssss', 'ssssssssssss', 's.s.ssss.s.s', '....swws....', '....ssss....', '....s..s....', '......bb....', '......k.....'] },
+  { id: 'baumhaus', name: 'Das Baumhaus', who: 'Die Kinder aus der Nachbarschaft wollen ein Baumhaus.', rows: ['.....dd.....', '.....dd.....', '.....dd.....', '...oooooo...', '..oowwoooo..', '..oowwoooo..', '..oooooooo..', '.kkkkkkkkkk.', '..kkkkkkkk..', '...kkkkkk...', '....kkkk....'] },
+  { id: 'schule', name: 'Olafs Schule', who: 'Olaf braucht eine Schule für alle Tiere.', rows: ['oooooddooooo', 'owwooddoowwo', 'oooooooooooo', 'owwoowwoowwo', 'oooooooooooo', 'yyyyyyyyyyyy', '.yyyyyyyyyy.', '...yyllyy...', '....yyyy....', '.....bb.....', '.....r......'] },
+  { id: 'rakete', name: 'Die Rakete', who: 'Die Mondforscher brauchen eine Rakete.', rows: ['....oooo....', '...rffffr...', '..rrffffrr..', '..r.ffff.r..', '....ffff....', '....fwwf....', '....fwwf....', '....ffff....', '....bbbb....', '....ffff....', '.....rr.....', '.....rr.....'] },
+  { id: 'muehle', name: 'Die Windmühle', who: 'Müllerin Mia braucht eine Mühle für ihr Mehl.', rows: ['...ssddss...', '...ssddss...', '...sswwss...', '....ssss....', '....ssss....', '..f......f..', '...f.yy.f...', '....fyyf....', '...f.yy.f...', '..f..yy..f..', '.....rr.....'] },
+  { id: 'schiff', name: 'Das Schiff', who: 'Kapitän Kalle möchte ein Segelschiff.', rows: ['bbbbbbbbbbbb', '.rrrrrrrrrr.', '..rwrrwrrw..', '...ffffff...', '......d.....', '...fffd.....', '...fffdfff..', '....ffdff...', '.....fdf....', '......d.....', '......dll...'] },
+  { id: 'bagger', name: 'Der Bagger', veh: true, who: 'Auf der Baustelle fehlt ein Bagger.', rows: topDown(['.......llll.', '......l...l.', '.lll.l....l.', '.lwlll...yy.', '.lwlll...yy.', 'llllll......', 'yyyyyyy.....', 'ysyysyy.....', '.yyyyy......']) },
+  { id: 'scheune', name: 'Die Scheune', who: 'Die Kühe von Bauer Jansen frieren im Regen.', rows: topDown(['.....rr.....', '....rrrr....', '...rrrrrr...', '..rrrffrrr..', '.rrrrrrrrrr.', '.rffrrrrffr.', '.rffrddrffr.', '.rrrrddrrrr.', 'kkkkkkkkkkkk']) },
+  { id: 'traktor', name: 'Der Traktor', veh: true, who: 'Bauer Jansen braucht einen Traktor für sein Feld.', rows: topDown(['.dddd.......', '.d..d...s...', '.dwwd...s...', '.rrrrrrrrr..', 'rrrrrrrrrrr.', 'yyyy...yyy..', 'ysyy...ysy..', 'yyyy....y...']) },
+  { id: 'zelt', name: 'Das Zirkuszelt', who: 'Der Zirkus kommt in die Stadt!', rows: topDown(['.....g......', '.....pp.....', '....vvvv....', '...pppppp...', '..vvvvvvvv..', '.pppppppppp.', '.fpfpddpfpf.', '.fpfpddpfpf.', 'kkkkkkkkkkkk']) },
+  { id: 'feuerwehr', name: 'Das Feuerwehrauto', veh: true, who: 'Die Feuerwehr wünscht sich ein neues Auto mit Leiter.', rows: topDown(['.b..........', '.rrr.ffffff.', '.rwr..s..s..', '.rwrrrrrrrrr', 'rrrrrfrrfrrr', 'rrrrrrrrrrrr', 'lyyrrrrrryyl', '.yy......yy.']) },
+  { id: 'bus', name: 'Der Schulbus', veh: true, who: 'Die Kinder brauchen einen Bus zur Schule.', rows: topDown(['.llllllllll.', 'lwwlwwlwwlwl', 'lwwlwwlwwlwl', 'llllllllllll', 'lllllllllllo', 'lyylllllyyll', '.yy.....yy..']) },
+  { id: 'lok', name: 'Die Lokomotive', veh: true, who: 'Der Bahnhof braucht eine Lokomotive.', rows: topDown(['.ff.........', '..ff........', '.yy.....rrrr', '.yy.....rwwr', 'bbbbbbbbrwwr', 'bbbbbbbbrrrr', 'yyyyyyyyyyyy', '.yy.yy..yy..']) },
+  { id: 'schloss', name: 'Das Königsschloss', prem: true, who: 'Prinzessin Pia wünscht sich ein Schloss mit Gold und Kristallen.', rows: topDown(['..g......g..', '.vvv....vvv.', '.sss.gg.sss.', '.sws.ee.sws.', '.ssssssssss.', '.sswsddswss.', '.ssssddssss.', 'kkkkkkkkkkkk']) },
+  { id: 'truhe', name: 'Die Schatztruhe', prem: true, who: 'Pirat Paul hat einen Schatz gefunden und braucht eine prächtige Truhe.', rows: topDown(['...e.ee.e...', '..gggggggg..', '.dddddddddd.', '.gggggggggg.', '.ddddggdddd.', '.ddddgedddd.', '.dddddddddd.', '.gddddddddg.']) }
 ];
 function planBricks(pl) {
   if (pl.bricks) return pl.bricks;
@@ -1639,69 +1708,426 @@ function planBricks(pl) {
   });
   pl.bricks = out; return out;
 }
-function bricksPlaced() { var t = 0; for (var k in S.dev) t += S.dev[k].b || 0; return t; }
-function buildPos() {
-  var n = bricksPlaced(), i = 0;
-  for (;;) { var pl = PLANS[i % PLANS.length], len = planBricks(pl).length; if (n < len) return { idx: i, plan: pl, placed: n, total: len }; n -= len; i++; }
+function cellMap(pl) {
+  if (pl.cells) return pl.cells;
+  var m = {}; planBricks(pl).forEach(function (b, k) { for (var j = 0; j < b.w; j++) m[(b.x + j) + ',' + b.y] = k; });
+  pl.cells = m; return m;
 }
-function planName(i) { var r = Math.floor(i / PLANS.length); return PLANS[i % PLANS.length].name + (r ? ' ' + (r + 1) : ''); }
-function buildSVG(pl, placed, ghost, drop) {
+function planById(id) { for (var i = 0; i < PLANS.length; i++) if (PLANS[i].id === id) return PLANS[i]; return null; }
+function bricksPlaced() { var t = 0; for (var k in S.dev) t += S.dev[k].b || 0; return t; }
+function zeros(n) { var s = ''; while (s.length < n) s += '0'; return s; }
+function bState() {
+  if (!S.at) S.at = {};
+  if (!S.build || typeof S.build !== 'object') {
+    // Früher liefen die Steine der Reihe nach durch die ersten acht Baupläne: diesen Stand übernehmen.
+    var n = bricksPlaced(), i = 0, done = [];
+    for (;;) { var pl = PLANS[i % 8], len = planBricks(pl).length; if (n < len) break; n -= len; done.push(pl.id); i++; }
+    var cur = n > 0 ? PLANS[i % 8] : null, set = '';
+    if (cur) for (var k = 0; k < planBricks(cur).length; k++) set += k < n ? '1' : '0';
+    S.build = { cur: cur ? cur.id : '', set: set, err: 0, done: done, clean: 0, tower: 0, tg: 0 };
+    if (!S.at.build) S.at.build = 1; // so alt wie möglich: ein echter Stand von einem anderen Gerät gewinnt
+  }
+  var B = S.build;
+  if (!Array.isArray(B.done)) B.done = [];
+  var pl2 = planById(B.cur);
+  if (!pl2) { B.cur = ''; B.set = ''; } else if (typeof B.set !== 'string' || B.set.length !== planBricks(pl2).length) B.set = zeros(planBricks(pl2).length);
+  B.err = B.err || 0; B.clean = B.clean || 0; B.tower = B.tower || 0; B.tg = B.tg || 0;
+  return B;
+}
+function mergeBuild(o, R) {
+  var rb = R.build; if (!rb || typeof rb !== 'object') return;
+  var la = o.at.build || 0, ra = (R.at || {}).build || 0, lb = o.build;
+  if (!lb || ra > la) {
+    var tw = Math.max(lb ? lb.tower || 0 : 0, rb.tower || 0);
+    o.build = JSON.parse(JSON.stringify(rb)); o.build.tower = tw; o.at.build = ra;
+  } else lb.tower = Math.max(lb.tower || 0, rb.tower || 0);
+}
+function bTouch() { S.at.build = Date.now(); }
+function countSet(s) { var n = 0; for (var i = 0; i < s.length; i++) if (s.charAt(i) === '1') n++; return n; }
+function offers() {
+  // drei Aufträge zur Wahl: ein Gebäude, ein Fahrzeug, noch ein Gebäude (zuerst die, die noch nie gebaut wurden)
+  var B = bState(), un = PLANS.filter(function (p) { return B.done.indexOf(p.id) < 0; });
+  var bld = un.filter(function (p) { return !p.veh && !p.prem; }), veh = un.filter(function (p) { return p.veh; }), prem = un.filter(function (p) { return p.prem; }), out = [];
+  if (bld[0]) out.push(bld[0]); if (veh[0]) out.push(veh[0]);
+  if (prem[0] && B.done.length >= 2) out.push(prem[0]); // Luxus-Aufträge ab dem Gesellen
+  else if (bld[1]) out.push(bld[1]); else if (veh[1]) out.push(veh[1]);
+  for (var i = B.done.length; out.length < 3; i++) { var p = PLANS[(i * 5) % PLANS.length]; if (out.indexOf(p) < 0) out.push(p); }
+  return out;
+}
+// Für Startseite und Abzeichen: idx = Zahl fertiger Bauwerke, dazu der laufende (oder nächste) Auftrag.
+function buildPos() {
+  var B = bState(), pl = planById(B.cur), placed = pl ? countSet(B.set) : 0;
+  if (!pl) pl = offers()[0];
+  return { idx: B.done.length, plan: pl, placed: placed, total: planBricks(pl).length };
+}
+var RANKS = ['Lehrling', 'Geselle', 'Meister', 'Großmeister'], RANK_AT = [0, 2, 5, 10];
+function bLevel() { var n = bState().done.length; return n >= 10 ? 3 : n >= 5 ? 2 : n >= 2 ? 1 : 0; }
+function rankText() {
+  var lv = bLevel(), n = bState().done.length;
+  return RANKS[lv] + (lv < 3 ? ' · noch ' + (RANK_AT[lv + 1] - n) + ' bis ' + RANKS[lv + 1] : '');
+}
+function trayColors(pl) {
+  // Lehrling: nur die Farben aus dem Bauplan. Später liegen auch Steine dabei, die man nicht braucht.
+  var used = {}, keys = Object.keys(BRICK), extra = [0, 2, 3, 4][bLevel()], h = 0, i;
+  planBricks(pl).forEach(function (b) { used[b.c] = 1; });
+  for (i = 0; i < pl.id.length; i++) h = (h * 31 + pl.id.charCodeAt(i)) % 997;
+  var others = keys.filter(function (k) { return !used[k] && !BPRICE[k]; });
+  for (i = 0; i < extra && others.length; i++) used[others.splice(h % others.length, 1)[0]] = 1;
+  return keys.filter(function (k) { return used[k]; });
+}
+function canPlace(pl, set, k) {
+  // Ein Stein braucht Halt: alles, was laut Plan direkt darunter liegt, muss schon gebaut sein.
+  var b = planBricks(pl)[k], m = cellMap(pl);
+  for (var j = 0; j < b.w; j++) { var u = m[(b.x + j) + ',' + (b.y - 1)]; if (u !== undefined && set.charAt(u) !== '1') return false; }
+  return true;
+}
+function brickShape(x, y, bw, col, CH, ST, op) {
+  var g = '';
+  for (var j = 0; j < bw / 40; j++) g += '<rect x="' + (x + j * 40 + 10) + '" y="' + (y - ST + 1) + '" width="20" height="' + ST + '" rx="2" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="1.5"' + op + '/>';
+  g += '<rect x="' + (x + 1) + '" y="' + y + '" width="' + (bw - 2) + '" height="' + CH + '" rx="3" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="2"' + op + '/>';
+  g += '<rect x="' + (x + 5) + '" y="' + (y + CH - 8) + '" width="' + (bw - 10) + '" height="4" rx="2" fill="' + col[1] + '" opacity=".45"/>';
+  if (col[2]) { var cx = x + bw / 2, cy = y + CH / 2 - 2; g += '<path d="M' + cx + ' ' + (cy - 8) + 'L' + (cx + 3) + ' ' + (cy - 3) + 'L' + (cx + 8) + ' ' + cy + 'L' + (cx + 3) + ' ' + (cy + 3) + 'L' + cx + ' ' + (cy + 8) + 'L' + (cx - 3) + ' ' + (cy + 3) + 'L' + (cx - 8) + ' ' + cy + 'L' + (cx - 3) + ' ' + (cy - 3) + 'Z" fill="#fff" opacity=".85"/>'; }
+  return g;
+}
+// set: '0'/'1' je Stein oder null (= alles gebaut). o: ghost (Umrisse), drop, bad + badC (falscher Stein), tip.
+function buildSVG(pl, set, o) {
+  o = o || {};
   var bricks = planBricks(pl), CW = 40, CH = 30, ST = 7, BASE = 14, rows = pl.rows.length, W = 12 * CW, H = rows * CH + ST + BASE + 4;
-  var s = '<svg class="buildsvg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + pl.name + '">';
+  var s = '<svg class="buildsvg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(pl.name) + '">';
   s += '<rect x="0" y="' + (H - BASE) + '" width="' + W + '" height="' + BASE + '" rx="3" fill="#3f9d4f"/>';
   for (var i = 0; i < 12; i++) s += '<rect x="' + (i * CW + 10) + '" y="' + (H - BASE - 5) + '" width="20" height="6" rx="1.5" fill="#4fb35f" stroke="#2f7a3c" stroke-width="1"/>';
+  var top = '';
   bricks.forEach(function (b, k) {
-    var x = b.x * CW, y = H - BASE - (b.y + 1) * CH, col = BRICK[b.c], bw = b.w * CW;
-    if (k >= placed) { if (ghost) s += '<rect x="' + (x + 3) + '" y="' + (y + 3) + '" width="' + (bw - 6) + '" height="' + (CH - 6) + '" rx="3" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="5 4"/>'; return; }
-    var g = '<g' + (k === drop ? ' class="drop"' : '') + '>';
-    for (var j = 0; j < b.w; j++) g += '<rect x="' + (x + j * CW + 10) + '" y="' + (y - ST + 1) + '" width="20" height="' + ST + '" rx="2" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="1.5"/>';
-    g += '<rect x="' + (x + 1) + '" y="' + y + '" width="' + (bw - 2) + '" height="' + CH + '" rx="3" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="2"/>';
-    g += '<rect x="' + (x + 5) + '" y="' + (y + CH - 8) + '" width="' + (bw - 10) + '" height="4" rx="2" fill="' + col[1] + '" opacity=".45"/></g>';
-    s += g;
+    var x = b.x * CW, y = H - BASE - (b.y + 1) * CH, bw = b.w * CW;
+    if (set && set.charAt(k) !== '1') {
+      if (k === o.tip) top += '<g class="tipglow">' + brickShape(x, y, bw, BRICK[b.c], CH, ST, ' fill-opacity=".55"') + '</g>';
+      else if (o.ghost) s += '<rect x="' + (x + 3) + '" y="' + (y + 3) + '" width="' + (bw - 6) + '" height="' + (CH - 6) + '" rx="3" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="5 4"/>';
+      if (k === o.bad) top += '<g class="shake">' + brickShape(x, y, bw, BRICK[o.badC], CH, ST, ' fill-opacity=".6"') + '<path d="M' + (x + bw / 2 - 8) + ' ' + (y + 7) + 'l16 16m0 -16l-16 16" stroke="#fff" stroke-width="4" stroke-linecap="round"/></g>';
+      return;
+    }
+    s += '<g' + (k === o.drop ? ' class="drop"' : '') + '>' + brickShape(x, y, bw, BRICK[b.c], CH, ST, '') + '</g>';
   });
-  return s + '</svg>';
+  return s + top + '</svg>';
 }
-var BV = { done: -1, drop: -1, busy: false };
+function trayBrick(c) { var col = BRICK[c]; return '<svg viewBox="0 0 84 44" aria-hidden="true"><rect x="12" y="4" width="20" height="8" rx="2" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="1.5"/><rect x="52" y="4" width="20" height="8" rx="2" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="1.5"/><rect x="2" y="11" width="80" height="30" rx="4" fill="' + col[0] + '" stroke="' + col[1] + '" stroke-width="2"/></svg>'; }
+
+var BAC = null;
+function bTone(f, d, type, delay) {
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    if (!BAC) BAC = new AC(); if (BAC.state === 'suspended') BAC.resume();
+    var t = BAC.currentTime + (delay || 0) + .01, o = BAC.createOscillator(), g = BAC.createGain();
+    o.type = type || 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.14, t + .01); g.gain.exponentialRampToValueAtTime(.001, t + d);
+    o.connect(g); g.connect(BAC.destination); o.start(t); o.stop(t + d + .05);
+  } catch (e) {}
+}
+function brickRain() {
+  // Zur Feier regnet es Klemmbausteine
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var old = $('party'); if (old) old.remove();
+  var cv = document.createElement('canvas'); cv.id = 'party'; document.body.appendChild(cv);
+  var dpr = Math.min(2, window.devicePixelRatio || 1), W = window.innerWidth, H = window.innerHeight, keys = Object.keys(BRICK), ps = [];
+  cv.width = W * dpr; cv.height = H * dpr; var c = cv.getContext('2d'); c.scale(dpr, dpr);
+  for (var i = 0; i < 70; i++) ps.push({ x: Math.random() * W, y: -40 - Math.random() * H * .8, v: 160 + Math.random() * 220, r: Math.random() * 6, vr: (Math.random() - .5) * 4, w: Math.random() < .5 ? 22 : 40, col: BRICK[keys[i % keys.length]] });
+  var start = performance.now(), last = start;
+  (function loop(now) {
+    var dt = Math.min(.05, (now - last) / 1000), fade = Math.max(0, Math.min(1, (3600 - (now - start)) / 700)); last = now;
+    c.clearRect(0, 0, W, H); c.globalAlpha = fade;
+    ps.forEach(function (p) {
+      p.y += p.v * dt; p.r += p.vr * dt;
+      c.save(); c.translate(p.x, p.y); c.rotate(p.r); c.fillStyle = p.col[0]; c.strokeStyle = p.col[1]; c.lineWidth = 2;
+      c.fillRect(-p.w / 2, -8, p.w, 16); c.strokeRect(-p.w / 2, -8, p.w, 16);
+      for (var j = 0; j < p.w / 20; j++) c.fillRect(-p.w / 2 + 5 + j * 20, -12, 10, 4);
+      c.restore();
+    });
+    if (fade > 0 && document.body.contains(cv)) requestAnimationFrame(loop); else cv.remove();
+  })(start);
+}
+
+var BV = { busy: false, tab: 'plan', sel: '', drop: -1, bad: -1, badC: '', tip: -1, msg: '', mood: 'happy', fin: null };
+function bSay(t, mood) { BV.msg = t; BV.mood = mood || 'happy'; }
 function renderBuild() {
-  var pos = buildPos(), st = stars();
+  var B = bState(), st = stars();
   $('bStars').textContent = st;
-  if (BV.done >= 0) {
-    var pl = PLANS[BV.done % PLANS.length];
-    $('bTitle').textContent = 'Fertig: ' + planName(BV.done) + '!';
-    $('bInfo').textContent = 'Alle ' + planBricks(pl).length + ' Steine sind verbaut. Super gebaut!';
-    $('bScene').innerHTML = buildSVG(pl, 9999, false, BV.drop);
-    $('bActions').innerHTML = '<button class="btn" id="bNext">Nächstes Bauwerk: ' + planName(BV.done + 1) + '</button>';
+  $('bTabPlan').className = 'btn' + (BV.tab === 'plan' ? '' : ' ghost');
+  $('bTabCrane').className = 'btn' + (BV.tab === 'crane' ? '' : ' ghost');
+  $('bPlanPane').hidden = BV.tab !== 'plan'; $('bCranePane').hidden = BV.tab !== 'crane';
+  if (BV.tab === 'crane') { renderCrane(); return; }
+  var pl = planById(B.cur), lv = bLevel();
+  $('bRank').textContent = rankText();
+  $('bMascot').innerHTML = owlSVG(BV.mood);
+  $('bPick').hidden = !!(pl || BV.fin); $('bWork').hidden = !(pl || BV.fin); $('bPlanFig').hidden = !!BV.fin || !pl;
+  if (BV.fin) {
+    var fp = planById(BV.fin.id);
+    $('bTitle').textContent = 'Fertig: ' + fp.name + '!';
+    $('bInfo').textContent = 'Alle ' + planBricks(fp).length + ' Steine sind verbaut.';
+    $('bBubble').textContent = BV.msg || 'Super gebaut!';
+    $('bScene').innerHTML = buildSVG(fp, null, {});
+    $('bTray').innerHTML = '';
+    $('bActions').innerHTML = '<button class="btn" id="bNew">Neuen Auftrag aussuchen</button>';
     $('bHint').textContent = '';
+  } else if (!pl) {
+    $('bTitle').textContent = 'Neuer Bauauftrag';
+    $('bInfo').textContent = 'Such dir aus, was du bauen möchtest. Ein Stein kostet 1 Stern, Gold und Kristall kosten mehr.';
+    $('bBubble').textContent = BV.msg || 'Drei Kunden warten schon auf dich. Wen möchtest du glücklich machen?';
+    $('bPick').innerHTML = offers().map(function (p) {
+      var again = B.done.indexOf(p.id) >= 0;
+      return '<button class="bpick" data-p="' + p.id + '">' + buildSVG(p, null, {}) + '<b>' + esc(p.name) + (again ? ' (nochmal)' : '') + '</b><span>' + esc(p.who) + '</span><span class="muted">' + (p.prem ? '<b class="lux">Luxus-Auftrag</b> · ' : '') + planBricks(p).length + ' Steine · ' + planCost(p) + ' ★' + (p.veh ? ' · Fahrzeug' : '') + '</span></button>';
+    }).join('');
+    $('bTray').innerHTML = ''; $('bActions').innerHTML = '';
+    $('bHint').textContent = st < 1 ? 'Du hast gerade keine Sterne. Rechne ein paar Aufgaben, dann kannst du loslegen!' : 'Du hast ' + st + (st === 1 ? ' Stern.' : ' Sterne.');
   } else {
-    $('bTitle').textContent = planName(pos.idx);
-    $('bInfo').textContent = pos.placed + ' von ' + pos.total + ' Steinen gesetzt · noch ' + (pos.total - pos.placed);
-    $('bScene').innerHTML = buildSVG(pos.plan, pos.placed, true, BV.drop);
-    $('bActions').innerHTML = '<button class="btn" id="bOne"' + (st < 1 ? ' disabled' : '') + '>Stein setzen · 1 ★</button>' + (st >= 5 ? '<button class="btn ghost" id="bFive">5 Steine setzen</button>' : '');
-    $('bHint').textContent = st < 1 ? 'Keine Sterne mehr. Rechne ein paar Aufgaben, dann geht es weiter!' : 'Du hast ' + st + (st === 1 ? ' Stern' : ' Sterne') + ' für neue Steine.';
+    var total = planBricks(pl).length, placed = countSet(B.set);
+    $('bTitle').textContent = pl.name;
+    var left = 0; planBricks(pl).forEach(function (b, k) { if (B.set.charAt(k) !== '1') left += bPrice(b.c); });
+    $('bInfo').textContent = placed + ' von ' + total + ' Steinen gesetzt · es fehlen noch ' + left + ' ★';
+    $('bBubble').textContent = BV.msg || (placed === 0 ? pl.who + ' ' : '') + [
+      'Wähle unten eine Farbe und tippe auf den Platz, wo der Stein hingehört. Die gestrichelten Umrisse helfen dir.',
+      'Als Geselle liegen auch Farben dabei, die du nicht brauchst. Schau genau auf den Bauplan!',
+      'Meister bauen ohne Umrisse. Schau auf den Bauplan und zähle die Noppen auf der grünen Platte.',
+      'Großmeister bauen ohne Umrisse und mit vielen falschen Farben. Du schaffst das!'][lv];
+    $('bScene').innerHTML = buildSVG(pl, B.set, { ghost: lv < 2, drop: BV.drop, bad: BV.bad, badC: BV.badC, tip: BV.tip });
+    $('bPlan').innerHTML = buildSVG(pl, null, {});
+    $('bTray').innerHTML = trayColors(pl).map(function (c) { return '<button data-c="' + c + '" class="' + (c === BV.sel ? 'on' : '') + '"' + (st < 1 ? ' disabled' : '') + ' aria-pressed="' + (c === BV.sel) + '">' + trayBrick(c) + '<span>' + BCOL[c][0] + (BPRICE[c] ? ' · ' + BPRICE[c] + ' ★' : '') + '</span></button>'; }).join('');
+    $('bActions').innerHTML = '<button class="btn ghost" id="bTip"' + (st < 1 ? ' disabled' : '') + '>Tipp zeigen</button>';
+    $('bHint').textContent = st < 1 ? 'Keine Sterne mehr. Rechne ein paar Aufgaben, dann geht es weiter!' : 'Du hast ' + st + (st === 1 ? ' Stern' : ' Sterne') + ' für neue Steine.' + (B.err ? '' : ' Bisher ohne Fehler!');
   }
-  BV.drop = -1;
-  var g = '', from = Math.max(0, pos.idx - 6);
-  for (var i = pos.idx - 1; i >= from; i--) g += '<figure>' + buildSVG(PLANS[i % PLANS.length], 9999, false, -1) + '<figcaption>' + esc(planName(i)) + '</figcaption></figure>';
+  BV.drop = -1; BV.bad = -1;
+  var g = '';
+  for (var i = B.done.length - 1; i >= Math.max(0, B.done.length - 9); i--) { var dp = planById(B.done[i]); if (dp) g += '<figure>' + buildSVG(dp, null, {}) + '<figcaption>' + esc(dp.name) + '</figcaption></figure>'; }
   $('bGallery').innerHTML = g; $('bGalleryWrap').hidden = !g;
 }
-function placeBrick() {
-  if (stars() < 1 || BV.done >= 0) return false;
-  var before = buildPos();
-  spendStars(1); S.dev[DEV].b = (S.dev[DEV].b || 0) + 1; save();
-  BV.drop = before.placed;
-  if (before.placed + 1 === before.total) { BV.done = before.idx; setTimeout(function () { checkBadges(); }, 700); }
-  renderBuild(); return true;
-}
-$('playBuild').addEventListener('click', function () { BV.done = -1; BV.drop = -1; go('build'); renderBuild(); });
-$('bActions').addEventListener('click', function (e) {
-  if (BV.busy) return;
-  if (e.target.closest('#bOne')) placeBrick();
-  else if (e.target.closest('#bNext')) { BV.done = -1; renderBuild(); }
-  else if (e.target.closest('#bFive')) {
-    BV.busy = true; var n = 0;
-    (function step() { if (n < 5 && !$('v-build').hidden && placeBrick()) { n++; setTimeout(step, 380); } else BV.busy = false; })();
+function bTap(cx, cyF) {
+  var B = bState(), pl = planById(B.cur); if (!pl || BV.fin) return;
+  var m = cellMap(pl), base = Math.floor(cyF), near = cyF - base < .5 ? base - 1 : base + 1, k = -1, filled = false;
+  [base, near].forEach(function (cy) { var kk = m[cx + ',' + cy]; if (k >= 0 || kk === undefined) return; if (B.set.charAt(kk) === '1') filled = true; else k = kk; });
+  if (stars() < 1) { bSay('Du hast keine Sterne mehr. Rechne ein paar Aufgaben, dann baust du weiter!'); renderBuild(); return; }
+  if (!BV.sel) { bSay('Wähle zuerst unten eine Farbe aus.'); renderBuild(); return; }
+  if (k < 0) {
+    if (filled) bSay('Da steht schon ein Stein.');
+    else { B.err++; bTouch(); save(); bTone(196, .25, 'sine'); bSay('Laut Bauplan kommt da kein Stein hin. Schau noch mal genau!', 'think'); }
+    renderBuild(); return;
   }
+  if (!canPlace(pl, B.set, k)) { bSay('Der Stein braucht Halt. Bau erst darunter weiter!'); renderBuild(); return; }
+  var b = planBricks(pl)[k];
+  if (b.c !== BV.sel) {
+    B.err++; bTouch(); save(); bTone(196, .25, 'sine');
+    BV.bad = k; BV.badC = BV.sel;
+    bSay(bLevel() === 0 ? 'Fast! Hier gehört ein ' + stoneName(b.c) + ' hin.' : 'Die Farbe passt hier nicht. Schau auf den Bauplan!', 'think');
+    renderBuild(); return;
+  }
+  var price = bPrice(b.c);
+  if (stars() < price) { bSay('Ein ' + stoneName(b.c) + ' kostet ' + price + ' Sterne, du hast nur ' + stars() + '. Rechne noch ein paar Aufgaben!', 'think'); renderBuild(); return; }
+  spendStars(price); S.dev[DEV].b = (S.dev[DEV].b || 0) + 1;
+  B.set = B.set.slice(0, k) + '1' + B.set.slice(k + 1); BV.drop = k; if (BV.tip === k) BV.tip = -1;
+  bTone(520 + b.y * 30, .09, 'square'); if (price > 1) bTone(1320, .18, 'triangle', .08);
+  if (countSet(B.set) === B.set.length) {
+    var clean = !B.err; B.done.push(pl.id); if (clean) B.clean++;
+    B.cur = ''; B.set = ''; B.err = 0; BV.fin = { id: pl.id }; BV.tip = -1;
+    var n = B.done.length, ri = RANK_AT.indexOf(n);
+    bSay(pl.who.replace(/\.$/, '') + ': erledigt! Danke, du bist ein toller Baumeister.' + (clean ? ' Und das ganz ohne Fehler!' : '') + (ri > 0 ? ' Du bist jetzt ' + RANKS[ri] + '!' : ''), 'cheer');
+    setTimeout(function () { chime(); brickRain(); }, 450);
+    setTimeout(function () { checkBadges(); }, 1200);
+  } else bSay(pick(['Prima!', 'Passt!', 'Genau richtig!', 'Klack, sitzt!', 'Weiter so!', 'Super!']));
+  bTouch(); save(); renderBuild();
+}
+function bTip() {
+  var B = bState(), pl = planById(B.cur); if (!pl) return;
+  var bricks = planBricks(pl), any = -1, same = -1;
+  for (var k = 0; k < bricks.length; k++) {
+    if (B.set.charAt(k) === '1' || !canPlace(pl, B.set, k)) continue;
+    if (any < 0) any = k;
+    if (same < 0 && bricks[k].c === BV.sel) same = k;
+  }
+  var t = same >= 0 ? same : any; if (t < 0) return;
+  BV.tip = t;
+  if (same < 0) { BV.sel = bricks[t].c; bSay(BV.sel && same < 0 ? 'Mit dieser Farbe geht gerade nichts. Nimm ' + BCOL[bricks[t].c][0] + ', der leuchtende Platz ist frei.' : 'Der leuchtende Platz ist frei.'); }
+  else bSay('Schau, der leuchtende Platz passt zu deiner Farbe.');
+  renderBuild();
+  setTimeout(function () { if (BV.tip === t) { BV.tip = -1; if (!$('v-build').hidden && BV.tab === 'plan') renderBuild(); } }, 2600);
+}
+$('playBuild').addEventListener('click', function () { BV.fin = null; BV.tab = 'plan'; BV.msg = ''; BV.mood = 'happy'; BV.tip = -1; go('build'); renderBuild(); });
+$('bTabPlan').addEventListener('click', function () { BV.tab = 'plan'; renderBuild(); });
+$('bTabCrane').addEventListener('click', function () { BV.tab = 'crane'; renderBuild(); });
+$('bPick').addEventListener('click', function (e) {
+  var p = e.target.closest('[data-p]'); if (!p) return;
+  var B = bState(), pl = planById(p.getAttribute('data-p')); if (!pl || B.cur) return;
+  B.cur = pl.id; B.set = zeros(planBricks(pl).length); B.err = 0; bTouch(); save();
+  BV.sel = ''; BV.tip = -1; bSay('Auftrag angenommen: ' + pl.name + '. Wähle eine Farbe und fang unten an!');
+  renderBuild();
 });
+$('bTray').addEventListener('click', function (e) {
+  var c = e.target.closest('[data-c]'); if (!c || c.disabled) return;
+  BV.sel = c.getAttribute('data-c'); bSay(BCOL[BV.sel][0] + ' ist ausgewählt. Tippe jetzt auf den Platz für den Stein.'); bTone(880, .05, 'sine'); renderBuild();
+});
+$('bScene').addEventListener('click', function (e) {
+  var svg = $('bScene').querySelector('svg'); if (!svg || BV.fin) return;
+  var vb = svg.viewBox.baseVal, r = svg.getBoundingClientRect(); if (!r.width) return;
+  var x = (e.clientX - r.left) / r.width * vb.width, y = (e.clientY - r.top) / r.height * vb.height;
+  var cx = Math.floor(x / 40), cyF = (vb.height - 14 - y) / 30;
+  if (cx < 0 || cx > 11 || cyF < -.4) return;
+  bTap(cx, Math.max(0, cyF));
+});
+$('bActions').addEventListener('click', function (e) {
+  if (e.target.closest('#bTip')) bTip();
+  else if (e.target.closest('#bNew')) { BV.fin = null; BV.msg = ''; BV.mood = 'happy'; renderBuild(); window.scrollTo(0, 0); }
+});
+
+/* Kran-Turm: Der Kran schwenkt einen Stein hin und her, Tippen lässt ihn fallen. Was übersteht, bricht ab. */
+var KT = null, KW = 400, KBH = 30, KCOLS = ['r', 'b', 'l', 'k', 'o', 'v', 'w', 'p'];
+function towerName(n) { return n >= 30 ? 'ein Turm bis zu den Sternen' : n >= 20 ? 'ein Wolkenkratzer' : n >= 10 ? 'ein Hochhaus' : n >= 5 ? 'ein Wohnhaus' : 'ein Gartenhaus'; }
+function renderCrane() {
+  var B = bState(), st = stars(), run = !!(KT && !KT.over);
+  $('kGame').hidden = !KT; $('kPanel').hidden = run;
+  $('kBest').textContent = B.tower;
+  if (KT) { $('kFloors').textContent = KT.floors; $('kHearts').textContent = '♥♥♥'.slice(0, KT.hearts) + '♡♡♡'.slice(0, 3 - KT.hearts); }
+  if (run) { if (KT.paused) { KT.paused = false; KT.last = 0; KT.raf = requestAnimationFrame(kTick); } return; }
+  $('kText').textContent = KT ? 'Dein Turm hat ' + KT.floors + (KT.floors === 1 ? ' Stockwerk' : ' Stockwerke') + ', das ist ' + towerName(KT.floors) + '!' + (KT.rec ? ' Neuer Rekord!' : '')
+    : 'Der Kran bringt einen Stein nach dem anderen. Tippe auf das Bild, dann fällt der Stein. Was übersteht, bricht ab. Bei drei Fehlwürfen ist Schluss.';
+  $('kRec').textContent = B.tower ? 'Dein Rekord: ' + B.tower + (B.tower === 1 ? ' Stockwerk. ' : ' Stockwerke. ') + 'Ab 10 wird es ein Hochhaus, ab 20 ein Wolkenkratzer.' : 'Ab 10 Stockwerken wird es ein Hochhaus, ab 20 ein Wolkenkratzer.';
+  $('kGo').disabled = st < COST; $('kGo').textContent = (KT ? 'Nochmal spielen' : 'Spielen') + ' · ' + COST + ' ★';
+  $('kNeed').textContent = st < COST ? 'Du brauchst ' + COST + ' Sterne. Noch ' + (COST - st) + ' sammeln!' : 'Du hast ' + st + ' Sterne.';
+}
+function kStart() {
+  var B = bState(); if (stars() < COST || (KT && !KT.over)) return;
+  spendStars(COST); B.tg++; bTouch(); save();
+  if (KT && KT.raf) cancelAnimationFrame(KT.raf);
+  KT = { floors: 0, hearts: 3, stack: [{ x: 120, w: 160, c: 'y' }], chunks: [], perfect: 0, ph: Math.random() * 6, mode: 'swing', bx: 0, by: 0, vy: 0, w: 160, c: 0, cam: 0,
+    msg: 'Tippe, damit der Stein fällt!', msgT: 2.5, over: false, rec: false, best0: B.tower, last: 0, wait: 0, paused: false };
+  renderBuild();
+  var cv = $('kCanvas'), w = cv.clientWidth || 360, h = cv.clientHeight || 520, dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  KT.ctx = cv.getContext('2d'); KT.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); KT.W = w; KT.H = h; KT.sc = w / KW;
+  KT.raf = requestAnimationFrame(kTick);
+}
+function kTop() { return KT.stack.length * KBH; }
+function kMsg(t) { KT.msg = t; KT.msgT = 1.6; }
+function kDrop() { if (KT && !KT.over && KT.mode === 'swing') { KT.mode = 'fall'; KT.vy = 0; } }
+function kTick(now) {
+  if (!KT || KT.over) return;
+  if ($('v-build').hidden || BV.tab !== 'crane') { KT.paused = true; KT.raf = 0; return; }
+  var dt = KT.last ? Math.min(.05, (now - KT.last) / 1000) : 0; KT.last = now;
+  kStep(dt); kDraw();
+  if (!KT.over) KT.raf = requestAnimationFrame(kTick);
+}
+function kStep(dt) {
+  var top = kTop();
+  KT.ph += dt * (1.25 + Math.min(2.3, KT.floors * .08));
+  if (KT.mode === 'swing') { KT.bx = KW / 2 + Math.min(150, 195 - KT.w / 2) * Math.sin(KT.ph) - KT.w / 2; KT.by = top + 3.2 * KBH; }
+  else if (KT.mode === 'fall') { KT.vy += 2400 * dt; KT.by -= KT.vy * dt; if (KT.by <= top) kLand(); }
+  else if (KT.mode === 'wait') { KT.wait -= dt; if (KT.wait <= 0) { if (KT.hearts <= 0) { kOver(); return; } KT.mode = 'swing'; } }
+  KT.chunks = KT.chunks.filter(function (p) { p.vy += 1800 * dt; p.y -= p.vy * dt; p.x += p.vx * dt; p.r += p.vr * dt; return p.y > KT.cam - 300; });
+  var viewH = KT.H / KT.sc, target = Math.max(0, kTop() + 5.4 * KBH + 46 / KT.sc - viewH);
+  KT.cam += (target - KT.cam) * Math.min(1, dt * 4);
+  if (KT.msgT > 0) KT.msgT -= dt;
+}
+function kLand() {
+  var B = bState(), t = KT.stack[KT.stack.length - 1], L = Math.max(KT.bx, t.x), R = Math.min(KT.bx + KT.w, t.x + t.w), ov = R - L;
+  var col = KCOLS[KT.c % KCOLS.length], top = kTop(), left = KT.bx < t.x, nb;
+  if (ov <= 2) {
+    KT.chunks.push({ x: KT.bx, y: top, w: KT.w, c: col, vx: left ? -90 : 90, vy: 120, r: 0, vr: left ? -2.5 : 2.5 });
+    KT.hearts--; KT.perfect = 0; kMsg(KT.hearts ? 'Plumps! Daneben.' : 'Plumps!'); bTone(180, .3, 'sine');
+    KT.mode = 'wait'; KT.wait = KT.hearts ? .7 : 1.3; renderCrane(); return;
+  }
+  if (Math.abs(KT.bx - t.x) <= 7) {
+    nb = { x: t.x, w: t.w, c: col }; KT.perfect++;
+    if (KT.perfect % 3 === 0 && nb.w < 160) { var g = Math.min(16, 160 - nb.w); nb.w += g; nb.x = Math.max(0, Math.min(KW - nb.w, nb.x - g / 2)); kMsg('Perfekt! Der Turm wird breiter.'); }
+    else kMsg(KT.perfect > 1 ? KT.perfect + '× perfekt!' : 'Perfekt!');
+    bTone(784, .12, 'triangle'); bTone(1046, .16, 'triangle', .09);
+  } else {
+    nb = { x: L, w: ov, c: col }; KT.perfect = 0;
+    KT.chunks.push({ x: left ? KT.bx : R, y: top, w: KT.w - ov, c: col, vx: left ? -60 : 60, vy: 0, r: 0, vr: left ? -3 : 3 });
+    bTone(440, .08, 'square');
+  }
+  KT.stack.push(nb); KT.floors++; KT.w = nb.w; KT.c++;
+  var ms = { 5: 'Ein Wohnhaus!', 10: 'Ein Hochhaus!', 20: 'Ein Wolkenkratzer!', 30: 'Bis zu den Sternen!' }[KT.floors];
+  if (ms) { kMsg(ms); bTone(523, .12); bTone(659, .12, 'triangle', .12); bTone(784, .25, 'triangle', .24); }
+  if (KT.floors > B.tower) { B.tower = KT.floors; bTouch(); save(); }
+  KT.mode = 'wait'; KT.wait = .25; renderCrane();
+}
+function kOver() {
+  KT.over = true; KT.rec = KT.floors > KT.best0; KT.raf = 0;
+  kDraw(); save(); renderBuild();
+  if (KT.rec && KT.best0) { chime(); }
+  setTimeout(function () { checkBadges(); }, 600);
+}
+function kMix(a, b, t) {
+  var x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16), o = [16, 8, 0].map(function (s) { var p = (x >> s) & 255, q = (y >> s) & 255; return Math.round(p + (q - p) * t); });
+  return 'rgb(' + o.join(',') + ')';
+}
+function kBrick(c, x, y, w, h, colKey, sc) {
+  var col = BRICK[colKey]; c.fillStyle = col[0]; c.strokeStyle = col[1]; c.lineWidth = 2;
+  for (var sx = 5; sx + 10 <= w / sc - 2; sx += 20) { c.fillRect(x + sx * sc, y - 6 * sc, 10 * sc, 6 * sc); c.strokeRect(x + sx * sc, y - 6 * sc, 10 * sc, 6 * sc); }
+  c.fillRect(x, y, w, h); c.strokeRect(x + 1, y + 1, w - 2, h - 2);
+}
+function kDraw() {
+  var c = KT.ctx, W = KT.W, H = KT.H, sc = KT.sc, cam = KT.cam, top = kTop(), i;
+  function Y(wy) { return H - (wy - cam) * sc; }
+  var f = Math.min(1, cam / 900), g = c.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, kMix('#6fbbef', '#0f1a40', f)); g.addColorStop(1, kMix('#d7efff', '#3a4785', f));
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  if (f > .4) { c.fillStyle = 'rgba(255,255,255,' + ((f - .4) * 1.6) + ')'; for (i = 0; i < 40; i++) { var sx = (i * 97) % 400, sy = ((i * 53) % 600 + cam * .3) % H; c.fillRect(sx * sc, sy, 2, 2); } }
+  [250, 470, 720, 980, 1260, 1560].forEach(function (cy, j) {
+    var y = Y(cy), x = ((j * 137) % 300 + 40) * sc; if (y < -40 || y > H + 40) return;
+    c.fillStyle = 'rgba(255,255,255,.85)'; c.beginPath(); c.ellipse(x, y, 34 * sc, 14 * sc, 0, 0, 7); c.ellipse(x + 26 * sc, y - 8 * sc, 24 * sc, 14 * sc, 0, 0, 7); c.ellipse(x - 24 * sc, y + 2 * sc, 20 * sc, 10 * sc, 0, 0, 7); c.fill();
+  });
+  var gy = Y(0); if (gy < H) { c.fillStyle = '#5cbf61'; c.fillRect(0, gy, W, H - gy); c.fillStyle = '#4aa74f'; c.fillRect(0, gy, W, 4); }
+  // Kran: Mast links, Ausleger oben
+  var jib = Y(top + 5.4 * KBH), mx = 8 * sc, mw = 18 * sc;
+  c.fillStyle = '#f2b81f'; c.fillRect(mx, jib, mw, Math.max(0, gy - jib)); c.strokeStyle = '#b8860b'; c.lineWidth = 1.5;
+  c.beginPath(); for (var yy = jib; yy < Math.min(H, gy); yy += mw) { c.moveTo(mx, yy); c.lineTo(mx + mw, yy + mw); } c.stroke();
+  c.fillStyle = '#f2b81f'; c.fillRect(0, jib - 8 * sc, W, 10 * sc); c.strokeStyle = '#b8860b'; c.strokeRect(0, jib - 8 * sc, W, 10 * sc);
+  c.fillStyle = '#3d4b63'; c.fillRect(mx - 2 * sc, jib - 26 * sc, 26 * sc, 18 * sc); c.fillStyle = '#a8dcf5'; c.fillRect(mx + 3 * sc, jib - 22 * sc, 14 * sc, 9 * sc);
+  // Turm
+  KT.stack.forEach(function (b, k) { var y = Y((k + 1) * KBH); if (y > -KBH * sc && y - KBH * sc < H) kBrick(c, b.x * sc, y, b.w * sc, KBH * sc, b.c, sc); });
+  c.fillStyle = '#fff'; c.font = '800 ' + Math.round(14 * Math.max(.8, sc)) + 'px "Baloo 2", sans-serif'; c.textAlign = 'left';
+  for (i = 10; i < KT.stack.length; i += 10) { var fy = Y((i + .5) * KBH); c.fillStyle = 'rgba(0,0,0,.35)'; c.fillRect(W - 38 * sc, fy - 9, 34 * sc, 18); c.fillStyle = '#fff'; c.fillText(String(i), W - 34 * sc, fy + 5); }
+  // hängender oder fallender Stein
+  if (KT.mode !== 'wait' && !KT.over) {
+    var col = KCOLS[KT.c % KCOLS.length], bx = KT.bx * sc, by = Y(KT.by + KBH), bw = KT.w * sc;
+    if (KT.mode === 'swing') {
+      c.fillStyle = '#3d4b63'; c.fillRect(bx + bw / 2 - 10 * sc, jib, 20 * sc, 8 * sc);
+      c.strokeStyle = '#3d4b63'; c.lineWidth = 2; c.beginPath(); c.moveTo(bx + bw / 2, jib + 8 * sc); c.lineTo(bx + bw / 2, by - 8 * sc); c.stroke();
+      c.setLineDash([5, 5]); c.strokeStyle = 'rgba(255,255,255,.7)'; c.beginPath(); c.moveTo(bx, by + KBH * sc); c.lineTo(bx, Y(top)); c.moveTo(bx + bw, by + KBH * sc); c.lineTo(bx + bw, Y(top)); c.stroke(); c.setLineDash([]);
+    }
+    kBrick(c, bx, by, bw, KBH * sc, col, sc);
+  }
+  KT.chunks.forEach(function (p) {
+    c.save(); c.translate((p.x + p.w / 2) * sc, Y(p.y + KBH / 2)); c.rotate(p.r);
+    kBrick(c, -p.w / 2 * sc, -KBH / 2 * sc, p.w * sc, KBH * sc, p.c, sc); c.restore();
+  });
+  if (KT.msgT > 0 && KT.msg) {
+    c.globalAlpha = Math.min(1, KT.msgT * 2); c.font = '800 ' + Math.round(Math.max(20, 28 * sc)) + 'px "Baloo 2", sans-serif'; c.textAlign = 'center';
+    c.lineWidth = 5; c.strokeStyle = 'rgba(20,30,60,.75)'; c.strokeText(KT.msg, W / 2, H * .3); c.fillStyle = '#fff'; c.fillText(KT.msg, W / 2, H * .3); c.globalAlpha = 1;
+  }
+}
+$('kGo').addEventListener('click', kStart);
+(function () {
+  var cv = $('kCanvas');
+  if (window.PointerEvent) cv.addEventListener('pointerdown', function (e) { e.preventDefault(); kDrop(); });
+  else { cv.addEventListener('touchstart', function (e) { e.preventDefault(); kDrop(); }); cv.addEventListener('mousedown', kDrop); }
+  document.addEventListener('keydown', function (e) {
+    if (!KT || $('v-build').hidden || BV.tab !== 'crane' || (e.key !== ' ' && e.key !== 'Enter' && e.key !== 'ArrowDown')) return;
+    if (e.target && e.target.tagName === 'BUTTON') return;
+    e.preventDefault(); kDrop();
+  });
+})();
+
+// Neue Abzeichen für die Baustelle (hinter „Stadtplaner“ einsortiert)
+(function () {
+  var ids = BADGES.map(function (b) { return b.id; }), sp = BADGES[ids.indexOf('stadtplaner')];
+  if (sp) sp.desc = 'Acht Bauwerke gebaut';
+  var add = [
+    { id: 'fahrzeugbau', name: 'Fahrzeugbauer', desc: 'Ein Fahrzeug gebaut', col: '#f08a24', sym: '⚙', test: function () { return bState().done.some(function (id) { var p = planById(id); return p && p.veh; }); } },
+    { id: 'sauberbau', name: 'Sauber gebaut', desc: 'Ein Bauwerk ganz ohne Fehler', col: '#2f9e5b', sym: '✓', test: function () { return bState().clean >= 1; } },
+    { id: 'baumeisterrang', name: 'Bau-Meister', desc: 'Rang Meister auf der Baustelle', col: '#6b3fb0', sym: '⌂⌂', test: function () { return bState().done.length >= 5; } },
+    { id: 'luxusbau', name: 'Luxus-Baumeister', desc: 'Einen Luxus-Auftrag mit Gold gebaut', col: '#a77d00', sym: '◆', test: function () { return bState().done.some(function (id) { var p = planById(id); return p && p.prem; }); } },
+    { id: 'kran10', name: 'Kranfahrer', desc: 'Kran-Turm mit 10 Stockwerken', col: '#c99a0a', sym: '10', test: function () { return bState().tower >= 10; } },
+    { id: 'kran20', name: 'Wolkenkratzer', desc: 'Kran-Turm mit 20 Stockwerken', col: '#1d4f9c', sym: '20', test: function () { return bState().tower >= 20; } }
+  ];
+  var at = ids.indexOf('stadtplaner') + 1 || BADGES.length;
+  BADGES.splice.apply(BADGES, [at, 0].concat(add));
+})();
 
 /* ---------- Eltern ---------- */
 var gateAns = 0;
