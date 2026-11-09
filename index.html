@@ -14,7 +14,8 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<!-- Schriften laden nebenbei: hängt Google Fonts (kein Internet, Filter), erscheint die Seite trotzdem sofort mit Ersatzschrift -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Layout: ein Rechenheft auf Karopapier mit rotem Rand; jede Ansicht ist eine Heftseite, große Tasten für Kinderfinger. */
 :root {
@@ -125,6 +126,23 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .pad .ok { background: var(--good); color: var(--accent-ink); border-color: var(--good); box-shadow: 0 4px 0 var(--good-dark); }
 .pad .del { font-size: 1.3rem; }
 .clockbox { display: flex; justify-content: center; }
+/* Tablet quer (z. B. Fire HD): Ziffernblock neben der Aufgabe, Uhr neben den Antworten, damit nichts unter den Rand rutscht */
+@media (orientation: landscape) and (max-height: 760px) and (min-width: 700px) {
+  #quizBody.q-num { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 36%); grid-auto-rows: min-content; column-gap: 24px; row-gap: 12px; }
+  #quizBody.q-num > * { grid-column: 1; }
+  #quizBody.q-num > .pad { grid-column: 2; grid-row: 1 / span 5; align-self: start; }
+  #quizBody.q-num .pad button { padding: 8px 0; }
+  #quizBody.q-num.miss > #fb { grid-column: 2; grid-row: 1 / span 5; }
+  #quizBody.q-num .story { font-size: 1.2rem; line-height: 1.45; padding: 12px 16px; gap: 8px; }
+  #quizBody.q-num .task.small { font-size: 2.4rem; }
+  #quizBody.q-clock { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 24px; row-gap: 12px; align-items: center; }
+  #quizBody.q-clock > p { grid-column: 1 / -1; }
+  #quizBody.q-clock > .clockbox { grid-column: 1; grid-row: 2 / span 3; }
+  #quizBody.q-clock > h3 { grid-column: 2; grid-row: 2; }
+  #quizBody.q-clock > .choices { grid-column: 2; grid-row: 3; }
+  #quizBody.q-clock > #fb { grid-column: 2; grid-row: 4; }
+  #quizBody.q-clock .clockbox svg { width: min(250px, 44vh); }
+}
 .clockbox svg { width: min(260px, 70vw); height: auto; }
 .choices { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 560px; width: 100%; margin: 0 auto; }
 .choices button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 8px; border-radius: 14px; background: var(--card); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); min-width: 0; }
@@ -227,7 +245,7 @@ body.testing .wrap { padding-bottom: 90px; }
 .m-p { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='15' y='22' width='10' height='18' rx='4' fill='%23f4ead8'/%3E%3Cpath d='M4 24q0-18 16-18t16 18z' fill='%23d64541'/%3E%3Ccircle cx='13' cy='15' r='3' fill='%23fff'/%3E%3Ccircle cx='24' cy='11' r='2.5' fill='%23fff'/%3E%3Ccircle cx='28' cy='19' r='2.5' fill='%23fff'/%3E%3C/svg%3E"); }
 .isl.night .m-q { filter: brightness(.7); }
 .c.free { cursor: pointer; }
-.c.free:hover { outline: 2px dashed rgba(255,255,255,.8); outline-offset: -3px; }
+@media (hover: hover) { .c.free:hover { outline: 2px dashed rgba(255,255,255,.8); outline-offset: -3px; } }
 .c.fresh { animation: place .35s cubic-bezier(.3, 1.5, .5, 1); }
 @keyframes place { from { transform: scale(.3); } to { transform: none; } }
 .m-w { background: repeating-linear-gradient(#c58b52 0 30%, #9c6a39 30% 34%, #b57d47 34% 64%, #9c6a39 64% 68%, #c58b52 68% 100%); box-shadow: inset 0 0 0 1px #7d5530; }
@@ -659,7 +677,7 @@ function syncNow() {
   fetch('sync.php?code=' + encodeURIComponent(SYNC.code), { cache: 'no-store' })
     .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); return r.json(); })
     .then(function (res) {
-      S = mergeState(S, res && res.state); ensure(); save(true);
+      S = mergeState(S, fixShapes(res && res.state)); ensure(); save(true);
       return fetch('sync.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: SYNC.code, state: S }) });
     })
     .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); SYNC.state = 'ok'; SYNC.last = Date.now(); })
@@ -824,7 +842,7 @@ var SACH2 = [
   function () { var a = rnd(25, 60), b = rnd(10, 35); return story('Auf dem Spielplatz spielen ' + a + ' Kinder. Dann kommen noch ' + b + ' Kinder dazu. Wie viele Kinder spielen jetzt dort?', 'Kinder:', a + b, '', a + ' + ' + b + ' = ' + (a + b)); }
 ];
 var SACH3 = [
-  function () { var n = who(), a = pick([20, 30, 40, 50]), b = rnd(4, 12), c = rnd(3, 10); return story(n + ' hat ' + a + ' €. ' + n + ' kauft ein Buch für ' + b + ' € und einen Stift für ' + c + ' €. Wie viel Geld bleibt übrig?', 'Übrig:', a - b - c, '€', a + ' − ' + b + ' − ' + c + ' = ' + (a - b - c)); },
+  function () { var n = who(), a = pick([20, 30, 40, 50]), b = rnd(4, 12), c = rnd(3, Math.min(10, a - b - 3)); return story(n + ' hat ' + a + ' €. ' + n + ' kauft ein Buch für ' + b + ' € und einen Stift für ' + c + ' €. Wie viel Geld bleibt übrig?', 'Übrig:', a - b - c, '€', a + ' − ' + b + ' − ' + c + ' = ' + (a - b - c)); },
   function () { var a = rnd(20, 40), b = rnd(5, 15), c = rnd(4, 12); return story('Im Zug sitzen ' + a + ' Leute. Am ersten Bahnhof steigen ' + b + ' ein. Am zweiten Bahnhof steigen ' + c + ' aus. Wie viele Leute sitzen jetzt im Zug?', 'Leute:', a + b - c, '', a + ' + ' + b + ' − ' + c + ' = ' + (a + b - c)); },
   function () { var n = who(), a = rnd(10, 30), b = rnd(10, 30), c = rnd(5, 20); return story(n + ' sammelt Sticker. Am Montag bekommt ' + n + ' ' + a + ', am Dienstag ' + b + ' und am Mittwoch ' + c + ' Sticker. Wie viele Sticker sind es zusammen?', 'Sticker:', a + b + c, '', a + ' + ' + b + ' + ' + c + ' = ' + (a + b + c)); }
 ];
@@ -952,9 +970,9 @@ function openLearn(k, pickLv) {
   if (mix) {
     $('learnBadge').textContent = T.name + ' · Meister-Mix';
     $('learnTitle').textContent = 'Meister-Mix: alles gemischt';
-    $('learnBody').innerHTML = '<p>Du hast alle Stufen geschafft! Im Meister-Mix kommen Aufgaben aus allen ' + n + ' Stufen durcheinander. Zeig, was du kannst!</p><p class="muted">Tippe oben auf eine Stufe, um ihre Erklärung nochmal zu sehen.</p>';
+    $('learnBody').innerHTML = '<p>Du hast alle Stufen geschafft! Im Meister-Mix kommen Aufgaben aus allen ' + n + ' Stufen durcheinander. Zeig, was du kannst! Jede richtige Aufgabe bringt 2 Sterne.</p><p class="muted">Tippe oben auf eine Stufe, um ihre Erklärung nochmal zu sehen.</p>';
   } else {
-    $('learnBadge').textContent = T.name + ' · Stufe ' + lv + (lv < cur ? ' (Wiederholung)' : '');
+    $('learnBadge').textContent = T.name + ' · Stufe ' + lv + (lv < cur || S.mastered[k] ? ' (Wiederholung)' : '');
     $('learnTitle').textContent = L.title;
     $('learnBody').innerHTML = L.explain;
   }
@@ -998,12 +1016,14 @@ function renderTask() {
     t.opts.forEach(function (o, i) { h += '<button data-o="' + i + '"><span class="dig">' + digital(o.h, o.m) + '</span><span class="wrd">' + clockWords(o.h, o.m) + '</span></button>'; });
     h += '</div>';
   }
+  $('quizBody').className = 'sheet ' + (t.type === 'num' ? 'q-num' : 'q-clock');
   $('quizBody').innerHTML = h;
 }
 $('quizBody').addEventListener('click', function (e) {
   var t = Q && Q.tasks[Q.i]; if (!t) return;
   var nx = e.target.closest('#nextBtn'); if (nx) { nextTask(); return; }
   if (e.target.closest('#speakBtn')) { speak(t.story); return; }
+  if (e.target.closest('#speakHint')) { speak(('Richtig ist ' + t.answer + (t.unit ? ' ' + t.unit : '') + '. ' + t.hint).replace(/−/g, ' minus ').replace(/·/g, ' mal ').replace(/€/g, ' Euro').replace(/\bct\b/g, ' Cent')); return; }
   if (Q.locked) return;
   var k = e.target.closest('[data-k]');
   if (k && t.type === 'num') {
@@ -1022,7 +1042,8 @@ $('quizBody').addEventListener('click', function (e) {
   }
 });
 document.addEventListener('keydown', function (e) {
-  if ($('v-quiz').hidden || !Q || Q.locked) return;
+  if ($('v-quiz').hidden || !Q) return;
+  if (Q.locked) { if ((e.key === 'Enter' || e.key === ' ') && $('nextBtn')) { e.preventDefault(); $('nextBtn').click(); } return; }
   var t = Q.tasks[Q.i]; if (t.type !== 'num') return;
   var b = null;
   if (/^[0-9]$/.test(e.key)) b = document.querySelector('#pad [data-k="' + e.key + '"]');
@@ -1038,28 +1059,29 @@ function check(ok, given) {
     if (ok) { Q.streak++; Q.miss = 0; if (Q.streak >= 3 && Q.dyn < maxLv) { Q.dyn++; Q.streak = 0; } }
     else { Q.miss++; Q.streak = 0; if (Q.miss >= 2 && Q.dyn > 1) { Q.dyn--; Q.miss = 0; } }
   }
-  if (ok) { var gain = taskStars(t); Q.earned = (Q.earned || 0) + gain; addStars(gain); save(); $('fb').innerHTML = '<div class="feedback good"><strong>' + pick(PRAISE) + ' +' + gain + ' ★</strong></div>'; renderProgress(); setTimeout(nextTask, 900); }
+  if (ok) { var gain = taskStars(t); Q.earned = (Q.earned || 0) + gain; addStars(gain); save(); $('fb').innerHTML = '<div class="feedback good"><strong>' + pick(PRAISE) + ' +' + gain + ' ★</strong></div>'; renderProgress(); var q0 = Q, i0 = Q.i; setTimeout(function () { if (Q === q0 && Q.i === i0) nextTask(); }, 900); }
   else {
     var right = t.type === 'num' ? t.answer + (t.unit ? ' ' + t.unit : '') : t.answerText;
     Q.wrong.push({ q: t.type === 'num' ? (t.story ? t.q : t.q + ' ?') : 'Uhr ' + digital(t.h, t.m), given: given, answer: t.type === 'num' ? t.answer : digital(t.h, t.m) });
-    $('fb').innerHTML = '<div class="feedback bad"><strong>Fast! Richtig ist ' + esc(right) + '.</strong><span>' + esc(t.hint) + '</span><div><button class="btn" id="nextBtn">Weiter</button></div></div>';
+    $('fb').innerHTML = '<div class="feedback bad"><strong>Fast! Richtig ist ' + esc(right) + '.</strong><span>' + esc(t.hint) + '</span><div class="row"><button class="btn" id="nextBtn">Weiter</button>' + (canSpeak && t.story ? '<button class="btn ghost" id="speakHint">🔊 Vorlesen</button>' : '') + '</div></div>';
     renderProgress();
-    if ($('pad')) $('pad').hidden = true;
+    if ($('pad')) { $('pad').hidden = true; $('quizBody').classList.add('miss'); }
   }
 }
 /* Sterne pro Aufgabe: Stufe 1-2 = 1, Stufe 3-4 = 2, Profi-Aufgabe (über der eigenen Stufe) +1 */
-function taskStars(t) { return (t.lv >= 3 ? 2 : 1) + (!Q.mix && t.lv > Q.level ? 1 : 0); }
+function taskStars(t) { return Q.mix ? 2 : (t.lv >= 3 ? 2 : 1) + (t.lv > Q.level ? 1 : 0); } // Meister-Mix: jede Aufgabe 2 Sterne
 function nextTask() { if (!Q || $('v-quiz').hidden) return; Q.i++; if (Q.i >= ROUND) finish(); else renderTask(); }
 
 function finish() {
   var correct = Q.results.filter(Boolean).length, bonus = correct === ROUND ? 3 : 0, T = THEMES[Q.theme], got = (Q.earned || 0) + bonus;
   addStars(bonus);
-  var msg = '';
+  var msg = '', next = null;
   if (Q.mix) msg = correct >= PASS ? 'Meister-Mix geschafft! Du kannst alles aus „' + T.name + '“.' : 'Der Meister-Mix ist knifflig. Übe einzelne Stufen und versuch es nochmal!';
-  else if (Q.level < S.levels[Q.theme]) msg = correct >= PASS ? 'Wiederholung geschafft! Stufe ' + Q.level + ' sitzt.' : 'Gut, dass du wiederholst. Übung macht den Meister!';
+  else if (Q.level < S.levels[Q.theme] || S.mastered[Q.theme]) msg = // geschaffte Stufen: Wiederholung ändert den Lernstand nicht
+    correct >= PASS ? 'Wiederholung geschafft! Stufe ' + Q.level + ' sitzt.' : 'Gut, dass du wiederholst. Übung macht den Meister!';
   else if (correct >= PASS) {
-    if (Q.level < T.levels.length && S.levels[Q.theme] === Q.level) { S.levels[Q.theme] = Q.level + 1; touch(Q.theme); msg = 'Neue Stufe freigeschaltet: <strong>' + T.levels[Q.level].title + '</strong>!'; }
-    else if (Q.level === T.levels.length) { S.mastered[Q.theme] = true; touch(Q.theme); msg = 'Du hast alle Stufen bei „' + T.name + '“ geschafft!'; }
+    if (Q.level < T.levels.length && S.levels[Q.theme] === Q.level) { S.levels[Q.theme] = Q.level + 1; touch(Q.theme); next = Q.level + 1; msg = 'Neue Stufe freigeschaltet: <strong>' + T.levels[Q.level].title + '</strong>!'; }
+    else if (Q.level === T.levels.length) { S.mastered[Q.theme] = true; touch(Q.theme); next = 'mix'; msg = 'Du hast alle Stufen bei „' + T.name + '“ geschafft!'; }
   } else if (correct <= LOW && Q.level > 1 && S.levels[Q.theme] === Q.level && lastScore(Q.theme, Q.level) !== null && lastScore(Q.theme, Q.level) <= LOW) {
     S.levels[Q.theme] = Q.level - 1; S.mastered[Q.theme] = false; touch(Q.theme);
     msg = 'Wir üben noch einmal <strong>' + T.levels[Q.level - 2].title + '</strong>. Dann klappt die nächste Stufe bestimmt!';
@@ -1074,6 +1096,7 @@ function finish() {
   $('resStars').innerHTML = st;
   $('resEarned').innerHTML = 'Du hast <b>' + got + ' Sterne</b> gesammelt' + (bonus ? ' (mit 3 Bonus-Sternen)' : '') + '. Jetzt hast du <b>' + stars() + '</b>.';
   $('resLevel').innerHTML = msg;
+  Q.next = next; $('resAgain').textContent = next === 'mix' ? 'Zum Meister-Mix ★' : next ? 'Weiter mit Stufe ' + next : 'Nochmal üben';
   $('resMascot').innerHTML = owlSVG(correct >= PASS ? 'cheer' : correct >= 5 ? 'wink' : 'happy');
   $('resBubble').textContent = resultLine(correct);
   var rw = rewardState(); if (rw && rw.done && rw.have - got < rw.goal) $('resBubble').textContent += ' Und: Du hast deine Belohnung erreicht!';
@@ -1081,7 +1104,7 @@ function finish() {
   checkBadges();
   if (correct === ROUND) celebrate();
 }
-$('resAgain').addEventListener('click', function () { openLearn(Q.theme, Q.mix ? 'mix' : Q.level); });
+$('resAgain').addEventListener('click', function () { openLearn(Q.theme, Q.next || (Q.mix ? 'mix' : Q.level)); });
 
 /* ---------- Die Keks-Jagd ---------- */
 /* Waschbär Rudi hat die Kekse vom Schulfest stibitzt. Krümel sammeln, Hindernissen ausweichen, Rudi einholen. Keine Gewalt: Rudi gibt die Kekse zurück und hilft beim Fest. */
@@ -1571,8 +1594,9 @@ var IV = { tool: 'build', sel: 'w', cat: 'bau', zone: 0, night: false, fresh: -1
 function emptyGrid() { return new Array(IW * IROWS + 1).join('.'); }
 function islandEnsure() {
   if (!S.island || typeof S.island.g !== 'string' || S.island.g.length !== IW * IROWS) {
-    S.island = { g: emptyGrid(), inv: { w: 12, d: 6, t: 1, g: 2, b: 3 }, photos: [] };
-    S.at.island = Date.now(); save();
+    // Neu angelegt: Zeitstempel so alt wie möglich, damit ein echtes Land von einem anderen Gerät beim Abgleich gewinnt
+    S.island = { g: emptyGrid(), inv: { w: 12, d: 6, t: 1, g: 2, b: 3 }, photos: [] }; IV.isNew = true;
+    if (!S.at.island) S.at.island = 1; save();
   }
   var I = S.island;
   if (!I.inv) I.inv = {};
@@ -1583,7 +1607,7 @@ function islandEnsure() {
     // Willkommensgeschenk für Olafs Land (einmalig, auch für alte Spielstände)
     var gift = { i: 3, j: 2, y: 2, c: 4, '1': 2, '4': 2, A: 1, B: 1, D: 1, E: 1 };
     for (var k in gift) I.inv[k] = (I.inv[k] || 0) + gift[k];
-    I.v = 2; IV.gift = true; S.at.island = Date.now(); save();
+    I.v = 2; IV.gift = true; save(); // Geschenk ändert den Zeitstempel nicht: ein neuerer Stand anderswo bleibt gültig
   }
   if (!I.t || typeof I.t !== 'object') I.t = {};
   ZONES.forEach(function (Z) { if (typeof I.t[Z.id] !== 'string' || I.t[Z.id].length !== IW) I.t[Z.id] = new Array(IW + 1).join('.'); });
@@ -1591,7 +1615,7 @@ function islandEnsure() {
     // Geschenk zu Gebäuden und Straßen (einmalig)
     var gift3 = { 'ä': 1, 'ø': 4, W: 1 };
     for (var k3 in gift3) I.inv[k3] = (I.inv[k3] || 0) + gift3[k3];
-    I.v = 3; IV.gift3 = true; S.at.island = Date.now(); save();
+    I.v = 3; IV.gift3 = true; save();
   }
 }
 function landGround(zi) { return S.island.t[ZONES[zi].id]; }
@@ -1633,6 +1657,7 @@ function islandHTML(g, night, interactive, freshIdx, zi, t) {
   return h + '</div>';
 }
 function islandSay(t) { $('iBubble').textContent = t; }
+function emptyMsg(m) { return '„' + m.name + '“ hast du gerade nicht im Vorrat. ' + (stars() >= m.p ? 'Tippe unten auf „' + m.name + ' kaufen“.' : 'Ein Stück kostet ' + m.p + ' ★. Rechne noch ein paar Aufgaben, dann kannst du es kaufen!'); }
 function matOf(k) { return MATS.filter(function (m) { return m.k === k; })[0]; }
 function renderIsland() {
   islandEnsure();
@@ -1674,7 +1699,8 @@ $('playIsland').addEventListener('click', function () {
   islandEnsure(); IV.residents = -1; go('island');
   $('iMascot').innerHTML = owlSVG('happy');
   var tips = ['Ein Haus mit Tür und Dach lockt Tiere an.', 'Mit „Dach links“ und „Dach rechts“ baust du ein spitzes Dach.', 'Oben bei den Pfeilen kommst du in andere Gebiete: Bauernhof, Wald, Berge, Wüste, Dorf, Hafen und Stadt.', 'Bei „Gebäude“ gibt es fertige Häuser, eine Schule, die Feuerwehr, einen Bahnhof und sogar ein Riesenrad.', 'Straßen und Schienen legst du auf die oberste Bodenreihe. Dann können Autos und Züge darauf stehen.', 'Bei „Tiere“ kannst du Tiere kaufen und überall hinsetzen.', 'Bei „Schätze“ gibt es ganz besondere Sachen wie ein Einhorn oder eine Olaf-Statue. Dafür musst du sparen!', 'Bau einen Teich aus Wasser, dann kommt ein Tier zum Schwimmen.', 'Schalte auf Nacht: Lampen und Fenster leuchten.', 'Mach ein Foto, wenn dir dein Bau gefällt.'];
-  if (IV.gift) { IV.gift = false; islandSay('Willkommen in Olafs Land, ' + S.name + '! Meine Insel ist jetzt viel größer: Es gibt einen Bauernhof, einen Wald, Schneeberge, eine Wüste, ein Dorf, einen Hafen und eine Stadt. Als Geschenk bekommst du Spitzdächer, Tannen, ein paar Tiere, ein Haus, ein Auto und Straßen!'); IV.gift3 = false; }
+  if (IV.isNew) { IV.isNew = IV.gift = IV.gift3 = false; islandSay('Willkommen in Olafs Land, ' + S.name + '! Hier baust du, was du willst: auf der Insel, am Bauernhof, im Wald, in den Bergen, in der Wüste, im Dorf, am Hafen und in der Stadt. Zum Start schenke ich dir Holz, Dächer, Türen, ein paar Tiere, ein Haus, ein Auto und Straßen. Wähle unten etwas aus und tippe auf einen freien Platz!'); }
+  else if (IV.gift) { IV.gift = false; islandSay('Willkommen in Olafs Land, ' + S.name + '! Meine Insel ist jetzt viel größer: Es gibt einen Bauernhof, einen Wald, Schneeberge, eine Wüste, ein Dorf, einen Hafen und eine Stadt. Als Geschenk bekommst du Spitzdächer, Tannen, ein paar Tiere, ein Haus, ein Auto und Straßen!'); IV.gift3 = false; }
   else if (IV.gift3) { IV.gift3 = false; islandSay('Neu in Olafs Land: fertige Gebäude, Straßen, Schienen und Fahrzeuge, dazu ein Dorf und ein Hafen! Ich schenke dir ein Haus, ein Auto und vier Straßenstücke. Straßen kommen auf die oberste Bodenreihe.'); }
   else islandSay('Willkommen in Olafs Land, ' + S.name + '! Wähle unten ein Material und tippe auf einen freien Platz. Tipp: ' + pick(tips));
   renderIsland();
@@ -1689,7 +1715,7 @@ document.addEventListener('click', function (e) {
       if (!tm.ground) { islandSay('Auf den Boden kommen nur Straße, Gehweg, Zebrastreifen und Schienen. Darüber kannst du bauen.'); return; }
       if (tg[tc] !== '.') { islandSay('Da liegt schon etwas. Mit „Abreißen“ kannst du es wegnehmen.'); return; }
       if (Zt.terrain[0][tc] === 'W') { islandSay('Auf dem Wasser geht das nicht. Bau lieber eine Brücke darüber.'); return; }
-      if (!(tinv[IV.sel] > 0)) { islandSay('Du hast keine ' + tm.name + ' mehr. Unten kannst du neue kaufen.'); return; }
+      if (!(tinv[IV.sel] > 0)) { islandSay(emptyMsg(tm)); return; }
       tinv[IV.sel]--; tset(IV.sel);
     } else if (tg[tc] !== '.') { tinv[tg[tc]] = (tinv[tg[tc]] || 0) + 1; tset('.'); }
     return;
@@ -1700,7 +1726,7 @@ document.addEventListener('click', function (e) {
     if (IV.tool === 'build') {
       if (sm.ground) { islandSay(sm.name + ' kommt auf den Boden. Tippe auf die oberste Bodenreihe.'); return; }
       if (ch !== '.') { islandSay('Da ist schon etwas. Mit „Abreißen“ kannst du Platz machen.'); return; }
-      if (!(inv[IV.sel] > 0)) { islandSay('Du hast kein ' + sm.name + ' mehr. Unten kannst du neues kaufen.'); return; }
+      if (!(inv[IV.sel] > 0)) { islandSay(emptyMsg(sm)); return; }
       if (BLD[IV.sel]) {
         var B = BLD[IV.sel], r0 = Math.max(Math.floor(i / IW), B.h - 1), c0 = Math.min(i % IW, IW - B.w), anc = r0 * IW + c0, cells = bldCells(IV.sel, anc);
         if (cells.some(function (j) { return g[j] !== '.'; })) { islandSay(B.name + ' braucht ' + B.w + ' Felder nebeneinander und ' + B.h + ' übereinander. Such dir einen freien Platz oder reiß etwas ab.'); return; }
@@ -2330,6 +2356,21 @@ $('rewSave').addEventListener('click', function () {
 $('rewDone').addEventListener('click', function () { S.reward = null; S.at.reward = Date.now(); save(); renderParents(); });
 $('silbenIn').addEventListener('change', function () { S.silben = $('silbenIn').checked; S.at.silben = Date.now(); save(); });
 
+/* Ältere sync.php (json_decode mit assoc) macht aus leeren Objekten {} leere Listen [] und aus {"0":…} Listen.
+   In einer Liste gehen später gesetzte Schlüssel (z. B. gekaufte Teile in Olafs Land) beim Speichern verloren.
+   Darum alles, was keine echte Liste ist, wieder zum Objekt machen. */
+var LISTS = { history: 1, wrong: 1, photos: 1, done: 1 };
+function fixShapes(x, key) {
+  if (!x || typeof x !== 'object') return x;
+  var i, k;
+  if (Array.isArray(x)) {
+    if (LISTS[key]) { for (i = 0; i < x.length; i++) x[i] = fixShapes(x[i]); return x; }
+    var o = {}; for (i = 0; i < x.length; i++) o[i] = fixShapes(x[i]); return o;
+  }
+  for (k in x) if (Object.prototype.hasOwnProperty.call(x, k)) x[k] = fixShapes(x[k], k);
+  return x;
+}
+S = fixShapes(S);
 ensure(); save(true);
 go('home');
 syncNow();
