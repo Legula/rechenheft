@@ -100,7 +100,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .tens { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
 .ten { width: 14px; height: 120px; border-radius: 4px; background: repeating-linear-gradient(var(--b2) 0 11px, var(--card) 11px 12px); border: 1px solid var(--accent); }
 .ten.alt { background: repeating-linear-gradient(var(--b4) 0 11px, var(--card) 11px 12px); border-color: var(--good); }
-.one { width: 14px; height: 11px; border-radius: 3px; background: var(--b3); border: 1px solid var(--star); }
+.one { width: 14px; height: 11px; border-radius: 3px; background: var(--b1); border: 1px solid var(--bad); } /* Einer rot, Zehner blau: wie bei „Zehner und Einer“ */
 .ones { display: flex; flex-direction: column-reverse; gap: 1px; }
 .plus-sign { font-family: var(--f-display); font-size: 2rem; font-weight: 800; align-self: center; padding: 0 4px; }
 
@@ -126,6 +126,62 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .pad .ok { background: var(--good); color: var(--accent-ink); border-color: var(--good); box-shadow: 0 4px 0 var(--good-dark); }
 .pad .del { font-size: 1.3rem; }
 .clockbox { display: flex; justify-content: center; }
+
+/* Olafs Sternwarte */
+.skywrap { max-width: 760px; width: 100%; margin: 0 auto; border-radius: 16px; overflow: hidden; border: 2px solid var(--line); background: #0b1236; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.skysvg { display: block; width: 100%; height: auto; }
+.skysvg .tw { animation: twinkle 2.6s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: .2; } }
+.skysvg .shoot { animation: shoot 9s linear infinite; cursor: pointer; }
+@keyframes shoot { 0% { transform: translate(500px, 18px); } 75% { transform: translate(-60px, 160px); } 100% { transform: translate(-60px, 160px); } }
+.skysvg .sat { animation: sat 40s linear infinite; }
+@keyframes sat { from { transform: translate(-20px, 128px); } to { transform: translate(500px, 112px); } }
+.skysvg .rain path { animation: rain 2.6s ease-in-out infinite; }
+@keyframes rain { 0%, 100% { opacity: 0; } 30% { opacity: 1; } }
+.skysvg .polar { animation: polar 6s ease-in-out infinite; }
+@keyframes polar { 50% { opacity: .55; } }
+.skysvg .burst2 { animation: burst2 .9s ease-out forwards; transform-origin: 240px 90px; transform-box: view-box; }
+@keyframes burst2 { from { transform: scale(.2); opacity: 1; } to { transform: scale(2.4); opacity: 0; } }
+.skysvg .cstar { cursor: pointer; }
+.skysvg .cstar.shake { animation: shake .4s; }
+@media (prefers-reduced-motion: reduce) { .skysvg .tw, .skysvg .rain path, .skysvg .polar, .skysvg .sat, .skysvg .burst2, .skysvg .cstar.shake { animation: none; } .skysvg .shoot { animation: none; transform: translate(250px, 70px); } }
+
+/* Zehner und Einer: Zehner blau, Einer rot (wie die Silbenfarben) */
+.pz { color: var(--syl1); font-weight: 800; }
+.pe { color: var(--syl2); font-weight: 800; }
+.tens.big { justify-content: center; }
+.sayword { align-items: center; text-align: center; }
+.sayword .word { font-family: var(--f-display); font-size: clamp(1.8rem, 6vw, 2.6rem); font-weight: 800; line-height: 1.1; color: var(--ink); }
+.choices.pick .dig { font-size: 2.6rem; }
+.laybox { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 150px; justify-content: flex-end; }
+.laycount { font-family: var(--f-display); font-size: 1.4rem; }
+.laynote { text-align: center; }
+.laypad { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 420px; width: 100%; margin: 0 auto; }
+.laypad button { font-family: var(--f-display); font-weight: 800; font-size: 1.4rem; padding: 12px 0; border-radius: 14px; background: var(--card); border: 2px solid var(--line); box-shadow: 0 4px 0 var(--line); }
+.laypad button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
+.laypad .pzb { color: var(--syl1); border-color: var(--syl1); }
+.laypad .peb { color: var(--syl2); border-color: var(--syl2); }
+.laypad .ok { grid-column: 1 / -1; background: var(--good); color: var(--accent-ink); border-color: var(--good); box-shadow: 0 4px 0 var(--good-dark); }
+.swaptip { display: flex; flex-direction: column; gap: 8px; background: var(--card); border-radius: 12px; padding: 10px 12px; }
+.swaptip .ten { height: 80px; } .swaptip .one { height: 7px; }
+/* Zahlenmauern */
+:root { --brick: #f6d9cb; --brick-line: #b8533e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --brick: #4a2f28; --brick-line: #d9826b; } }
+:root[data-theme="dark"] { --brick: #4a2f28; --brick-line: #d9826b; }
+.wall { display: flex; flex-direction: column; align-items: center; gap: 5px; margin: 0 auto; }
+.wrow { display: flex; gap: 5px; }
+.brick { width: clamp(60px, 17vw, 92px); height: clamp(46px, 11vw, 60px); display: flex; align-items: center; justify-content: center; box-sizing: border-box; border-radius: 8px; background: var(--brick); border: 2px solid var(--brick-line); font-family: var(--f-display); font-weight: 800; font-size: clamp(1.4rem, 4.6vw, 1.9rem); font-variant-numeric: tabular-nums; color: var(--ink); padding: 0; }
+.brick.hole { background: var(--card); border: 3px dashed var(--accent); }
+.brick.hole em { font-style: normal; color: var(--accent); }
+button.brick.hole { cursor: pointer; }
+.brick.on { border-style: solid; background: var(--accent-soft); color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.brick.ok { border-style: solid; border-color: var(--good); background: var(--good-soft); }
+.brick.bad { border-style: solid; border-color: var(--bad); background: var(--bad-soft); }
+.brick.shown { border-style: solid; color: var(--accent); }
+.wallhelp { text-align: center; }
+@media (orientation: landscape) and (max-height: 760px) and (min-width: 700px) {
+  #quizBody.q-wall .brick { height: 44px; }
+}
 /* Tablet quer (z. B. Fire HD): Ziffernblock neben der Aufgabe, Uhr neben den Antworten, damit nichts unter den Rand rutscht */
 @media (orientation: landscape) and (max-height: 760px) and (min-width: 700px) {
   #quizBody.q-num { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 36%); grid-auto-rows: min-content; column-gap: 24px; row-gap: 12px; }
@@ -433,6 +489,12 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
       <p class="level">Bau, was du willst: Häuser, Straßen, Tiere und mehr in acht Gebieten</p>
       <span class="badge" id="islandBadge">Kreativ bauen</span>
     </button>
+    <button class="topic play" id="playSky">
+      <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="12" fill="#1f2f6b"/><circle cx="50" cy="13" r="7" fill="#fdf3c4"/><path d="M14 8l1.6 3.4 3.6.4-2.7 2.5.8 3.6-3.3-1.9-3.3 1.9.8-3.6L8.8 11.8l3.6-.4z" fill="#fff6c2"/><circle cx="30" cy="10" r="1.3" fill="#fff"/><circle cx="24" cy="22" r="1" fill="#fff"/><path d="M6 64L28 40L36 34L44 40L64 52V64Z" fill="#46506e"/><rect x="27" y="30" width="18" height="12" fill="#e9edf3"/><path d="M26 31A10 10 0 0 1 46 31Z" fill="#c9d1dd"/><rect x="36" y="16" width="5" height="16" rx="1.5" fill="#f2f4f8" transform="rotate(-35 38 30)"/><path d="M52 30l9-5" stroke="#fff6c2" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <h3>Olafs Sternwarte</h3>
+      <p class="level" id="skyInfo">Bau eine Sternwarte, kauf Planeten und entdecke Sternbilder</p>
+      <span class="badge" id="skyBadge"></span>
+    </button>
   </div>
   <button class="parents-link" id="toParents">Für Eltern</button>
 </section>
@@ -557,6 +619,21 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   <div id="iPhotosWrap" hidden><h3>Fotoalbum</h3><div class="photos" id="iPhotos"></div></div>
 </section>
 
+<!-- OLAFS STERNWARTE -->
+<section id="v-sky" hidden>
+  <div class="row" style="justify-content:space-between">
+    <button class="back" data-go="home">← Zurück</button>
+    <div class="stars"><b>★</b><span id="skStars">0</span></div>
+  </div>
+  <div class="mascot-row"><div class="mascot" id="skMascot" style="width:64px"></div><p class="bubble" id="skBubble"></p></div>
+  <div class="skywrap" id="skScene"></div>
+  <div class="row"><button class="btn ghost" id="skCancel" hidden>Sternbild abbrechen</button></div>
+  <p class="muted" id="skStreak"></p>
+  <div class="cats" id="skCats"></div>
+  <p class="muted" id="skInfo"></p>
+  <div class="mats" id="skItems"></div>
+</section>
+
 <!-- ABZEICHEN -->
 <section id="v-badges" hidden>
   <button class="back" data-go="home">← Zurück</button>
@@ -625,9 +702,9 @@ var COST = 5, PASS = 8, LOW = 4, ROUND = 10;
 function lastScore(theme, level) { for (var i = S.history.length - 1; i >= 0; i--) { var x = S.history[i]; if (x.theme === theme) return x.level === level ? x.score : null; } return null; }
 
 function merge(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call(b, k)) a[k] = b[k]; return a; }
-function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, uhr: 1, geld: 1, sach: 1 }, mastered: {}, history: [], best: { caught: 0, chase: 0, crumbs: 0 } }; }
+function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, stelle: 1, mauer: 1, uhr: 1, geld: 1, sach: 1 }, mastered: {}, history: [], best: { caught: 0, chase: 0, crumbs: 0 } }; }
 var S = fresh();
-try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, uhr: 1, geld: 1, sach: 1 }, p.levels || {}); S.best = merge({ caught: 0, chase: 0, crumbs: 0 }, p.best || {}); } } catch (e) {}
+try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, stelle: 1, mauer: 1, uhr: 1, geld: 1, sach: 1 }, p.levels || {}); S.best = merge({ caught: 0, chase: 0, crumbs: 0 }, p.best || {}); } } catch (e) {}
 function save(noSync) { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} if (!noSync) scheduleSync(); }
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -642,7 +719,7 @@ function ensure() {
   if (TEST && !S.testInit) { S.dev[DEV].e += 999; S.testInit = true; }
   if (!S.at) S.at = {};
   if (!S.epoch) S.epoch = 0;
-  S.levels = merge({ plus: 1, uhr: 1, geld: 1, sach: 1 }, S.levels || {});
+  S.levels = merge({ plus: 1, stelle: 1, mauer: 1, uhr: 1, geld: 1, sach: 1 }, S.levels || {});
   S.best = merge({ caught: 0, chase: 0, crumbs: 0 }, S.best || {});
   if (!S.mastered) S.mastered = {};
   if (!S.history) S.history = [];
@@ -664,6 +741,7 @@ function mergeState(L, R) {
   if ((Ra.silben || 0) > (o.at.silben || 0)) { o.silben = R.silben; o.at.silben = Ra.silben; }
   if ((Ra.reward || 0) > (o.at.reward || 0)) { o.reward = R.reward || null; o.at.reward = Ra.reward; }
   if ((Ra.island || 0) > (o.at.island || 0) && R.island) { o.island = R.island; o.at.island = Ra.island; }
+  if ((Ra.sky || 0) > (o.at.sky || 0) && R.sky) { o.sky = R.sky; o.at.sky = Ra.sky; }
   var seen = {}, all = [];
   o.history.concat(R.history || []).forEach(function (h) { var id = h.d + h.theme; if (!seen[id]) { seen[id] = 1; all.push(h); } });
   all.sort(function (x, y) { return x.d < y.d ? -1 : x.d > y.d ? 1 : 0; });
@@ -691,7 +769,7 @@ function syncNow() {
     })
     .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); SYNC.state = 'ok'; SYNC.last = Date.now(); })
     .catch(function (e) { SYNC.state = 'error'; SYNC.err = String((e && e.message) || e); })
-    .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); if (!$('v-build').hidden && !BV.busy) renderBuild(); if (!$('v-island').hidden) renderIsland(); });
+    .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); if (!$('v-build').hidden && !BV.busy) renderBuild(); if (!$('v-island').hidden) renderIsland(); if (!$('v-sky').hidden && !SV.con) renderSky(); });
 }
 function scheduleSync() { if (!SYNC.code) return; clearTimeout(SYNC.timer); SYNC.timer = setTimeout(syncNow, 1200); }
 function showSync() {
@@ -927,15 +1005,149 @@ function silbenHTML(text) {
 var canSpeak = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
 function speak(text) { try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; u.rate = .9; speechSynthesis.speak(u); } catch (e) {} }
 
+/* ---------- Zehner und Einer ---------- */
+/* Viele Kinder vertauschen Zehner und Einer, weil man im Deutschen die Einer zuerst spricht (vierundzwanzig = 24).
+   Farben wie bei der Silbenfärbung: Zehner blau, Einer rot. */
+var ONES_W = ['', 'ein', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun'];
+var TENS_W = ['', 'zehn', 'zwanzig', 'dreißig', 'vierzig', 'fünfzig', 'sechzig', 'siebzig', 'achtzig', 'neunzig', 'hundert'];
+var TEENS_W = { 11: 'elf', 12: 'zwölf', 16: 'sechzehn', 17: 'siebzehn' };
+function zSpan(s) { return '<span class="pz">' + s + '</span>'; }
+function eSpan(s) { return '<span class="pe">' + s + '</span>'; }
+function numWord(n) { return numWordHTML(n).replace(/<[^>]+>/g, ''); }
+function numWordHTML(n) {
+  var t = Math.floor(n / 10), o = n % 10;
+  if (n === 100) return zSpan('hundert');
+  if (n < 10) return eSpan(n === 1 ? 'eins' : ONES_W[o]);
+  if (TEENS_W[n]) return n === 16 ? eSpan('sech') + zSpan('zehn') : n === 17 ? eSpan('sieb') + zSpan('zehn') : zSpan(TEENS_W[n]);
+  if (n < 20) return eSpan(ONES_W[o]) + zSpan('zehn');
+  if (!o) return zSpan(TENS_W[t]);
+  return eSpan(ONES_W[o]) + 'und' + zSpan(TENS_W[t]);
+}
+function digitsHTML(n) { var s = String(n); return s.length === 2 ? zSpan(s[0]) + eSpan(s[1]) : esc(s); }
+function placeHint(n) { var t = Math.floor(n / 10), o = n % 10; return n + ' hat ' + t + ' Zehner und ' + o + ' Einer. Die Zehner stehen vorne.'; }
+function twoDigit(minT) { var t = rnd(minT || 1, 9), o = rnd(1, 9); return t * 10 + o; }
+var STELLE = [
+  { title: 'Stangen und Würfel zählen',
+    explain: '<p>Eine <strong class="pz">Zehnerstange</strong> hat 10 Würfel. Einzelne <strong class="pe">Einerwürfel</strong> liegen daneben. Zähle zuerst die Stangen in Zehnerschritten, dann die Würfel.</p><div class="tens">' + tensHTML(34) + '</div><p class="example"><span class="pz">3 Zehner</span> und <span class="pe">4 Einer</span><br>= <em>' + digitsHTML(34) + '</em></p><p>Die Zehner schreibt man <strong>vorne</strong>, die Einer <strong>hinten</strong>.</p>',
+    gen: function () { var n = Math.random() < .15 ? rnd(1, 9) * 10 : twoDigit(); return { type: 'num', place: true, q: 'Stangen und Würfel: ' + n, blocks: n, prompt: 'Das sind', answer: n, hint: placeHint(n) }; } },
+  { title: 'Zahlen legen',
+    explain: '<p>Jetzt legst du selbst! Tippe auf <strong class="pz">+ Zehner</strong> für eine Stange und auf <strong class="pe">+ Einer</strong> für einen Würfel.</p><p class="example">' + digitsHTML(52) + ' = <span class="pz">5 Zehner</span> und <span class="pe">2 Einer</span></p><div class="tens">' + tensHTML(52) + '</div><p>Übrigens: 10 Einerwürfel kann man zu einer Zehnerstange tauschen.</p>',
+    gen: function () { var n = Math.random() < .15 ? rnd(1, 9) * 10 : twoDigit(); return { type: 'lay', q: 'Lege ' + n, answer: n, hint: placeHint(n) }; } },
+  { title: 'Hören und schreiben',
+    explain: '<p>Beim Sprechen kommen die Einer <strong>zuerst</strong>, beim Schreiben die Zehner. Darum: Hör gut zu und schreib die Zehner vorne hin!</p><p class="example">' + numWordHTML(47) + '<br>= <em>' + digitsHTML(47) + '</em></p><p>Tipp: Was hinten mit <span class="pz">-zig</span> oder <span class="pz">-ßig</span> endet, sind die Zehner.</p>',
+    gen: function () { var n = Math.random() < .12 ? rnd(11, 19) : twoDigit(2); return { type: 'num', place: true, say: n, q: 'Hören: ' + numWord(n), prompt: 'Schreibe:', answer: n, hint: numWord(n) + ' = ' + Math.floor(n / 10) + ' Zehner und ' + n % 10 + ' Einer, also ' + n + '.' }; } },
+  { title: 'Zahlendreher',
+    explain: '<p>34 und 43 sehen fast gleich aus, sind aber ganz verschieden! Schau immer zuerst auf die <strong class="pz">Zehner</strong>.</p><div class="row"><div class="tens">' + tensHTML(34) + '</div><p class="example">' + digitsHTML(34) + '</p></div><div class="row"><div class="tens">' + tensHTML(43) + '</div><p class="example">' + digitsHTML(43) + '</p></div><p>43 ist größer, weil es mehr Zehner hat.</p>',
+    gen: function () {
+      var t = rnd(1, 9), o = rnd(1, 9); while (o === t) o = rnd(1, 9);
+      var n = t * 10 + o, tw = o * 10 + t;
+      if (Math.random() < .5) {
+        var opts = [n, tw]; [t * 10 + t, o * 10 + o].forEach(function (x) { if (opts.indexOf(x) < 0) opts.push(x); });
+        return { type: 'pick', say: n, q: 'Zahlendreher: ' + numWord(n), title: 'Welche Zahl hörst du?', word: numWordHTML(n), opts: shuffle(opts.map(function (x) { return { label: x, ok: x === n }; })), answer: n, answerText: String(n), hint: numWord(n) + ' = ' + t + ' Zehner und ' + o + ' Einer, also ' + n + '.' };
+      }
+      var big = Math.max(n, tw), sm = Math.min(n, tw), small = Math.random() < .3;
+      return { type: 'pick', q: (small ? 'Kleiner: ' : 'Größer: ') + n + ' oder ' + tw, title: small ? 'Welche Zahl ist kleiner?' : 'Welche Zahl ist größer?', opts: shuffle([n, tw]).map(function (x) { return { label: x, ok: x === (small ? sm : big) }; }), answer: small ? sm : big, answerText: String(small ? sm : big), hint: 'Vergleiche die Zehner: ' + Math.floor(big / 10) + ' Zehner sind mehr als ' + Math.floor(sm / 10) + ' Zehner. Also ist ' + big + ' größer.' };
+    } }
+];
+/* Hat das Kind Zehner und Einer vertauscht? (z. B. 34 statt 43) */
+function isSwap(given, answer) { var g = String(given), a = String(answer); return a.length === 2 && g.length === 2 && a[0] !== a[1] && g === a[1] + a[0]; }
+function swapTip(answer) { return '<div class="swaptip"><p><strong>Schau mal: Du hast Zehner und Einer vertauscht!</strong> ' + digitsHTML(answer) + ' hat <span class="pz">' + Math.floor(answer / 10) + ' Zehner</span> und <span class="pe">' + answer % 10 + ' Einer</span>. Die Zehner stehen vorne.</p><div class="tens">' + tensHTML(answer) + '</div></div>'; }
+function layHTML(t) {
+  var tt = Math.floor(t.cur / 10), oo = t.cur % 10;
+  return '<div class="laybox"><div class="tens">' + (t.cur ? tensHTML(t.cur) : '<span class="muted">Noch leer</span>') + '</div><p class="laycount"><span class="pz">' + tt + ' Zehner</span> und <span class="pe">' + oo + ' Einer</span></p></div>';
+}
+
+/* ---------- Zahlenmauern ---------- */
+/* Zwei Steine nebeneinander ergeben zusammen den Stein darüber. Reihe 0 ist unten. */
+function wallVals(base) { var v = [base.slice()]; while (v[v.length - 1].length > 1) { var p = v[v.length - 1], n = []; for (var i = 0; i < p.length - 1; i++) n.push(p[i] + p[i + 1]); v.push(n); } return v; }
+function wallSolve(v, holes) {
+  // Löst die Mauer Schritt für Schritt; gibt die Reihenfolge zurück oder null, wenn sie nicht eindeutig lösbar ist
+  var known = {}, order = [], r, i, n = v[0].length;
+  for (r = 0; r < v.length; r++) for (i = 0; i < v[r].length; i++) if (holes.indexOf(r + ',' + i) < 0) known[r + ',' + i] = 1;
+  for (var guard = 0; guard < 20; guard++) {
+    var found = null;
+    for (r = 0; r < v.length && !found; r++) for (i = 0; i < v[r].length && !found; i++) {
+      var k = r + ',' + i; if (known[k]) continue;
+      if (r > 0 && known[(r - 1) + ',' + i] && known[(r - 1) + ',' + (i + 1)]) found = k;
+      else if (r < n - 1 && i < v[r].length - 1 && known[(r + 1) + ',' + i] && known[r + ',' + (i + 1)]) found = k;
+      else if (r < n - 1 && i > 0 && known[(r + 1) + ',' + (i - 1)] && known[r + ',' + (i - 1)]) found = k;
+    }
+    if (!found) break;
+    known[found] = 1; order.push(found);
+  }
+  return order.length === holes.length ? order : null;
+}
+function wallTask(base, holeCount, needLow) {
+  var v = wallVals(base), all = [], r, i;
+  for (r = 0; r < v.length; r++) for (i = 0; i < v[r].length; i++) all.push(r + ',' + i);
+  for (var g = 0; g < 200; g++) {
+    var holes = shuffle(all.slice()).slice(0, holeCount);
+    if (needLow === true && !holes.some(function (k) { return k[0] === '0'; })) continue;
+    if (needLow === false && holes.some(function (k) { return k[0] === '0'; })) continue;
+    var order = wallSolve(v, holes);
+    if (order) return { type: 'wall', v: v, holes: order, q: 'Zahlenmauer ' + all.map(function (k) { return order.indexOf(k) < 0 ? v[+k.split(',')[0]][+k.split(',')[1]] : '?'; }).join(' '), done: {}, sel: order[0] };
+  }
+  return null;
+}
+function wallGen(n, maxTop, minTop, holeCount, needLow, lo, hi) {
+  for (var g = 0; g < 400; g++) {
+    var base = []; for (var i = 0; i < n; i++) base.push(rnd(lo, hi));
+    var top = wallVals(base); top = top[top.length - 1][0];
+    if (top > maxTop || top < minTop) continue;
+    var t = wallTask(base, holeCount, needLow); if (t) return t;
+  }
+  return wallTask([5, 3], 1);
+}
+function wallHint(t, k) {
+  var p = k.split(','), r = +p[0], i = +p[1], v = t.v, val = v[r][i];
+  if (r > 0) return 'Die zwei Steine darunter ergeben zusammen diesen Stein: ' + v[r - 1][i] + ' + ' + v[r - 1][i + 1] + ' = ' + val + '.';
+  var up = i < v[0].length - 1 ? [v[1][i], v[0][i + 1]] : [v[1][i - 1], v[0][i - 1]];
+  return 'Der Stein darüber ist ' + up[0] + ', daneben liegt ' + up[1] + '. Also ' + up[0] + ' − ' + up[1] + ' = ' + val + '.';
+}
+function wallHTML(t, given) {
+  // given: Mauer zum Anschauen (Erklärung). Sonst interaktiv mit Lücken.
+  var h = '<div class="wall">';
+  for (var r = t.v.length - 1; r >= 0; r--) {
+    h += '<div class="wrow">';
+    for (var i = 0; i < t.v[r].length; i++) {
+      var k = r + ',' + i, hole = t.holes.indexOf(k) >= 0, val = t.v[r][i];
+      if (!hole) { h += '<span class="brick">' + val + '</span>'; continue; }
+      if (given) { h += '<span class="brick hole">' + (given === 'show' ? '<em>' + val + '</em>' : '?') + '</span>'; continue; }
+      var st = t.done[k] === true ? ' ok' : t.done[k] === false ? ' bad' : t.reveal ? ' shown' : k === t.sel ? ' on' : '';
+      var txt = t.done[k] === true || t.reveal ? val : k === t.sel ? (Q.input ? esc(Q.input) : '') : '';
+      h += '<button class="brick hole' + st + '" data-b="' + k + '" aria-label="Leerer Stein">' + (txt === '' ? '&nbsp;' : txt) + '</button>';
+    }
+    h += '</div>';
+  }
+  return h + '</div>';
+}
+function wallDemo(base, holes, show) { var v = wallVals(base); return wallHTML({ v: v, holes: holes }, show ? 'show' : 'q'); }
+var MAUER = [
+  { title: 'Kleine Mauern',
+    explain: '<p>In einer Zahlenmauer ergeben <strong>zwei Steine nebeneinander zusammen den Stein darüber</strong>.</p>' + wallDemo([5, 3], ['1,0'], true) + '<p class="example">5 + 3 = <em>8</em></p><p>Fehlt unten ein Stein, rechnest du minus: <strong>oben minus daneben</strong>.</p>' + wallDemo([4, 6], ['0,1'], true) + '<p class="example">10 − 4 = <em>6</em></p>',
+    gen: function () { return wallGen(2, 20, 6, 1, null, 1, 12); } },
+  { title: 'Mauern mit sechs Steinen',
+    explain: '<p>Jetzt hat die Mauer drei Reihen. Rechne von unten nach oben, Stein für Stein. Tippe auf einen leeren Stein, um ihn auszuwählen.</p>' + wallDemo([12, 7, 15], ['1,0', '1,1', '2,0'], true) + '<p class="example">12 + 7 = 19<br>7 + 15 = 22<br>19 + 22 = <em>41</em></p>',
+    gen: function () { return wallGen(3, 100, 25, rnd(2, 3), false, 2, 30); } },
+  { title: 'Lücken unten',
+    explain: '<p>Jetzt fehlen auch Steine unten. Dann rechnest du minus: <strong>der Stein darüber minus der Stein daneben</strong>.</p>' + wallDemo([14, 9, 20], ['0,1', '1,1'], true) + '<p class="example">23 − 14 = <em>9</em><br>9 + 20 = <em>29</em></p><p>Such dir immer einen Stein, bei dem du schon zwei Nachbarn kennst.</p>',
+    gen: function () { return wallGen(3, 100, 30, rnd(2, 3), true, 3, 30); } },
+  { title: 'Große Mauer',
+    explain: '<p>Die große Mauer hat vier Reihen und zehn Steine! Oben steht höchstens 100. Rechne geduldig Stein für Stein, mal plus, mal minus.</p>' + wallDemo([6, 9, 4, 11], ['1,1', '2,0', '0,3', '3,0'], true) + '<p class="example">9 + 4 = <em>13</em><br>15 + 13 = <em>28</em></p><p class="muted">Tipp: Beginne dort, wo zwei Nachbarn schon da sind.</p>',
+    gen: function () { return wallGen(4, 100, 40, rnd(4, 5), null, 1, 16); } }
+];
+
 var THEMES = {
   plus: { name: 'Plus und Minus', sub: 'Zahlen bis 100', levels: PLUS, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="var(--accent-soft)"/><path d="M14 22h16M22 14v16" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/><path d="M36 22h16" stroke="var(--margin)" stroke-width="5" stroke-linecap="round"/><text x="14" y="52" font-family="Baloo 2,sans-serif" font-weight="800" font-size="16" fill="var(--ink)">100</text></svg>' },
+  stelle: { name: 'Zehner und Einer', sub: 'Zahlen richtig lesen', levels: STELLE, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="var(--accent-soft)"/><rect x="11" y="10" width="8" height="44" rx="2" fill="#3fa7e0" stroke="#1d72b0" stroke-width="1.5"/><rect x="23" y="10" width="8" height="44" rx="2" fill="#3fa7e0" stroke="#1d72b0" stroke-width="1.5"/><rect x="37" y="44" width="10" height="10" rx="2" fill="#ef5b5b"/><rect x="49" y="44" width="10" height="10" rx="2" fill="#ef5b5b"/><rect x="37" y="31" width="10" height="10" rx="2" fill="#ef5b5b"/><text x="48" y="25" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="14"><tspan fill="#1d72b0">2</tspan><tspan fill="#c22b26">3</tspan></text></svg>' },
+  mauer: { name: 'Zahlenmauern', sub: 'Plus und Minus in Mauern', levels: MAUER, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><g stroke="#9e3b2c" stroke-width="2" fill="#f6d9cb"><rect x="23" y="6" width="18" height="14" rx="2"/><rect x="13" y="22" width="18" height="14" rx="2"/><rect x="33" y="22" width="18" height="14" rx="2"/><rect x="3" y="38" width="18" height="14" rx="2"/><rect x="23" y="38" width="18" height="14" rx="2"/><rect x="43" y="38" width="18" height="14" rx="2"/></g><g font-family="Baloo 2,sans-serif" font-weight="800" font-size="10" text-anchor="middle" fill="#1f2a44"><text x="32" y="17">?</text><text x="22" y="33">7</text><text x="42" y="33">9</text><text x="12" y="49">3</text><text x="32" y="49">4</text><text x="52" y="49">5</text></g></svg>' },
   uhr: { name: 'Uhr lesen', sub: 'Stunden und Minuten', levels: UHR, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="var(--card)" stroke="var(--ink)" stroke-width="4"/><path d="M32 32V16" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/><path d="M32 32l10 6" stroke="var(--hour)" stroke-width="5" stroke-linecap="round"/></svg>' },
   geld: { name: 'Geld', sub: 'Euro und Cent', levels: GELD, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="14" width="44" height="26" rx="4" fill="#7aa0d9"/><text x="26" y="32" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="12" fill="#1f1f1f">20 €</text><circle cx="44" cy="44" r="14" fill="#c9c9c9" stroke="#6b5420"/><circle cx="44" cy="44" r="9" fill="#e4b84a"/><text x="44" y="48" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="11" fill="#2b2110">2</text></svg>' },
   sach: { name: 'Sachaufgaben', sub: 'Rechengeschichten', levels: SACH, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 12h20c3 0 4 2 4 4v38c0-2-1-4-4-4H8Z" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5"/><path d="M56 12H36c-3 0-4 2-4 4v38c0-2 1-4 4-4h20Z" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5"/><path d="M13 22h12M13 29h12M39 22h12M39 29h8" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="45" y="45" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="13" fill="var(--margin)">?</text></svg>' }
 };
 
 /* ---------- Navigation ---------- */
-var VIEWS = ['home', 'learn', 'quiz', 'result', 'chase', 'build', 'island', 'badges', 'gate', 'parents'];
+var VIEWS = ['home', 'learn', 'quiz', 'result', 'chase', 'build', 'island', 'sky', 'badges', 'gate', 'parents'];
 function go(v) { VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
 document.addEventListener('click', function (e) { var t = e.target.closest('[data-go]'); if (t) { stopGame(); go(t.getAttribute('data-go')); } });
 
@@ -963,6 +1175,9 @@ function renderHome() {
   $('chaseBadge').textContent = S.best.caught ? 'Rudi ' + S.best.caught + '-mal erwischt' : 'Noch nie erwischt';
   var bp = buildPos();
   $('buildInfo').textContent = '1 Stern pro Baustein · ' + bp.plan.name + ': ' + bp.placed + ' von ' + bp.total;
+ var shr = shootReady(), skb = skyBuilt();
+  $('skyBadge').textContent = shr ? 'Heute fliegt eine Sternschnuppe!' : 'Sternschnuppen-Serie: ' + (S.sky.shoot.streak || 0) + (S.sky.shoot.streak === 1 ? ' Tag' : ' Tage');
+  $('skyInfo').textContent = skb < SKY_BUILD.length ? 'Bau eine Sternwarte auf dem Berg: ' + skb + ' von ' + SKY_BUILD.length + ' Teilen' : 'Kauf Planeten und entdecke Sternbilder: ' + skyCount(SKY_CON, S.sky.con) + ' von ' + SKY_CON.length;
   $('buildBadge').textContent = bp.idx ? bp.idx + (bp.idx === 1 ? ' Bauwerk fertig' : ' Bauwerke fertig') : 'Bau dein erstes Haus';
 }
 $('topicCards').addEventListener('click', function (e) { var b = e.target.closest('[data-topic]'); if (b) openLearn(b.getAttribute('data-topic')); });
@@ -1004,7 +1219,7 @@ function renderProgress() {
 function makeTask() {
   if (Q.mix) Q.dyn = rnd(1, THEMES[Q.theme].levels.length);
   var L = THEMES[Q.theme].levels[Q.dyn - 1], t;
-  for (var g = 0; g < 60; g++) { t = L.gen(); var id = t.type === 'num' ? t.q : t.h + ':' + t.m; if (!Q.seen[id]) { Q.seen[id] = 1; break; } }
+  for (var g = 0; g < 60; g++) { t = L.gen(); var id = t.type === 'clock' ? t.h + ':' + t.m : t.q; if (!Q.seen[id]) { Q.seen[id] = 1; break; } }
   t.lv = Q.dyn; return t;
 }
 function renderTask() {
@@ -1017,43 +1232,95 @@ function renderTask() {
     Q.input = '';
     if (t.story) h += '<div class="story"><p id="storyText"' + (S.silben !== false ? ' class="silben"' : '') + '>' + (S.silben !== false ? silbenHTML(t.story) : esc(t.story)) + '</p>' + (canSpeak ? '<button class="btn ghost speak" id="speakBtn">🔊 Vorlesen</button>' : '') + '</div>';
     if (t.visual) h += '<div class="money">' + t.visual + '</div>';
-    h += '<div class="task' + (t.story || t.visual ? ' small' : '') + '">' + esc(t.prompt || t.q) + ' <span class="answer" id="ans">&nbsp;</span>' + (t.unit ? ' <span class="unit">' + t.unit + '</span>' : '') + '</div><div id="fb"></div><div class="pad" id="pad">';
-    [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(function (n) { h += '<button data-k="' + n + '">' + n + '</button>'; });
-    h += '<button class="del" data-k="del" aria-label="Löschen">⌫</button><button data-k="0">0</button><button class="ok" data-k="ok" aria-label="Fertig">✓</button></div>';
+    if (t.blocks) h += '<div class="tens big">' + tensHTML(t.blocks) + '</div>';
+    if (t.say) h += '<div class="story sayword"><p class="word">' + numWordHTML(t.say) + '</p>' + (canSpeak ? '<button class="btn ghost speak" id="sayBtn">🔊 Nochmal hören</button>' : '') + '</div>';
+    h += '<div class="task' + (t.story || t.visual || t.blocks || t.say ? ' small' : '') + '">' + esc(t.prompt || t.q) + ' <span class="answer" id="ans">&nbsp;</span>' + (t.unit ? ' <span class="unit">' + t.unit + '</span>' : '') + '</div><div id="fb"></div>' + padHTML();
+  } else if (t.type === 'wall') {
+    Q.input = '';
+    h += '<div id="wall">' + wallHTML(t) + '</div><p class="muted wallhelp">Tippe auf einen leeren Stein und gib die Zahl ein.</p><div id="fb"></div>' + padHTML();
+  } else if (t.type === 'lay') {
+    if (t.cur == null) t.cur = 0;
+    h += '<div class="task small">Lege die Zahl ' + digitsHTML(t.answer) + '</div><div id="lay">' + layHTML(t) + '</div><div class="laypad" id="laypad"><button data-lay="t+" class="pzb">+ Zehner</button><button data-lay="o+" class="peb">+ Einer</button><button data-lay="t-" class="pzb">− Zehner</button><button data-lay="o-" class="peb">− Einer</button><button data-lay="ok" class="ok">✓ Fertig</button></div><div id="fb"></div>';
+  } else if (t.type === 'pick') {
+    h += '<h3 style="text-align:center">' + esc(t.title) + '</h3>';
+    if (t.word) h += '<div class="story sayword"><p class="word">' + t.word + '</p>' + (canSpeak ? '<button class="btn ghost speak" id="sayBtn">🔊 Nochmal hören</button>' : '') + '</div>';
+    h += '<div id="fb"></div><div class="choices pick" id="choices">';
+    t.opts.forEach(function (o, i) { h += '<button data-o="' + i + '"><span class="dig">' + digitsHTML(o.label) + '</span></button>'; });
+    h += '</div>';
   } else {
     h += '<h3 style="text-align:center">Wie spät ist es?</h3><div class="clockbox">' + clockSVG(t.h, t.m) + '</div><div id="fb"></div><div class="choices" id="choices">';
     t.opts.forEach(function (o, i) { h += '<button data-o="' + i + '"><span class="dig">' + digital(o.h, o.m) + '</span><span class="wrd">' + clockWords(o.h, o.m) + '</span></button>'; });
     h += '</div>';
   }
-  $('quizBody').className = 'sheet ' + (t.type === 'num' ? 'q-num' : 'q-clock');
+  $('quizBody').className = 'sheet ' + (t.type === 'num' || t.type === 'wall' ? 'q-num' : t.type === 'clock' ? 'q-clock' : 'q-' + t.type) + (t.type === 'wall' ? ' q-wall' : '');
   $('quizBody').innerHTML = h;
+  if (t.say && !t.said) { t.said = true; setTimeout(function () { if (Q && Q.tasks[Q.i] === t) speak(numWord(t.say)); }, 250); }
+}
+function padHTML() {
+  var h = '<div class="pad" id="pad">';
+  [1, 2, 3, 4, 5, 6, 7, 8, 9].forEach(function (n) { h += '<button data-k="' + n + '">' + n + '</button>'; });
+  return h + '<button class="del" data-k="del" aria-label="Löschen">⌫</button><button data-k="0">0</button><button class="ok" data-k="ok" aria-label="Fertig">✓</button></div>';
+}
+function showInput(t) {
+  if (t.type === 'wall') { $('wall').innerHTML = wallHTML(t); return; }
+  $('ans').innerHTML = Q.input ? (t.place ? digitsHTML(Q.input) : esc(Q.input)) : '&nbsp;';
+}
+/* Zahlenmauer: ein Stein ist fertig. Richtig -> nächster Stein, falsch -> ganze Aufgabe falsch mit Tipp */
+function wallEnter(t) {
+  var k = t.sel, p = k.split(','), val = t.v[+p[0]][+p[1]], given = parseInt(Q.input, 10);
+  if (given === val) {
+    t.done[k] = true; Q.input = '';
+    var next = t.holes.filter(function (x) { return t.done[x] !== true; });
+    if (!next.length) { $('wall').innerHTML = wallHTML(t); check(true, ''); return; }
+    // nächster Stein: zuerst einer, der sich jetzt ausrechnen lässt
+    var rest = t.holes.filter(function (x) { return t.done[x] !== true; }), solvable = wallSolve(t.v, rest);
+    t.sel = solvable ? solvable[0] : next[0];
+    $('wall').innerHTML = wallHTML(t); return;
+  }
+  t.done[k] = false; t.reveal = true; t.answer = val; t.hint = wallHint(t, k);
+  t.wq = 'Zahlenmauer: ' + wallHint(t, k).replace(/^.*(: |Also )/, '').replace(/ = \d+\.$/, ' = ?');
+  $('wall').innerHTML = wallHTML(t);
+  check(false, Q.input);
 }
 $('quizBody').addEventListener('click', function (e) {
   var t = Q && Q.tasks[Q.i]; if (!t) return;
   var nx = e.target.closest('#nextBtn'); if (nx) { nextTask(); return; }
   if (e.target.closest('#speakBtn')) { speak(t.story); return; }
+  if (e.target.closest('#sayBtn')) { speak(numWord(t.say)); return; }
   if (e.target.closest('#speakHint')) { speak(('Richtig ist ' + t.answer + (t.unit ? ' ' + t.unit : '') + '. ' + t.hint).replace(/−/g, ' minus ').replace(/·/g, ' mal ').replace(/€/g, ' Euro').replace(/\bct\b/g, ' Cent')); return; }
   if (Q.locked) return;
+  var bk = e.target.closest('[data-b]');
+  if (bk && t.type === 'wall') { var bkey = bk.getAttribute('data-b'); if (t.done[bkey] !== true && bkey !== t.sel) { t.sel = bkey; Q.input = ''; showInput(t); } return; }
   var k = e.target.closest('[data-k]');
-  if (k && t.type === 'num') {
+  if (k && (t.type === 'num' || t.type === 'wall')) {
     var v = k.getAttribute('data-k');
     if (v === 'del') Q.input = Q.input.slice(0, -1);
-    else if (v === 'ok') { if (Q.input !== '') check(parseInt(Q.input, 10) === t.answer, Q.input); return; }
+    else if (v === 'ok') { if (Q.input !== '') { if (t.type === 'wall') wallEnter(t); else check(parseInt(Q.input, 10) === t.answer, Q.input); } return; }
     else if (Q.input.length < 3) Q.input += v;
-    $('ans').innerHTML = Q.input || '&nbsp;';
+    showInput(t);
+  }
+  var ly = e.target.closest('[data-lay]');
+  if (ly && t.type === 'lay') {
+    var a = ly.getAttribute('data-lay'), tt = Math.floor(t.cur / 10), oo = t.cur % 10, note = '';
+    if (a === 'ok') { check(t.cur === t.answer, String(t.cur)); return; }
+    if (a === 't+') { if (tt < 9) tt++; else note = 'Mehr als 9 Zehner passen hier nicht hin.'; }
+    if (a === 't-' && tt > 0) tt--;
+    if (a === 'o-' && oo > 0) oo--;
+    if (a === 'o+') { if (oo < 9) oo++; else if (tt < 9) { tt++; oo = 0; note = '10 Einer sind 1 Zehner! Ich habe sie zu einer Stange getauscht.'; } }
+    t.cur = tt * 10 + oo; $('lay').innerHTML = layHTML(t) + (note ? '<p class="muted laynote">' + note + '</p>' : '');
   }
   var o = e.target.closest('[data-o]');
-  if (o && t.type === 'clock') {
+  if (o && (t.type === 'clock' || t.type === 'pick')) {
     var opt = t.opts[+o.getAttribute('data-o')];
     o.classList.add(opt.ok ? 'right' : 'wrong');
     if (!opt.ok) { var btns = $('choices').children; for (var i = 0; i < btns.length; i++) if (t.opts[i].ok) btns[i].classList.add('right'); }
-    check(opt.ok, digital(opt.h, opt.m));
+    check(opt.ok, t.type === 'pick' ? String(opt.label) : digital(opt.h, opt.m));
   }
 });
 document.addEventListener('keydown', function (e) {
   if ($('v-quiz').hidden || !Q) return;
   if (Q.locked) { if ((e.key === 'Enter' || e.key === ' ') && $('nextBtn')) { e.preventDefault(); $('nextBtn').click(); } return; }
-  var t = Q.tasks[Q.i]; if (t.type !== 'num') return;
+  var t = Q.tasks[Q.i]; if (t.type !== 'num' && t.type !== 'wall') return;
   var b = null;
   if (/^[0-9]$/.test(e.key)) b = document.querySelector('#pad [data-k="' + e.key + '"]');
   else if (e.key === 'Backspace') b = document.querySelector('#pad [data-k="del"]');
@@ -1070,11 +1337,14 @@ function check(ok, given) {
   }
   if (ok) { var gain = taskStars(t); Q.earned = (Q.earned || 0) + gain; addStars(gain); save(); $('fb').innerHTML = '<div class="feedback good"><strong>' + pick(PRAISE) + ' +' + gain + ' ★</strong></div>'; renderProgress(); var q0 = Q, i0 = Q.i; setTimeout(function () { if (Q === q0 && Q.i === i0) nextTask(); }, 900); }
   else {
-    var right = t.type === 'num' ? t.answer + (t.unit ? ' ' + t.unit : '') : t.answerText;
-    Q.wrong.push({ q: t.type === 'num' ? (t.story ? t.q : t.q + ' ?') : 'Uhr ' + digital(t.h, t.m), given: given, answer: t.type === 'num' ? t.answer : digital(t.h, t.m) });
-    $('fb').innerHTML = '<div class="feedback bad"><strong>Fast! Richtig ist ' + esc(right) + '.</strong><span>' + esc(t.hint) + '</span><div class="row"><button class="btn" id="nextBtn">Weiter</button>' + (canSpeak && t.story ? '<button class="btn ghost" id="speakHint">🔊 Vorlesen</button>' : '') + '</div></div>';
+    var right = t.type === 'clock' ? t.answerText : t.answer + (t.unit ? ' ' + t.unit : ''), swap = t.type !== 'clock' && isSwap(given, t.answer);
+    Q.wrong.push({ q: t.type === 'clock' ? 'Uhr ' + digital(t.h, t.m) : t.type === 'wall' ? t.wq : t.story || t.type !== 'num' ? t.q : t.q + ' ?', given: given, answer: t.type === 'clock' ? digital(t.h, t.m) : t.answer, swap: swap || undefined });
+    if (swap) Q.swaps = (Q.swaps || 0) + 1;
+    $('fb').innerHTML = '<div class="feedback bad"><strong>Fast! Richtig ist ' + esc(right) + '.</strong>' + (swap ? swapTip(t.answer) : '<span>' + esc(t.hint) + '</span>') + '<div class="row"><button class="btn" id="nextBtn">Weiter</button>' + (canSpeak && t.story ? '<button class="btn ghost" id="speakHint">🔊 Vorlesen</button>' : '') + '</div></div>';
     renderProgress();
     if ($('pad')) { $('pad').hidden = true; $('quizBody').classList.add('miss'); }
+    if ($('laypad')) $('laypad').hidden = true;
+    var wh = document.querySelector('.wallhelp'); if (wh) wh.hidden = true;
   }
 }
 /* Sterne pro Aufgabe: Stufe 1-2 = 1, Stufe 3-4 = 2, Profi-Aufgabe (über der eigenen Stufe) +1 */
@@ -1597,6 +1867,7 @@ function hello() {
   ];
   if (r && !r.done && r.goal - r.have <= 30) return 'Hallo ' + n + '! Nur noch ' + (r.goal - r.have) + ' Sterne bis zu deiner Belohnung!';
   if (r && r.done) return 'Juhu, ' + n + '! Du hast genug Sterne für deine Belohnung. Sag Mama oder Papa Bescheid!';
+  if (shootReady() && Math.random() < .35) return 'Psst, ' + n + '! Heute fliegt in meiner Sternwarte eine Sternschnuppe. Fang sie dir!';
   if (st >= COST && Math.random() < .4) return 'Du hast ' + st + ' Sterne, ' + n + '! Damit kannst du im Spielzimmer spielen oder auf der Baustelle bauen.';
   return pick(opts);
 }
@@ -1635,7 +1906,7 @@ var BADGES = [
   { id: 'stern500', name: 'Sternenkönig', desc: '500 Sterne verdient', col: '#1d72b0', sym: '♛', test: function () { return earnedTotal() >= 500; } },
   { id: 'fleiss25', name: 'Fleißig', desc: '25 Runden gerechnet', col: '#2f6fd6', sym: '25', test: function () { return S.history.length >= 25; } },
   { id: 'fleiss100', name: 'Superfleißig', desc: '100 Runden gerechnet', col: '#1e6b3c', sym: '100', test: function () { return S.history.length >= 100; } },
-  { id: 'entdecker', name: 'Entdecker', desc: 'Alle vier Themen ausprobiert', col: '#3fa7e0', sym: '4', test: function () { return themesTried() >= 4; } },
+  { id: 'entdecker', name: 'Entdecker', desc: 'Vier Themen ausprobiert', col: '#3fa7e0', sym: '4', test: function () { return themesTried() >= 4; } },
   { id: 'profi-plus', name: 'Plus-Minus-Profi', desc: 'Alle Stufen bei Plus und Minus', col: '#1d72b0', sym: '±', test: function () { return !!S.mastered.plus; } },
   { id: 'profi-uhr', name: 'Uhren-Profi', desc: 'Alle Stufen bei Uhr lesen', col: '#c73d3d', sym: '◷', test: function () { return !!S.mastered.uhr; } },
   { id: 'profi-geld', name: 'Geld-Profi', desc: 'Alle Stufen bei Geld', col: '#c99a0a', sym: '€', test: function () { return !!S.mastered.geld; } },
@@ -1966,6 +2237,192 @@ document.addEventListener('click', function (e) {
 });
 
 /* ---------- Feier bei 10 von 10 ---------- */
+/* ---------- Olafs Sternwarte ---------- */
+/* Mit Sternen baut man eine Sternwarte auf dem Berg, kauft Planeten und entdeckt Sternbilder (Sterne in Zählschritten verbinden).
+   Jeden Tag fliegt eine Sternschnuppe vorbei: fangen gibt 1 Stern, viele Tage hintereinander schenken besondere Dinge.
+   Speicher: S.sky = { own: {Teil: 1}, con: {Sternbild: 1}, shoot: { last, streak, best, total } }, Zeitstempel S.at.sky. Nur Objekte, keine Listen. */
+var SKY_BUILD = [{ k: 'weg', name: 'Bergpfad', p: 5 }, { k: 'fund', name: 'Fundament', p: 8 }, { k: 'turm', name: 'Turm', p: 12 }, { k: 'kuppel', name: 'Kuppel', p: 15 }, { k: 'gross', name: 'Großes Fernrohr', p: 20 }];
+var SKY_PLANETS = [
+  { k: 'merkur', name: 'Merkur', p: 8, x: 22, y: 142, r: 4, c: '#a9a9a9' }, { k: 'venus', name: 'Venus', p: 10, x: 52, y: 150, r: 6, c: '#f3d9a4' },
+  { k: 'mars', name: 'Mars', p: 10, x: 84, y: 138, r: 5.5, c: '#d2603a' }, { k: 'jupiter', name: 'Jupiter', p: 15, x: 126, y: 146, r: 12, c: '#d9a066' },
+  { k: 'saturn', name: 'Saturn', p: 20, x: 178, y: 140, r: 9, c: '#e6c47a', ring: 1 }, { k: 'uranus', name: 'Uranus', p: 12, x: 226, y: 150, r: 7, c: '#8fd8e0' },
+  { k: 'neptun', name: 'Neptun', p: 12, x: 266, y: 136, r: 7, c: '#4a72d9' }];
+var SKY_EXTRAS = [{ k: 'fern', name: 'Kleines Fernrohr', p: 6, info: 'Damit entdeckst du Sternbilder' }, { k: 'laterne', name: 'Laterne', p: 3 }, { k: 'bank', name: 'Bank', p: 3 }, { k: 'zelt', name: 'Zelt', p: 8 }, { k: 'sat', name: 'Satellit', p: 15 }, { k: 'rakete', name: 'Rakete', p: 30 }];
+var SKY_STREAK = [{ k: 'komet', name: 'Komet', days: 3 }, { k: 'polar', name: 'Polarlicht', days: 7 }, { k: 'regen', name: 'Sternenregen', days: 14 }, { k: 'gold', name: 'Goldener Stern', days: 30 }];
+/* Sternbilder (vereinfacht). pts in Tipp-Reihenfolge (Feld 100 × 75), e = Linien, s/d = Startzahl und Schritt */
+var SKY_CON = [
+  { k: 'wagen', name: 'Großer Wagen', s: 10, d: 10, pts: [[5, 15], [22, 20], [36, 28], [50, 36], [54, 60], [86, 64], [90, 38]], e: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 3]] },
+  { k: 'kassiopeia', name: 'Kassiopeia', s: 5, d: 5, pts: [[5, 20], [28, 52], [50, 30], [72, 56], [95, 22]], e: [[0, 1], [1, 2], [2, 3], [3, 4]] },
+  { k: 'orion', name: 'Orion', s: 2, d: 2, pts: [[22, 6], [76, 10], [60, 40], [50, 38], [40, 36], [24, 70], [78, 70]], e: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 2], [4, 0]] },
+  { k: 'schwan', name: 'Schwan', s: 20, d: 20, pts: [[50, 4], [50, 30], [12, 22], [88, 38], [50, 72]], e: [[0, 1], [1, 2], [1, 3], [1, 4]] },
+  { k: 'leier', name: 'Leier', s: 50, d: -10, pts: [[50, 4], [38, 30], [62, 32], [36, 68], [60, 70]], e: [[0, 1], [0, 2], [1, 2], [1, 3], [2, 4], [3, 4]] },
+  { k: 'loewe', name: 'Löwe', s: 3, d: 3, pts: [[22, 8], [10, 24], [18, 42], [34, 46], [86, 52], [74, 28]], e: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 3]] },
+  { k: 'kwagen', name: 'Kleiner Wagen', s: 35, d: 1, pts: [[8, 10], [24, 18], [40, 26], [55, 34], [60, 58], [90, 60], [86, 36]], e: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 3]] },
+  { k: 'zwillinge', name: 'Zwillinge', s: 100, d: -5, pts: [[20, 5], [55, 8], [25, 40], [60, 40], [22, 72], [62, 72]], e: [[0, 1], [0, 2], [2, 4], [1, 3], [3, 5]] }];
+var SKY_SLOTS = [[6, 6], [90, 4], [174, 8], [258, 4], [8, 66], [92, 64], [176, 68], [260, 64]];
+var CON_COST = 5;
+var SV = { cat: 'bau', con: null, step: 0, wrong: -1, msg: '', mood: 'happy', catchFx: 0 };
+function skyEnsure() {
+  if (!S.sky || typeof S.sky !== 'object') { S.sky = { own: {}, con: {}, shoot: {} }; if (!S.at.sky) S.at.sky = 1; } // so alt wie möglich: ein echter Stand anderswo gewinnt
+  var K = S.sky; if (!K.own || typeof K.own !== 'object') K.own = {}; if (!K.con || typeof K.con !== 'object') K.con = {}; if (!K.shoot || typeof K.shoot !== 'object') K.shoot = {};
+  K.shoot.streak = K.shoot.streak || 0; K.shoot.best = K.shoot.best || 0; K.shoot.total = K.shoot.total || 0;
+  return K;
+}
+function skyTouch() { S.at.sky = Date.now(); }
+function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + '-' + (d.getDate() < 10 ? '0' : '') + d.getDate(); }
+function shootReady() { var K = skyEnsure(); return TEST || K.shoot.last !== dayKey(); }
+function skyBuilt() { var K = skyEnsure(), n = 0; SKY_BUILD.forEach(function (b) { if (K.own[b.k]) n++; }); return n; }
+function skyCount(list, map) { var n = 0; list.forEach(function (x) { if (map[x.k]) n++; }); return n; }
+function conNum(C, i) { return C.s + C.d * i; }
+function stepWord(C) { var a = Math.abs(C.d); return C.d < 0 ? 'Zähle rückwärts in ' + (a === 10 ? 'Zehner' : a === 5 ? 'Fünfer' : a + 'er') + 'schritten' : a === 1 ? 'Zähle immer eins weiter' : 'Zähle in ' + (a === 10 ? 'Zehner' : a === 20 ? 'Zwanziger' : a === 5 ? 'Fünfer' : a === 2 ? 'Zweier' : a === 3 ? 'Dreier' : a + 'er') + 'schritten'; }
+function starPath(cx, cy, r) { var p = ''; for (var i = 0; i < 10; i++) { var a = Math.PI / 5 * i - Math.PI / 2, rr = i % 2 ? r * .45 : r; p += (i ? 'L' : 'M') + (cx + rr * Math.cos(a)).toFixed(1) + ' ' + (cy + rr * Math.sin(a)).toFixed(1); } return p + 'Z'; }
+var SKY_BG = (function () { var s = '', seed = 7; function r() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; } for (var i = 0; i < 46; i++) { var x = r() * 480, y = r() * 175, rad = .6 + r() * 1.1; s += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + rad.toFixed(1) + '"' + (i % 6 === 0 ? ' class="tw" style="animation-delay:' + (i % 5) * .6 + 's"' : '') + '/>'; } return s; })();
+function owlAt(x, y, w, mood) { return owlSVG(mood || 'happy').replace('<svg ', '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + (w * 130 / 120).toFixed(0) + '" '); }
+function conSmall(C, found) {
+  var sx = SKY_SLOTS[SKY_CON.indexOf(C)], sc = .7, h = '<g transform="translate(' + sx[0] + ' ' + sx[1] + ') scale(' + sc + ')"' + (found ? '' : ' opacity=".35"') + '>';
+  if (found) C.e.forEach(function (e) { var a = C.pts[e[0]], b = C.pts[e[1]]; h += '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="#9cc3ff" stroke-width="1.4" opacity=".75"/>'; });
+  C.pts.forEach(function (p) { h += '<path d="' + starPath(p[0], p[1], found ? 4.2 : 2.6) + '" fill="' + (found ? '#fff6c2' : '#cfd8ff') + '"/>'; });
+  if (found) h += '<text x="50" y="86" text-anchor="middle" font-family="Andika,sans-serif" font-size="11" fill="#cfe0ff">' + C.name + '</text>';
+  return h + '</g>';
+}
+function skySVG() {
+  var K = skyEnsure(), o = K.own, h = '<svg viewBox="0 0 480 300" class="skysvg" role="img" aria-label="Olafs Sternwarte">';
+  h += '<defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1236"/><stop offset=".7" stop-color="#1f2f6b"/><stop offset="1" stop-color="#3b4d8f"/></linearGradient>';
+  h += '<linearGradient id="polg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3dffb0" stop-opacity="0"/><stop offset=".3" stop-color="#3dffb0" stop-opacity=".45"/><stop offset=".7" stop-color="#7a7bff" stop-opacity=".4"/><stop offset="1" stop-color="#7a7bff" stop-opacity="0"/></linearGradient>';
+  h += '<radialGradient id="glow"><stop offset="0" stop-color="#ffe9a0" stop-opacity=".9"/><stop offset="1" stop-color="#ffe9a0" stop-opacity="0"/></radialGradient></defs>';
+  h += '<rect width="480" height="300" fill="url(#skyg)"/>';
+  if (o.polar) h += '<path class="polar" d="M0 60 Q80 10 160 50 T320 40 T480 30 V90 Q400 70 320 95 T160 100 T0 110Z" fill="url(#polg)"/>';
+  h += '<g fill="#fff">' + SKY_BG + '</g>';
+  h += '<circle cx="440" cy="40" r="22" fill="#fdf3c4"/><circle cx="432" cy="34" r="4" fill="#e8dca8"/><circle cx="446" cy="48" r="3" fill="#e8dca8"/><circle cx="447" cy="31" r="2" fill="#e8dca8"/>';
+  if (o.gold) h += '<circle cx="396" cy="78" r="20" fill="url(#glow)"/><path d="' + starPath(396, 78, 12) + '" fill="#ffd23f" stroke="#c99a0a" stroke-width="1.5"/>';
+  if (o.komet) h += '<path d="M446 120 L478 96 L476 104 Z" fill="#bfe6ff" opacity=".7"/><path d="M446 120 L470 92" stroke="#e8f6ff" stroke-width="2" opacity=".8"/><circle cx="446" cy="120" r="4.5" fill="#fff"/>';
+  if (o.regen) h += '<g class="rain" stroke="#fff" stroke-width="1.6" stroke-linecap="round"><path d="M352 12 l-14 10"/><path d="M398 6 l-12 9" style="animation-delay:.7s"/><path d="M470 70 l-12 9" style="animation-delay:1.3s"/><path d="M372 120 l-10 8" style="animation-delay:2s"/></g>';
+  if (o.sat) h += '<g class="sat"><rect x="-10" y="-3" width="7" height="6" fill="#4a72d9"/><rect x="3" y="-3" width="7" height="6" fill="#4a72d9"/><rect x="-3" y="-4" width="6" height="8" rx="1" fill="#d6dbe4"/></g>';
+  SKY_CON.forEach(function (C) { h += conSmall(C, !!K.con[C.k]); });
+  SKY_PLANETS.forEach(function (P) {
+    if (!o[P.k]) return;
+    if (P.ring) h += '<ellipse cx="' + P.x + '" cy="' + P.y + '" rx="' + P.r * 2 + '" ry="' + P.r * .55 + '" fill="none" stroke="#c9a65a" stroke-width="2.5"/>';
+    h += '<circle cx="' + P.x + '" cy="' + P.y + '" r="' + P.r + '" fill="' + P.c + '"/>';
+    if (P.k === 'jupiter') h += '<path d="M' + (P.x - 11) + ' ' + (P.y - 3) + 'h22M' + (P.x - 11) + ' ' + (P.y + 4) + 'h22" stroke="#b07a45" stroke-width="2"/>';
+    if (P.ring) h += '<path d="M' + (P.x - P.r * 2) + ' ' + P.y + ' A' + P.r * 2 + ' ' + P.r * .55 + ' 0 0 0 ' + (P.x + P.r * 2) + ' ' + P.y + '" fill="none" stroke="#c9a65a" stroke-width="2.5"/>';
+  });
+  // Berg mit Sternwarte
+  h += '<path d="M170 300 L300 196 L326 168 L396 168 L420 194 L480 214 V300Z" fill="#46506e"/><path d="M326 168 L396 168 L404 178 L318 178Z" fill="#e8eef8" opacity=".85"/>';
+  h += '<path d="M0 238 Q120 214 250 246 L260 300 L0 300Z" fill="#2c4a3a"/>';
+  if (o.weg) h += '<path d="M236 296 L290 262 L254 240 L314 214 L290 196 L330 176" fill="none" stroke="#e0c58f" stroke-width="4" stroke-dasharray="7 5" stroke-linecap="round"/>';
+  if (o.fund) h += '<rect x="322" y="160" width="78" height="14" rx="2" fill="#8a8f9c" stroke="#5b6070"/><path d="M330 167h10M348 167h10M366 167h10M384 167h10" stroke="#6b707c" stroke-width="2"/>';
+  if (o.turm) h += '<rect x="332" y="118" width="58" height="44" fill="#e9edf3" stroke="#9aa3ad" stroke-width="2"/><rect x="354" y="140" width="14" height="22" rx="6" fill="#6b4329"/><rect x="339" y="126" width="9" height="9" rx="2" fill="#ffd23f"/><rect x="374" y="126" width="9" height="9" rx="2" fill="#ffd23f"/>';
+  if (o.kuppel) h += '<path d="M330 120 A31 31 0 0 1 392 120 Z" fill="#c9d1dd" stroke="#8a93a2" stroke-width="2"/>' + (o.gross ? '<path d="M357 120 L357 92 Q361 89 365 92 L365 120Z" fill="#1a2350"/>' : '<path d="M361 90 V120" stroke="#8a93a2" stroke-width="2"/>');
+  if (o.gross) h += '<g transform="rotate(-38 361 112)"><rect x="355" y="58" width="12" height="54" rx="3" fill="#f2f4f8" stroke="#6b737c" stroke-width="1.5"/><rect x="353" y="56" width="16" height="8" rx="2" fill="#c73d3d"/></g>';
+  if (o.rakete) h += '<g transform="translate(452 158)"><path d="M0 0 Q8 12 8 34 H-8 Q-8 12 0 0Z" fill="#f4f6f8" stroke="#6b737c" stroke-width="1.5"/><circle cx="0" cy="16" r="3.5" fill="#3fa7e0"/><path d="M-8 26 L-14 40 H-8Z M8 26 L14 40 H8Z" fill="#c73d3d"/><path d="M-4 34 L0 44 L4 34Z" fill="#ffb03a"/></g>';
+  if (o.zelt) h += '<path d="M126 252 L150 220 L174 252Z" fill="#e0763a" stroke="#9e4f22" stroke-width="2"/><path d="M150 220 L150 252" stroke="#9e4f22" stroke-width="2"/><path d="M144 252 L150 236 L156 252Z" fill="#5a2e14"/>';
+  if (o.bank) h += '<rect x="196" y="244" width="34" height="5" rx="2" fill="#a0683c"/><path d="M200 249v9M226 249v9" stroke="#6b4329" stroke-width="3"/>';
+  if (o.laterne) h += '<circle cx="186" cy="218" r="16" fill="url(#glow)"/><path d="M186 222 V258" stroke="#3b3b3b" stroke-width="3"/><rect x="180" y="212" width="12" height="12" rx="2" fill="#ffe9a0" stroke="#3b3b3b" stroke-width="2"/>';
+  if (o.fern) h += '<g><path d="M100 258 L108 232 L116 258 M108 232 V258" stroke="#3b3b3b" stroke-width="2.5" fill="none"/><rect x="92" y="216" width="34" height="9" rx="3" fill="#2f6fd6" transform="rotate(-28 108 228)"/></g>';
+  h += owlAt(24, 196, 56, SV.mood);
+  if (shootReady()) h += '<g class="shoot" data-shoot="1"><circle cx="0" cy="0" r="30" fill="#fff" fill-opacity="0.01"/><path d="M0 0 L46 -22" stroke="#fff6c2" stroke-width="4" stroke-linecap="round" opacity=".7"/><path d="' + starPath(0, 0, 11) + '" fill="#fff6c2" stroke="#ffd23f" stroke-width="2"/></g>';
+  if (SV.catchFx) h += '<g class="burst2"><path d="' + starPath(240, 90, 30) + '" fill="#ffd23f"/></g>';
+  if (SV.con) h += conBig(SV.con);
+  return h + '</svg>';
+}
+function conBig(C) {
+  var h = '<g class="conbig"><rect x="0" y="0" width="480" height="300" fill="#0b1236" opacity=".82"/>', X = function (p) { return 60 + p[0] * 3.6; }, Y = function (p) { return 24 + p[1] * 3.4; };
+  C.e.forEach(function (e) { if (e[0] < SV.step && e[1] < SV.step) { var a = C.pts[e[0]], b = C.pts[e[1]]; h += '<line x1="' + X(a) + '" y1="' + Y(a) + '" x2="' + X(b) + '" y2="' + Y(b) + '" stroke="#9cc3ff" stroke-width="3"/>'; } });
+  C.pts.forEach(function (p, i) {
+    var done = i < SV.step, bad = i === SV.wrong;
+    h += '<g data-cs="' + i + '" class="cstar' + (bad ? ' shake' : '') + '"><circle cx="' + X(p) + '" cy="' + Y(p) + '" r="26" fill="#fff" fill-opacity="0.01"/>' +
+      '<path d="' + starPath(X(p), Y(p), done ? 15 : 12) + '" fill="' + (done ? '#ffd23f' : bad ? '#ff8585' : '#fff6c2') + '"/>' +
+      '<text x="' + X(p) + '" y="' + (Y(p) + 32) + '" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="20" fill="' + (done ? '#ffd23f' : '#fff') + '">' + conNum(C, i) + '</text></g>';
+  });
+  return h + '</g>';
+}
+function skySay(t, mood) { SV.msg = t; SV.mood = mood || 'happy'; }
+function skyItem(x, have, locked, sub) {
+  return '<button class="mat' + (x.p >= 15 ? ' rare' : '') + (have ? ' on' : '') + '" data-sk="' + x.k + '"' + (have || locked ? ' disabled' : '') + '><b>' + x.name + '</b>' +
+    (have ? '<span>✓ gehört dir</span>' : (locked ? '<span>' + locked + '</span>' : '') + '<span class="price">' + x.p + ' ★</span>') + (sub ? '<span>' + sub + '</span>' : '') + '</button>';
+}
+function renderSky() {
+  var K = skyEnsure(), st = stars();
+  $('skStars').textContent = st;
+  $('skScene').innerHTML = skySVG(); SV.catchFx = 0;
+  $('skMascot').innerHTML = owlSVG(SV.mood); $('skBubble').textContent = SV.msg;
+  var sh = K.shoot;
+  $('skStreak').innerHTML = '<b>Sternschnuppen-Serie:</b> ' + (sh.streak || 0) + (sh.streak === 1 ? ' Tag' : ' Tage') + ' · gefangen: ' + (sh.total || 0) + (shootReady() ? ' · <span class="badge">Heute fliegt eine Sternschnuppe! Tipp sie an.</span>' : ' · Morgen kommt die nächste.');
+  $('skCats').innerHTML = [['bau', 'Sternwarte'], ['planet', 'Planeten'], ['bild', 'Sternbilder'], ['extra', 'Extras']].map(function (c) { return '<button class="' + (SV.cat === c[0] ? 'on' : '') + '" data-skc="' + c[0] + '">' + c[1] + '</button>'; }).join('');
+  var h = '', nb = skyBuilt();
+  if (SV.cat === 'bau') {
+    h = SKY_BUILD.map(function (b, i) { return skyItem(b, K.own[b.k], i > nb ? 'erst ' + SKY_BUILD[i - 1].name : '', ''); }).join('');
+    $('skInfo').textContent = nb === SKY_BUILD.length ? 'Deine Sternwarte ist fertig! Toll gebaut.' : 'Bau die Sternwarte Stück für Stück: ' + nb + ' von ' + SKY_BUILD.length + ' Teilen.';
+  } else if (SV.cat === 'planet') {
+    h = SKY_PLANETS.map(function (P) { return skyItem(P, K.own[P.k], '', ''); }).join('');
+    $('skInfo').textContent = 'Jeder Planet bekommt seinen Platz am Himmel. ' + skyCount(SKY_PLANETS, K.own) + ' von ' + SKY_PLANETS.length + ' Planeten.';
+  } else if (SV.cat === 'bild') {
+    h = SKY_CON.map(function (C) { var f = K.con[C.k]; return '<button class="mat' + (f ? ' on' : '') + '" data-con="' + C.k + '"' + (f ? ' disabled' : '') + '><b>' + C.name + '</b>' + (f ? '<span>✓ entdeckt</span>' : '<span class="price">' + CON_COST + ' ★</span><span>' + conNum(C, 0) + ', ' + conNum(C, 1) + ', …</span>') + '</button>'; }).join('');
+    $('skInfo').textContent = K.own.fern ? 'Verbinde die Sterne in der richtigen Reihenfolge. ' + skyCount(SKY_CON, K.con) + ' von ' + SKY_CON.length + ' Sternbildern entdeckt.' : 'Für Sternbilder brauchst du zuerst das kleine Fernrohr (bei Extras).';
+  } else {
+    h = SKY_EXTRAS.map(function (x) { return skyItem(x, K.own[x.k], '', x.info || ''); }).join('') +
+      SKY_STREAK.map(function (x) { return '<button class="mat' + (K.own[x.k] ? ' on' : '') + '" disabled><b>' + x.name + '</b><span>' + (K.own[x.k] ? '✓ gehört dir' : 'Geschenk für ' + x.days + ' Tage Serie') + '</span></button>'; }).join('');
+    $('skInfo').textContent = 'Extras kaufst du mit Sternen. Die Geschenke unten gibt es nur für Sternschnuppen an vielen Tagen hintereinander.';
+  }
+  $('skItems').innerHTML = h;
+  $('skItems').hidden = $('skCats').hidden = $('skInfo').hidden = !!SV.con;
+  $('skCancel').hidden = !SV.con;
+}
+function skyBuy(k) {
+  var K = skyEnsure(), x = SKY_BUILD.concat(SKY_PLANETS, SKY_EXTRAS).filter(function (y) { return y.k === k; })[0];
+  if (!x || K.own[k]) return;
+  if (stars() < x.p) { skySay('Für ' + x.name + ' brauchst du ' + x.p + ' Sterne. Dir fehlen noch ' + (x.p - stars()) + '. Rechne weiter, dann klappt es!', 'wink'); renderSky(); return; }
+  spendStars(x.p); K.own[k] = 1; skyTouch(); save();
+  var lines = { weg: 'Ein Weg auf den Berg! Jetzt können wir hinaufsteigen.', fund: 'Das Fundament steht. Darauf bauen wir den Turm.', turm: 'Was für ein schöner Turm! Fehlt nur noch das Dach.', kuppel: 'Die Kuppel ist drauf! Sie kann sich drehen, damit wir überallhin schauen können.', gross: 'Das große Fernrohr ist da! Unsere Sternwarte ist fertig. Juhu!',
+    fern: 'Mit dem Fernrohr können wir jetzt Sternbilder entdecken. Schau bei „Sternbilder“!', rakete: 'Eine Rakete! Vielleicht fliegen wir eines Tages zum Mond.', sat: 'Der Satellit fliegt um die Erde und schickt Bilder.', zelt: 'Im Zelt können wir übernachten und lange Sterne gucken.', laterne: 'Die Laterne leuchtet uns den Weg.', bank: 'Eine Bank zum Ausruhen und Sterne gucken.',
+    saturn: 'Saturn hat schöne Ringe aus Eis und Gestein.', jupiter: 'Jupiter ist der größte Planet von allen!', mars: 'Mars ist der rote Planet.', venus: 'Venus leuchtet am Abendhimmel ganz hell.', merkur: 'Merkur ist der Sonne am nächsten.', uranus: 'Uranus rollt wie eine Kugel auf der Seite um die Sonne.', neptun: 'Neptun ist am weitesten weg und ganz blau.' };
+  skySay(lines[k] || x.name + ' gehört jetzt dir!', 'cheer'); chime(); renderSky(); checkBadges();
+}
+function conStart(k) {
+  var K = skyEnsure(), C = SKY_CON.filter(function (c) { return c.k === k; })[0];
+  if (!C || K.con[k]) return;
+  if (!K.own.fern) { SV.cat = 'extra'; skySay('Zuerst brauchen wir das kleine Fernrohr. Es kostet ' + SKY_EXTRAS[0].p + ' Sterne.', 'wink'); renderSky(); return; }
+  if (stars() < CON_COST) { skySay('Ein Sternbild zu entdecken kostet ' + CON_COST + ' Sterne. Dir fehlen noch ' + (CON_COST - stars()) + '.', 'wink'); renderSky(); return; }
+  SV.con = C; SV.step = 0; SV.wrong = -1;
+  skySay(C.name + ': Tippe die Sterne der Reihe nach an. Fang bei ' + conNum(C, 0) + ' an. ' + stepWord(C) + ': ' + conNum(C, 0) + ', ' + conNum(C, 1) + ', ' + conNum(C, 2) + ' …');
+  renderSky(); $('skScene').scrollIntoView({ block: 'nearest' });
+}
+function conTap(i) {
+  var C = SV.con; if (!C) return;
+  if (i < SV.step) return;
+  if (i !== SV.step) { SV.wrong = i; skySay(i === SV.step + 1 || SV.step === 0 ? 'Fast! Welche Zahl kommt ' + (SV.step ? 'nach ' + conNum(C, SV.step - 1) : 'zuerst') + '? ' + stepWord(C) + '.' : 'Das ist ' + conNum(C, i) + '. Welche Zahl kommt ' + (SV.step ? 'nach ' + conNum(C, SV.step - 1) : 'zuerst') + '?', 'wink'); renderSky(); SV.wrong = -1; return; }
+  SV.step++; SV.wrong = -1;
+  if (SV.step < C.pts.length) { skySay(pick(['Richtig!', 'Genau!', 'Super!', 'Weiter so!']) + ' Und nach ' + conNum(C, SV.step - 1) + '?'); renderSky(); return; }
+  var K = skyEnsure(); spendStars(CON_COST); K.con[C.k] = 1; skyTouch(); save();
+  renderSky(); // fertige Linien kurz zeigen
+  skySay('Du hast ' + C.name + ' entdeckt! ' + (skyCount(SKY_CON, K.con) === SKY_CON.length ? 'Jetzt kennst du alle Sternbilder. Du bist ein echter Sternenforscher!' : 'Jetzt leuchtet es für immer an deinem Himmel.'), 'cheer'); chime();
+  setTimeout(function () { SV.con = null; if (!$('v-sky').hidden) renderSky(); checkBadges(); }, 1400);
+  $('skBubble').textContent = SV.msg; $('skMascot').innerHTML = owlSVG('cheer');
+}
+var WISHES = ['Ich wünsche mir, dass du heute ganz viele Aufgaben richtig hast!', 'Ich wünsche mir einen riesigen Keks!', 'Ich wünsche mir, dass wir zusammen zum Mond fliegen!', 'Ich wünsche mir, dass Waschbär Rudi nie wieder Kekse stibitzt!', 'Ich wünsche mir eine Mütze mit Sternen!', 'Ich wünsche mir, dass morgen die Sonne scheint!', 'Ich wünsche mir einen eigenen Planeten mit Ringen!', 'Ich wünsche mir, dass du morgen wiederkommst!'];
+function skyCatch() {
+  if (!shootReady()) return;
+  var K = skyEnsure(), sh = K.shoot, today = dayKey(), y = new Date(); y.setDate(y.getDate() - 1);
+  if (TEST) sh.streak = (sh.streak || 0) + 1; // Testmodus: jeder Fang zählt wie ein neuer Tag
+  else sh.streak = sh.last === dayKey(y) ? (sh.streak || 0) + 1 : 1;
+  sh.last = today; sh.total = (sh.total || 0) + 1; sh.best = Math.max(sh.best || 0, sh.streak);
+  addStars(1);
+  var gift = null; SKY_STREAK.forEach(function (x) { if (sh.best >= x.days && !K.own[x.k]) { K.own[x.k] = 1; gift = x; } });
+  skyTouch(); save(); SV.catchFx = 1;
+  skySay('Gefangen! +1 ★. Olaf hält die Sternschnuppe fest und wünscht sich etwas: „' + pick(WISHES) + '“' + (sh.streak > 1 ? ' Das ist dein ' + sh.streak + '. Tag hintereinander!' : ' Komm morgen wieder, dann wächst deine Serie.') + (gift ? ' Geschenk für deine Serie: ' + gift.name + '!' : ''), 'cheer');
+  chime(); renderSky(); checkBadges();
+}
+function openSky() {
+  skyEnsure(); SV.con = null; SV.cat = skyBuilt() < SKY_BUILD.length ? 'bau' : SV.cat;
+  skySay(shootReady() ? 'Hallo ' + S.name + '! Schau, da oben fliegt eine Sternschnuppe! Tipp sie schnell an.' : skyBuilt() ? 'Willkommen in meiner Sternwarte, ' + S.name + '! Was bauen oder entdecken wir heute?' : 'Hallo ' + S.name + '! Hier oben auf dem Berg wollen wir eine Sternwarte bauen. Fang mit dem Bergpfad an!');
+  go('sky'); renderSky();
+}
+$('playSky').addEventListener('click', openSky);
+$('skCats').addEventListener('click', function (e) { var b = e.target.closest('[data-skc]'); if (b) { SV.cat = b.getAttribute('data-skc'); renderSky(); } });
+$('skItems').addEventListener('click', function (e) { var b = e.target.closest('[data-sk]'); if (b) { skyBuy(b.getAttribute('data-sk')); return; } var c = e.target.closest('[data-con]'); if (c) conStart(c.getAttribute('data-con')); });
+$('skScene').addEventListener('click', function (e) { var c = e.target.closest('[data-cs]'); if (c && SV.con) { conTap(+c.getAttribute('data-cs')); return; } if (!SV.con && e.target.closest('[data-shoot]')) skyCatch(); });
+$('skCancel').addEventListener('click', function () { SV.con = null; skySay('Kein Problem. Das Sternbild wartet auf dich. Bezahlt hast du nichts.'); renderSky(); });
+
 var TROPHY = '<svg viewBox="0 0 120 130" aria-hidden="true"><path d="M30 14h60v26a30 30 0 0 1-60 0Z" fill="#ffd23f" stroke="#c99a0a" stroke-width="4"/><path d="M30 22H14c0 18 8 28 18 30M90 22h16c0 18-8 28-18 30" fill="none" stroke="#c99a0a" stroke-width="5" stroke-linecap="round"/><rect x="52" y="68" width="16" height="22" fill="#e9b81f"/><rect x="34" y="90" width="52" height="14" rx="4" fill="#d64541"/><rect x="28" y="104" width="64" height="16" rx="4" fill="#9e2f2c"/><path d="M60 24l5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1Z" fill="#fff6c9"/><text x="60" y="116" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="12" fill="#fff">10/10</text></svg>';
 function chime() {
   try {
@@ -2483,18 +2940,29 @@ $('kGo').addEventListener('click', kStart);
 })();
 
 /* ---------- Eltern ---------- */
+/* Abzeichen für Zehner und Einer, Zahlenmauern und Olafs Sternwarte */
+BADGES.push(
+  { id: 'profi-stelle', name: 'Stellenwert-Profi', desc: 'Alle Stufen bei Zehner und Einer', col: '#1a56b8', sym: 'ZE', test: function () { return !!S.mastered.stelle; } },
+  { id: 'profi-mauer', name: 'Mauer-Profi', desc: 'Alle Stufen bei Zahlenmauern', col: '#b8533e', sym: '▲', test: function () { return !!S.mastered.mauer; } },
+  { id: 'sternwarte', name: 'Sternwärter', desc: 'Olafs Sternwarte fertig gebaut', col: '#1f2f6b', sym: '☾', test: function () { return skyBuilt() >= SKY_BUILD.length; } },
+  { id: 'sternbild3', name: 'Sternenforscher', desc: '3 Sternbilder entdeckt', col: '#4a72d9', sym: '✦', test: function () { return skyCount(SKY_CON, skyEnsure().con) >= 3; } },
+  { id: 'sternbild8', name: 'Himmelskenner', desc: 'Alle 8 Sternbilder entdeckt', col: '#6b3fb0', sym: '8', test: function () { return skyCount(SKY_CON, skyEnsure().con) >= SKY_CON.length; } },
+  { id: 'planeten', name: 'Planetenkenner', desc: 'Alle 7 Planeten am Himmel', col: '#d9a066', sym: '♄', test: function () { return skyCount(SKY_PLANETS, skyEnsure().own) >= SKY_PLANETS.length; } },
+  { id: 'serie7', name: 'Sternschnuppen-Woche', desc: '7 Tage hintereinander eine Sternschnuppe gefangen', col: '#e9a800', sym: '7', test: function () { return (skyEnsure().shoot.best || 0) >= 7; } }
+);
 var gateAns = 0;
 $('toParents').addEventListener('click', function () { var a = rnd(12, 19), b = rnd(6, 9); gateAns = a * b; $('gateQ').textContent = a + ' × ' + b; $('gateIn').value = ''; $('gateMsg').hidden = true; go('gate'); });
 $('gateOk').addEventListener('click', function () { if (parseInt($('gateIn').value, 10) === gateAns) go('parents'); else $('gateMsg').hidden = false; });
 $('gateIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('gateOk').click(); });
 
+function swapCount() { var n = 0; S.history.slice(-20).forEach(function (h) { (h.wrong || []).forEach(function (w) { if (w.swap || isSwap(w.given, w.answer)) n++; }); }); return n; }
 function fmtDate(iso) { var d = new Date(iso); return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); }
 function renderParents() {
   var rw = rewardState();
   $('rewardNow').innerHTML = rw ? 'Aktuell: <strong>' + esc(rw.text) + '</strong> bei ' + rw.goal + ' Sternen · ' + rw.have + ' verdient' + (rw.done ? ' · <strong>erreicht!</strong>' : '') : 'Noch keine Belohnung festgelegt.';
   $('rewDone').hidden = !rw;
   $('nameIn').value = S.name; $('codeIn').value = SYNC.code; $('silbenIn').checked = S.silben !== false; showSync();
-  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Rudi erwischt</span><strong>' + (S.best.caught || 0) + '×</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Schnellste Keks-Jagd</span><strong>' + (S.best.chase ? S.best.chase + ' s' : '–') + '</strong></div><div><span>Krümel-Rekord</span><strong>' + (S.best.crumbs || '–') + '</strong></div></div></div>';
+  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Rudi erwischt</span><strong>' + (S.best.caught || 0) + '×</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Schnellste Keks-Jagd</span><strong>' + (S.best.chase ? S.best.chase + ' s' : '–') + '</strong></div><div><span>Krümel-Rekord</span><strong>' + (S.best.crumbs || '–') + '</strong></div><div><span>Sternwarte</span><strong>' + skyBuilt() + ' / ' + SKY_BUILD.length + '</strong></div><div><span>Sternschnuppen-Serie</span><strong>' + (skyEnsure().shoot.streak || 0) + ' (beste ' + (S.sky.shoot.best || 0) + ')</strong></div><div><span>Zahlendreher (letzte 20 Runden)</span><strong>' + swapCount() + '</strong></div></div><p class="muted">Zahlendreher heißt: Zehner und Einer vertauscht, z. B. 34 statt 43. Philian bekommt dann einen Tipp mit Stangen und Würfeln. Üben lässt sich das im Thema „Zehner und Einer“.</p></div>';
   Object.keys(THEMES).forEach(function (k) {
     var T = THEMES[k], hist = S.history.filter(function (x) { return x.theme === k; }), last5 = hist.slice(-5);
     var rate = last5.length ? Math.round(last5.reduce(function (s, x) { return s + x.score; }, 0) / (last5.length * ROUND) * 100) + ' %' : '–';
@@ -2506,7 +2974,7 @@ function renderParents() {
       hist.slice(-8).reverse().forEach(function (x) { h += '<tr><td>' + fmtDate(x.d) + '</td><td>' + x.level + '</td><td>' + x.score + ' / ' + ROUND + '</td></tr>'; });
       h += '</tbody></table></div>';
       var wr = []; hist.slice().reverse().forEach(function (x) { (x.wrong || []).forEach(function (w) { if (wr.length < 8) wr.push(w); }); });
-      if (wr.length) { h += '<p class="muted">Zuletzt falsch:</p><div class="table-wrap"><table><thead><tr><th>Aufgabe</th><th>Antwort</th><th>Richtig</th></tr></thead><tbody>'; wr.forEach(function (w) { h += '<tr><td>' + esc(w.q) + '</td><td class="danger">' + esc(w.given) + '</td><td>' + esc(w.answer) + '</td></tr>'; }); h += '</tbody></table></div>'; }
+      if (wr.length) { h += '<p class="muted">Zuletzt falsch:</p><div class="table-wrap"><table><thead><tr><th>Aufgabe</th><th>Antwort</th><th>Richtig</th></tr></thead><tbody>'; wr.forEach(function (w) { h += '<tr><td>' + esc(w.q) + '</td><td class="danger">' + esc(w.given) + (w.swap ? ' <span class="badge">Zahlendreher</span>' : '') + '</td><td>' + esc(w.answer) + '</td></tr>'; }); h += '</tbody></table></div>'; }
     } else h += '<p class="muted">Noch keine Runde gespielt.</p>';
     h += '</div>';
   });
