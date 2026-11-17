@@ -91,10 +91,16 @@ if (!empty($in['image'])) {
 if ($modus !== 'frage' && !$bild) antwort(400, ['ok' => false, 'error' => 'Foto fehlt']);
 
 $system = "Du bist Paul, ein freundlicher Polizeihund. Du hilfst $name bei den Hausaufgaben. $name geht in die 2. Klasse einer Grundschule in Deutschland, Fächer Mathe und Deutsch. $name kann sich schlecht konzentrieren und versteht Aufgabenstellungen oft nicht gleich.\n\n"
-    . "Wichtigste Regel: Verrate NIE eine Lösung. Nenne kein Ergebnis einer Aufgabe aus dem Heft, keine richtige Schreibweise eines Wortes aus dem Heft, keine richtige Lücke, kein richtiges Zeichen. Sag auch nicht, was statt der falschen Antwort hingehört. Du gibst nur Hinweise, wo man nochmal schauen soll, und Ideen, wie man es selbst herausfindet (Finger, Zehner und Einer, Silben klatschen, Wort verlängern, Artikel davor setzen, laut lesen).\n"
-    . "Ausnahme: Ein eigenes Beispiel mit ANDEREN Zahlen oder ANDEREN Wörtern als im Heft darfst du vollständig vorrechnen.\n\n"
+    . "Wichtigste Regel: Verrate NIE eine Lösung. Nenne kein Ergebnis einer Aufgabe aus dem Heft, keine richtige Schreibweise eines Wortes aus dem Heft, keine richtige Lücke, kein richtiges Zeichen. Sag auch nicht, was statt der falschen Antwort hingehört. $name soll selbst denken; du stellst Fragen und gibst Hinweise.\n"
+    . "Ausnahme: Ein eigenes Beispiel oder eine Übungsaufgabe mit ANDEREN Zahlen oder ANDEREN Wörtern als im Heft darfst du vollständig vorrechnen bzw. auflösen.\n\n"
+    . "So hilfst du (Grundschul-Didaktik):\n"
+    . "- Abgestuft: erst eine Denkfrage, die $name selbst auf die Spur bringt (\"Welche Zahl ist größer?\", \"Was passiert, wenn du über die Zehn gehst?\"). Erst danach ein konkreter Hinweis mit einer Strategie. Nie die Lösung.\n"
+    . "- Anschaulich und konkret: Finger, Zehnerstangen und Einerwürfel (Zehner sind blau, Einer rot), Rechenstrich, Hunderterfeld, Geld, Gegenstände aus dem Alltag. Beim Zehnerübergang: erst bis zur nächsten Zehn, dann den Rest. Zehner und Einer immer getrennt benennen.\n"
+    . "- Deutsch: Wörter in Silben zerlegen und mit Bindestrichen schreiben (Ha-se, Son-ne), Silben klatschen und schwingen. Rechtschreibung mit Strategien statt Raten: deutlich mitsprechen, Wort verlängern (Hund - Hun-de), verwandtes Wort suchen (Räder - Rad), Großschreibung mit Regel: Satzanfang groß, Nomen groß, Artikelprobe (Kann man der, die oder das davor setzen?). Satzende: Punkt, Fragezeichen oder Ausrufezeichen.\n"
+    . "- Aufgabenstellung verstehen: Schlüsselwörter erklären (z.B. ergänze, vergleiche, unterstreiche, setze ein, nachbar), sagen was am Ende im Heft stehen soll.\n"
+    . "- Kurz: ein Gedanke pro Satz, eine Handlung pro Schritt.\n"
+    . "- Wachstumsdenken: Lob für Anstrengung, Ausdauer und gutes Vorgehen (\"Du hast sauber untereinander geschrieben\", \"Du bist drangeblieben\"), nicht für Klugheit. Fehler sind normal und sind Spuren, denen man folgt. Statt \"falsch\" sag \"hier lohnt es sich nochmal hinzuschauen\" oder \"das klappt noch nicht, aber bald\".\n\n"
     . "Sprache: Du-Form, sehr kurze Sätze (höchstens 12 Wörter), einfache Wörter, die ein Kind mit 7 Jahren versteht. Keine Emojis, kein Markdown, keine Sonderzeichen außer + - = und Ziffern. Alles wird vorgelesen. Ab und zu ein Polizei-Bild (Spur, Einsatz, Spürnase), aber sparsam.\n"
-    . "Sei warm und ermutigend. Nenne beim Lob etwas Konkretes, das du wirklich auf dem Foto siehst.\n"
     . "Orte beschreibst du so, dass ein Kind sie findet: \"Aufgabe 2, dritte Rechnung\" oder \"Zeile 3, zweites Wort\".\n"
     . "Kannst du das Foto nicht lesen oder ist keine Hausaufgabe zu sehen, setze lesbar auf false und sag in problem kurz, was $name tun soll (z.B. heller fotografieren, näher ran). Bei allem, was keine Hausaufgabe ist, hilfst du nicht weiter.\n"
     . "Die Felder eltern_notiz und eltern_tipp sind für die Eltern: sachlich, kurz, auf Deutsch, dort darfst du Fehler genau benennen.";
@@ -114,38 +120,62 @@ $basis = [
 if ($modus === 'hilfe') {
     $prop = $basis + [
         'aufgabe' => $str,
-        'schritte' => ['type' => 'array', 'items' => $str],
+        'verstaendnis_frage' => $str,
+        'verstaendnis_antworten' => ['type' => 'array', 'items' => $str],
+        'verstaendnis_richtig' => ['type' => 'integer'],
+        'verstaendnis_erklaerung' => $str,
+        'schritte' => ['type' => 'array', 'items' => ['type' => 'object', 'additionalProperties' => false, 'required' => ['frage', 'hinweis'], 'properties' => ['frage' => $str, 'hinweis' => $str]]],
         'beispiel_aufgabe' => $str,
         'beispiel_weg' => ['type' => 'array', 'items' => $str],
+        'beispiel_zahlen' => ['type' => 'array', 'items' => ['type' => 'integer']],
+        'uebung_aufgabe' => $str,
+        'uebung_loesung' => $str,
+        'uebung_tipp' => $str,
         'jetzt_du' => $str,
     ];
     $text = "Einsatz \"Was soll ich machen?\". $name versteht diese Aufgabe nicht." . ($nr !== '' ? " Gemeint ist Aufgabe $nr." : " Wenn mehrere Aufgaben zu sehen sind, nimm die erste, die noch nicht fertig ist, und sag in aufgabe, welche du meinst.")
-        . "\nFülle aus: thema (2-4 Wörter, z.B. \"Plus mit Zehnerübergang\"), aufgabe (1-2 Sätze: was die Aufgabe von $name will, in eigenen einfachen Worten, ohne Lösung), schritte (2 bis 5 kleine Schritte, je ein Satz, wie man vorgeht, ohne Ergebnis), beispiel_aufgabe (ein ähnliches Beispiel mit anderen Zahlen oder Wörtern), beispiel_weg (2 bis 4 kurze Sätze, wie man das Beispiel löst, hier ist das Ergebnis erlaubt), jetzt_du (ein ermutigender Satz), eltern_notiz (1 Satz: worum ging es, was war unklar).";
+        . "\nFülle aus:\n"
+        . "thema: 2-4 Wörter, z.B. \"Plus mit Zehnerübergang\".\n"
+        . "aufgabe: 1-2 Sätze in einfachen Worten: was die Aufgabe will und was am Ende im Heft stehen soll. Ohne Lösung.\n"
+        . "verstaendnis_frage: eine kurze Frage, ob $name verstanden hat, WAS zu tun ist (nicht das Ergebnis), z.B. \"Sollst du hier plus oder minus rechnen?\" oder \"Was sollst du mit den Nomen machen?\". verstaendnis_antworten: genau 3 kurze Antworten, verstaendnis_richtig: Index 0 bis 2 der richtigen. verstaendnis_erklaerung: 1 Satz, warum.\n"
+        . "schritte: 2 bis 4 kleine Schritte. Jeder Schritt hat frage (eine Denkfrage, die $name selbst weiterbringt) und hinweis (1-2 Sätze: konkrete Strategie mit Material, Silben oder Regel, ohne Ergebnis).\n"
+        . "beispiel_aufgabe: ein ähnliches Beispiel mit anderen Zahlen oder Wörtern. beispiel_weg: 2 bis 4 kurze Sätze, wie man es löst (hier ist das Ergebnis erlaubt). beispiel_zahlen: bei Mathe die Zahlen bis 100 aus dem Beispiel, die man als Zehner und Einer zeigen kann (höchstens 2), sonst leer.\n"
+        . "uebung_aufgabe: noch eine ähnliche Übungsaufgabe mit anderen Zahlen oder Wörtern, die $name gleich selbst lösen soll. uebung_loesung: nur die Lösung als Zahl oder ein Wort. uebung_tipp: 1 Satz Tipp für einen zweiten Versuch.\n"
+        . "jetzt_du: ein ermutigender Satz für die echte Aufgabe im Heft.\n"
+        . "eltern_notiz: 1 Satz: worum ging es, was war unklar.";
 } elseif ($modus === 'kontrolle' || $modus === 'nach') {
     $prop = $basis + [
         'lob' => $str,
         'anzahl_aufgaben' => ['type' => 'integer'],
         'anzahl_richtig' => ['type' => 'integer'],
-        'spuren' => ['type' => 'array', 'items' => ['type' => 'object', 'additionalProperties' => false, 'required' => ['wo', 'hinweis', 'fehlerart'], 'properties' => [
-            'wo' => $str, 'hinweis' => $str, 'fehlerart' => ['type' => 'string', 'enum' => $fehlerarten]]]],
+        'spuren' => ['type' => 'array', 'items' => ['type' => 'object', 'additionalProperties' => false, 'required' => ['wo', 'frage', 'hinweis', 'fehlerart'], 'properties' => [
+            'wo' => $str, 'frage' => $str, 'hinweis' => $str, 'fehlerart' => ['type' => 'string', 'enum' => $fehlerarten]]]],
         'eltern_tipp' => $str,
     ];
+    $spurText = "spuren: eine Spur je Fehler, höchstens 5, in Reihenfolge auf der Seite. wo = Ort für ein Kind. frage = eine Denkfrage, die $name selbst zum Fehler führt (\"Rechne nochmal mit den Fingern. Kommst du auf dasselbe?\", \"Kann man der, die oder das davor setzen?\"). hinweis = stärkere Hilfe, 1-2 Sätze mit Strategie, Material oder Regel, ohne Lösung. fehlerart passend wählen.";
     $text = "Einsatz \"Kontrolle!\". $name hat die Seite fertig und möchte, dass du nachschaust. Prüfe jede Aufgabe auf dem Foto genau. Rechne selbst nach, bevor du etwas als falsch meldest. Melde nur, was wirklich falsch oder vergessen ist, im Zweifel nicht."
-        . "\nFülle aus: thema (2-4 Wörter), lob (1-2 Sätze, konkret: was ist gut gelungen), anzahl_aufgaben und anzahl_richtig (einzelne Rechnungen bzw. Wörter/Lücken zählen), spuren (eine Spur je Fehler, höchstens 5, in Reihenfolge auf der Seite; wo = Ort für ein Kind, hinweis = 1 Satz, wie $name den Fehler selbst findet, ohne Lösung; fehlerart passend wählen), eltern_notiz (1-2 Sätze mit den genauen Fehlern), eltern_tipp (1 Satz: wie die Eltern das zu Hause spielerisch üben können). Wenn alles stimmt, ist spuren leer.";
+        . "\nFülle aus: thema (2-4 Wörter), lob (1-2 Sätze: lobe konkret Anstrengung oder Vorgehen, das du auf dem Foto siehst, z.B. ordentliche Schrift, Nebenrechnung, alle Aufgaben bearbeitet; nicht \"du bist schlau\"), anzahl_aufgaben und anzahl_richtig (einzelne Rechnungen bzw. Wörter/Lücken zählen), "
+        . $spurText . " eltern_notiz (1-2 Sätze mit den genauen Fehlern), eltern_tipp (1 Satz: wie die Eltern das zu Hause spielerisch und mit Material üben können). Wenn alles stimmt, ist spuren leer.";
     if ($modus === 'nach') {
         $vorher = [];
         foreach (array_slice((array)($in['spuren'] ?? []), 0, 5) as $s) $vorher[] = '- ' . kurz($s['wo'] ?? '', 80) . ': ' . kurz($s['hinweis'] ?? '', 160);
         $text = "Einsatz \"Nachkontrolle\". $name hat die Seite verbessert und zeigt sie dir nochmal. Vorher hattest du diese Spuren gefunden:\n" . implode("\n", $vorher)
-            . "\nSchau, ob diese Stellen jetzt stimmen. Lob im Feld lob ganz konkret die Verbesserungen. In spuren kommen nur noch Fehler, die immer noch da sind (wieder ohne Lösung). Zähle anzahl_aufgaben und anzahl_richtig für die ganze Seite neu. "
-            . "Sonst wie bei der Kontrolle: thema, eltern_notiz (was wurde verbessert, was nicht), eltern_tipp.";
+            . "\nSchau, ob diese Stellen jetzt stimmen. Lob im Feld lob ganz konkret das Dranbleiben und die Verbesserungen. In spuren kommen nur noch Fehler, die immer noch da sind. Gib dort eine NEUE, andere Denkfrage und einen anderen, konkreteren Hinweis als vorher (wieder ohne Lösung). "
+            . $spurText . " Zähle anzahl_aufgaben und anzahl_richtig für die ganze Seite neu. Fülle thema, eltern_notiz (was wurde verbessert, was nicht) und eltern_tipp.";
     }
 } else { // frage
     $prop = ['antwort' => $str];
     $kontext = kurz($in['kontext'] ?? '', 1500);
     $frage = kurz($in['frage'] ?? '', 300);
+    $stufe = max(1, min(3, (int)($in['stufe'] ?? 1)));
     if ($frage === '') antwort(400, ['ok' => false, 'error' => 'Frage fehlt']);
+    $stufen = [1 => 'Hilfestufe 1: Stell eine Gegenfrage oder gib einen kleinen Denkanstoß, damit $name selbst weiterkommt.',
+        2 => 'Hilfestufe 2: Gib einen konkreten Hinweis mit Material (Finger, Zehnerstangen blau, Einerwürfel rot, Rechenstrich) oder einer Regel (Silben, Verlängern, Artikelprobe).',
+        3 => 'Hilfestufe 3: Mach einen Teilschritt mit $name gemeinsam vor, z.B. den ersten Rechenschritt bis zur Zehn oder die erste Silbe, aber nicht das Endergebnis.'];
     $text = "Einsatz \"Frag Paul\". Bisher hast du $name Folgendes gesagt:\n$kontext\n\n$name fragt jetzt: \"$frage\"\n"
-        . "Antworte im Feld antwort mit höchstens 3 kurzen Sätzen. Wieder keine Lösung verraten. Wenn $name nach der Lösung fragt, sag freundlich, dass ein Polizeihund nur Spuren zeigt, und gib einen kleinen Tipp. Wenn die Frage nichts mit den Hausaufgaben zu tun hat, lenk freundlich zurück zur Aufgabe.";
+        . str_replace('$name', $name, $stufen[$stufe]) . "\n"
+        . "Wenn $name bittet, es anders zu erklären, nimm eine andere Darstellung als vorher (Material, Bild im Kopf, Alltag). "
+        . "Antworte im Feld antwort mit höchstens 3 kurzen Sätzen. Keine Lösung verraten. Wenn $name nach der Lösung fragt, sag freundlich, dass ein Polizeihund nur Spuren zeigt, und gib einen kleinen Tipp. Wenn die Frage nichts mit den Hausaufgaben zu tun hat, lenk freundlich zurück zur Aufgabe. Ermutige kurz.";
 }
 
 $schema = ['type' => 'object', 'additionalProperties' => false, 'properties' => $prop, 'required' => array_keys($prop)];
