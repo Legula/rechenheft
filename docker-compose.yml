@@ -12,11 +12,29 @@ services:
       RECHENHEFT_DATA: /data
       # "aus" setzen, um automatische Updates abzuschalten
       RECHENHEFT_UPDATE_URL: https://raw.githubusercontent.com/Legula/rechenheft/main/index.html
+      # Hausaufgaben-Wache: API-Schlüssel von console.anthropic.com.
+      # Am besten in eine Datei ".env" neben diese Datei schreiben (eine Zeile: ANTHROPIC_API_KEY=sk-ant-...).
+      # Ohne Schlüssel zeigt die Wache freundlich "noch nicht eingerichtet", der Rest der App läuft normal.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      # Höchstens so viele Anfragen an Paul pro Tag (Kostenbremse)
+      WACHE_LIMIT: "60"
     volumes:
       - ./:/var/www/html:ro
       - rechenheft-daten:/data
     # index.php liefert die App aus und holt neue Versionen automatisch von GitHub (stündlich).
-    command: sh -c "chown -R www-data:www-data /data && echo 'DirectoryIndex index.php index.html' > /etc/apache2/conf-enabled/rechenheft.conf && exec apache2-foreground"
+    # Apache gibt .env, docker-compose.yml und andere Hilfsdateien nicht im Browser heraus (der Schlüssel bleibt geheim).
+    command:
+      - sh
+      - -c
+      - |
+        chown -R www-data:www-data /data
+        cat > /etc/apache2/conf-enabled/rechenheft.conf <<'CONF'
+        DirectoryIndex index.php index.html
+        <FilesMatch "(^\.|\.(ya?ml|md|env|txt|json)$$)">
+          Require all denied
+        </FilesMatch>
+        CONF
+        exec apache2-foreground
 
 volumes:
   rechenheft-daten:

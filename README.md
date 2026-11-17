@@ -2,6 +2,7 @@
 
 Mathe-Übungsheft für die 2. Klasse als einzelne Web-Seite. Läuft in jedem Browser, auch im Silk-Browser auf dem Amazon Fire Tablet.
 
+- **Hausaufgaben-Wache** mit Polizeihund Paul (nur auf der Synology, siehe unten): Foto vom Papierheft machen. „Was soll ich machen?“ zerlegt eine unverstandene Aufgabe in 2 bis 5 kleine Schritte, einzeln angezeigt, dazu ein Beispiel mit anderen Zahlen. „Kontrolle!“ lobt erst konkret und zeigt dann die Fehler als „Spuren“ einzeln (Ort und Hinweis, nie die Lösung), danach kann die Verbesserung nochmal fotografiert werden. „Frag Paul“: Tipp-Fragen, Tippen oder Mikrofon. Alles wird vorgelesen, Sterne und Dienstgrade vom Polizeischüler bis zum Polizeichef
 - **Plus und Minus bis 100** in 4 Stufen
 - **Zehner und Einer** in 4 Stufen gegen Zahlendreher: Stangen und Würfel zählen, Zahlen selbst legen (10 Einer werden zur Zehnerstange), Zahl hören und schreiben, Zahlendreher unterscheiden (34 oder 43, welche ist größer). Zehner sind immer blau, Einer rot, auch im gesprochenen Zahlwort (*drei*und*vierzig*)
 - **Zahlenmauern** in 4 Stufen: kleine Mauern mit 3 Steinen, Mauern mit 6 Steinen, Lücken unten (minus rechnen), große Mauer mit 4 Reihen; oben höchstens 100. Jeder leere Stein wird einzeln angetippt und ausgerechnet
@@ -21,6 +22,7 @@ Mathe-Übungsheft für die 2. Klasse als einzelne Web-Seite. Läuft in jedem Bro
 - Olafs Sternwarte: auf dem Berg eine Sternwarte bauen (Bergpfad, Fundament, Turm, Kuppel, großes Fernrohr; 5 bis 20 ★), sieben Planeten an den Himmel holen (8 bis 20 ★), Extras wie Fernrohr, Zelt, Satellit und Rakete. Sternbilder entdecken (5 ★): Sterne in Zählschritten verbinden (10, 20, 30 … oder rückwärts 50, 40, 30 …). Jeden Tag fliegt eine Sternschnuppe vorbei: antippen gibt 1 ★ und verlängert die Tages-Serie; nach 3, 7, 14 und 30 Tagen gibt es Komet, Polarlicht, Sternenregen und einen goldenen Stern
 - Testmodus für Erwachsene im Elternbereich (999 Sterne, eigener Speicher, kein Abgleich)
 - 34 Abzeichen für Meilensteine, mit Sammelseite
+- Elternbereich Hausaufgaben-Wache: Tage, Dauer, Trefferquote, häufige Fehlerarten, Übungstipps, letzte Notizen; worauf Paul achten soll (z. B. Großschreibung); Stimme, Tempo und automatisches Vorlesen
 - Elternbereich mit Lernstand (hinter einer kleinen Rechenaufgabe) und einer echten Belohnung mit Sterne-Ziel
 
 Der Lernstand wird im Browser des Geräts gespeichert (`localStorage`). Mit Familien-Code wird er zusätzlich nur mit der eigenen Synology abgeglichen. Sonst werden keine Daten verschickt; nur die Schriften kommen von Google Fonts.
@@ -45,6 +47,24 @@ Die App funktioniert auch ohne Verbindung zur Synology. Sie speichert dann auf d
 
 Der Lernstand liegt im Docker-Volume `rechenheft-daten`. **Updates kommen automatisch:** `index.php` holt sich höchstens einmal pro Stunde die neueste `index.html` von GitHub und speichert sie im Volume. Ohne Internet läuft die zuletzt geladene Version weiter. Sofort aktualisieren: im Elternbereich auf „Jetzt aktualisieren“ tippen (oder `http://<IP>:8088/?update=1` aufrufen). Nur wenn sich `sync.php`, `index.php` oder `docker-compose.yml` ändern, das ZIP neu einspielen und das Projekt neu erstellen.
 
+## Hausaufgaben-Wache einrichten
+
+Die Wache schickt das Foto über `wache.php` auf der Synology an Claude (Anthropic). Dafür braucht es einen eigenen API-Schlüssel. Der Schlüssel bleibt auf der Synology und kommt nie aufs Tablet.
+
+1. Auf https://console.anthropic.com anmelden, unter **Billing** etwas Guthaben aufladen (z. B. 5 €) und unter **API Keys** einen Schlüssel erstellen (beginnt mit `sk-ant-`). Eine Prüfung kostet etwa 2 bis 6 Cent, eine Rückfrage an Paul etwa 1 bis 2 Cent.
+2. Neue Version einspielen (einmalig nötig, weil `wache.php` und `docker-compose.yml` neu sind): ZIP herunterladen und den Inhalt nach `docker/rechenheft` kopieren (wie oben, Schritt 2 und 3).
+3. Schlüssel hinterlegen, eine der beiden Arten:
+   - **Datei `.env`** (empfohlen, bleibt bei späteren ZIP-Updates erhalten): auf dem PC eine Textdatei mit genau einer Zeile `ANTHROPIC_API_KEY=sk-ant-…` anlegen, als `.env` speichern und per File Station nach `docker/rechenheft` hochladen.
+   - **Direkt im Projekt**: Container Manager → Projekt `rechenheft` → YAML bearbeiten, dort `ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}` durch `ANTHROPIC_API_KEY: "sk-ant-…"` ersetzen. (Wird beim nächsten ZIP-Update überschrieben.)
+4. Container Manager → Projekt `rechenheft` → **Aktion → Erstellen** (bzw. Stoppen und neu erstellen), damit der Schlüssel geladen wird.
+5. Im Elternbereich steht unter „Hausaufgaben-Wache“ dann „Eingerichtet: Paul ist im Dienst“.
+
+Apache gibt `.env`, `docker-compose.yml` und andere Hilfsdateien nicht über den Browser heraus. Optional in der `docker-compose.yml`: `WACHE_LIMIT` (Anfragen pro Tag, Standard 60), `WACHE_MODELL` (Standard `claude-opus-5-5`), `WACHE_AUFWAND` (`low`, `medium`, `high`; Standard `medium`).
+
+Datenschutz: Fotos werden nur im Arbeitsspeicher verarbeitet und nicht gespeichert, weder auf dem Tablet noch auf der Synology. Gespeichert werden nur kurze Notizen (Thema, Anzahl richtig, Fehlerarten, ein Satz für die Eltern) im Lernstand. Auf GitHub Pages gibt es kein PHP, dort zeigt die Wache „noch nicht eingerichtet“.
+
+Noch ungetestet auf dem Fire Tablet: Kamera über den Knopf „Foto machen“ (öffnet die Kamera über das Datei-Auswahlfeld) und das Mikrofon. Das Mikrofon braucht Spracherkennung im Browser und meist HTTPS; fehlt das, wird der Knopf ausgeblendet und Phili tippt eine Frage an oder schreibt sie.
+
 ## Aufbau
 
-Die App steckt komplett in `index.html` (HTML, CSS und JavaScript). `sync.php` speichert den Lernstand pro Familien-Code als JSON-Datei. `docker-compose.yml` startet beides auf der Synology. Zusätzlich gehostet über GitHub Pages vom Branch `main` (dort ohne Abgleich).
+Die App steckt komplett in `index.html` (HTML, CSS und JavaScript). `sync.php` speichert den Lernstand pro Familien-Code als JSON-Datei. `wache.php` reicht Fotos der Hausaufgaben-Wache an die Claude-API weiter (Schlüssel aus `ANTHROPIC_API_KEY`). `docker-compose.yml` startet beides auf der Synology. Zusätzlich gehostet über GitHub Pages vom Branch `main` (dort ohne Abgleich).
