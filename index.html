@@ -520,6 +520,7 @@ select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px;
 .ppane { display: flex; flex-direction: column; gap: 16px; }
 .ppane[hidden] { display: none; }
 @media (prefers-reduced-motion: reduce) { .wdog.walk { animation: none; left: 50%; } .wpaul svg, .wpaws span { animation: none !important; opacity: 1; } }
+.speaktoast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);max-width:calc(100% - 32px);background:#1f2937;color:#fff;padding:12px 18px;border-radius:14px;font-size:1.05rem;z-index:99;box-shadow:0 6px 20px rgba(0,0,0,.25);text-align:center}
 </style>
 
 <div id="errbox" hidden style="margin:16px;padding:16px;border:3px solid #c73d3d;background:#fff;color:#1f2a44;border-radius:12px;font:16px/1.4 sans-serif"></div>
@@ -1096,11 +1097,89 @@ function silbenHTML(text) {
     return syllables(part).map(function (sy, k) { return '<span class="syl' + (k % 2 ? ' s2' : '') + '">' + esc(sy) + '</span>'; }).join('');
   }).join('');
 }
-var canSpeak = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
-/* Stimme und Tempo stellt man im Elternbereich ein (pro Gerät, weil jedes Gerät andere Stimmen hat). */
-var VOICE = { v: '', r: .9, auto: true }; try { VOICE = merge(VOICE, JSON.parse(localStorage.getItem('philian-rechenheft-v1-voice') || '{}')); } catch (e) {}
-function voiceFor() { if (!VOICE.v || !canSpeak) return null; var vs = speechSynthesis.getVoices() || []; for (var i = 0; i < vs.length; i++) if (vs[i].name === VOICE.v) return vs[i]; return null; }
-function speak(text) { try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; u.rate = VOICE.r || .9; var vo = voiceFor(); if (vo) { u.voice = vo; u.lang = vo.lang; } speechSynthesis.speak(u); } catch (e) {} }
+/* Vorlesen: zuerst die Stimme des Geräts. Hat das Gerät keine deutsche Stimme (z. B. Amazon Fire im Kinderprofil),
+   liest die Synology über sprich.php vor (Piper, offline). Stimme, Tempo und Quelle stellt man im Elternbereich ein (pro Gerät). */
+var hasSynth = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+var canSpeak = true; // Vorlese-Knöpfe immer zeigen; geht es nicht, sagt die App das freundlich
+var VOICE = { v: '', r: .9, auto: true, src: 'auto' }; try { VOICE = merge(VOICE, JSON.parse(localStorage.getItem('philian-rechenheft-v1-voice') || '{}')); } catch (e) {}
+var TTS = { tab: null, srv: null, aud: null, gen: 0, warned: 0 }; // tab: true/false/null (noch unklar), srv: Antwort von sprich.php
+function deVoices() { if (!hasSynth) return []; try { return (speechSynthesis.getVoices() || []).filter(function (v) { return /^de/i.test(v.lang); }); } catch (e) { return []; } }
+function ttsCheckTab() { var n = deVoices().length; if (n) TTS.tab = true; else if (TTS.tab === null && (!hasSynth || TTS.waited)) TTS.tab = false; return TTS.tab; }
+if (hasSynth) { try { speechSynthesis.getVoices(); speechSynthesis.addEventListener('voiceschanged', function () { ttsCheckTab(); ttsSrvCheck(); }); } catch (e) {} }
+setTimeout(function () { TTS.waited = true; ttsCheckTab(); ttsSrvCheck(); }, 2500);
+/* Server-Stimme nur abfragen, wenn sie gebraucht wird (Gerät ohne deutsche Stimme oder so eingestellt) */
+function ttsSrvCheck(force, peek) {
+  if (location.protocol === 'file:') return;
+  var need = force || VOICE.src === 'server' || TTS.tab === false;
+  if (!need && !peek) return;
+  if (TTS.srvBusy) return; TTS.srvBusy = true;
+  fetch('sprich.php?status=1' + (need ? '&install=1' : '') + (force ? '&nochmal=1' : ''), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { TTS.srv = j; }).catch(function () { TTS.srv = { ready: false, state: 'keinserver' }; }).then(function () {
+    TTS.srvBusy = false; if (typeof renderVoiceStatus === 'function') renderVoiceStatus();
+    if (TTS.srv && TTS.srv.state === 'laedt') setTimeout(function () { ttsSrvCheck(false, true); }, 8000);
+  });
+}
+/* Welche Stimme liest gerade? 'tablet', 'server' oder '' (keine) */
+function ttsMode() {
+  var srv = TTS.srv && TTS.srv.ready;
+  if (VOICE.src === 'server') return srv ? 'server' : '';
+  if (VOICE.src === 'tablet') return hasSynth ? 'tablet' : '';
+  if (deVoices().length) return 'tablet';
+  if (srv) return 'server';
+  if (hasSynth && TTS.tab === null) return 'tablet'; // Stimmen noch nicht geladen, versuchen
+  return '';
+}
+function voiceFor() { if (!VOICE.v || !hasSynth) return null; var vs = speechSynthesis.getVoices() || []; for (var i = 0; i < vs.length; i++) if (vs[i].name === VOICE.v) return vs[i]; return null; }
+function stopSpeak() { TTS.gen++; if (hasSynth) try { speechSynthesis.cancel(); } catch (e) {} if (TTS.aud) { try { TTS.aud.onended = TTS.aud.onerror = null; TTS.aud.pause(); } catch (e) {} TTS.aud = null; } }
+/* Satzweise, damit der erste Satz schnell kommt und jeder Satz einzeln im Zwischenspeicher landet */
+function ttsChunks(text) {
+  var parts = String(text).replace(/\s+/g, ' ').match(/[^.!?:;]+[.!?:;]*\s*/g) || [], out = [];
+  parts.forEach(function (p) { p = p.trim(); if (!p) return; if (out.length && (out[out.length - 1].length < 25 || p.length < 8) && out[out.length - 1].length + p.length < 300) out[out.length - 1] += ' ' + p; else out.push(p); });
+  return out.map(function (p) { return p.length > 480 ? p.slice(0, 480) : p; });
+}
+function ttsURL(t) { return 'sprich.php?r=' + (VOICE.r || .9) + '&t=' + encodeURIComponent(t); }
+/* Ein einziges Audio-Element für die ganze App. Beim ersten Tipp wird es mit Stille "freigeschaltet",
+   damit Browser mit Autoplay-Sperre (z. B. Amazon Kids) später auch automatisch vorlesen dürfen. */
+var SILENCE = 'data:audio/wav;base64,UklGRmQGAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+function ttsEl() { if (!TTS.el) { TTS.el = new Audio(); TTS.el.preload = 'auto'; } return TTS.el; }
+function ttsUnlock() {
+  if (TTS.unlocked) return; TTS.unlocked = true;
+  try { var a = ttsEl(); if (!a.src || a.paused) { a.src = SILENCE; var p = a.play(); if (p && p.catch) p.catch(function () { TTS.unlocked = false; }); } } catch (e) { TTS.unlocked = false; }
+}
+['pointerdown', 'touchend', 'click', 'keydown'].forEach(function (ev) { document.addEventListener(ev, ttsUnlock, true); });
+function speakServer(text, manual) {
+  var gen = TTS.gen, parts = ttsChunks(text), i = 0, a = ttsEl();
+  function next() {
+    if (gen !== TTS.gen || i >= parts.length) { if (gen === TTS.gen) TTS.aud = null; return; }
+    TTS.aud = a; a.onended = next;
+    a.onerror = function () { if (gen === TTS.gen) { TTS.aud = null; if (manual) speakFail('server'); } };
+    a.src = ttsURL(parts[i]); i++;
+    if (i < parts.length && window.fetch) fetch(ttsURL(parts[i])).catch(function () {}); // nächsten Satz schon erzeugen lassen
+    var p = a.play();
+    if (p && p.catch) p.catch(function (e) {
+      if (gen !== TTS.gen || (e && e.name === 'AbortError')) return;
+      TTS.aud = null;
+      if (manual) speakFail('server'); else if (e && e.name === 'NotAllowedError') TTS.blocked = true; // Autoplay gesperrt: „Nochmal hören“ geht trotzdem
+    });
+  }
+  next();
+}
+/* manual: Kind hat auf einen Vorlese-Knopf getippt. Automatisches Vorlesen bleibt still, wenn es nicht geht. */
+function speak(text, manual) {
+  stopSpeak(); if (!text) return;
+  var m = ttsMode();
+  if (m === 'server') { speakServer(text, manual); return; }
+  if (m === 'tablet') { try { var u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; u.rate = VOICE.r || .9; var vo = voiceFor(); if (vo) { u.voice = vo; u.lang = vo.lang; } speechSynthesis.speak(u); } catch (e) { if (manual) speakFail(''); } return; }
+  if (manual) speakFail('');
+}
+function speakFail(why) {
+  var s = TTS.srv || {}, t;
+  if (s.state === 'laedt') t = 'Die Vorlese-Stimme wird gerade eingerichtet. Probier es gleich nochmal.';
+  else if (why === 'server') t = 'Vorlesen hat gerade nicht geklappt. Probier es nochmal.';
+  else t = 'Dieses Tablet kann gerade nicht vorlesen. Sag Mama oder Papa Bescheid.';
+  var el = $('speakToast'); if (!el) { el = document.createElement('div'); el.id = 'speakToast'; el.className = 'speaktoast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+  el.textContent = '🔇 ' + t; el.hidden = false; clearTimeout(TTS.toast); TTS.toast = setTimeout(function () { el.hidden = true; }, 4500);
+  if (!TTS.srv || s.state === 'fehlt' || s.state === 'keinserver') ttsSrvCheck(true);
+}
 
 /* ---------- Zehner und Einer ---------- */
 /* Viele Kinder vertauschen Zehner und Einer, weil man im Deutschen die Einer zuerst spricht (vierundzwanzig = 24).
@@ -1384,9 +1463,9 @@ function wallEnter(t) {
 $('quizBody').addEventListener('click', function (e) {
   var t = Q && Q.tasks[Q.i]; if (!t) return;
   var nx = e.target.closest('#nextBtn'); if (nx) { nextTask(); return; }
-  if (e.target.closest('#speakBtn')) { speak(t.story); return; }
-  if (e.target.closest('#sayBtn')) { speak(numWord(t.say)); return; }
-  if (e.target.closest('#speakHint')) { speak(('Richtig ist ' + t.answer + (t.unit ? ' ' + t.unit : '') + '. ' + t.hint).replace(/−/g, ' minus ').replace(/·/g, ' mal ').replace(/€/g, ' Euro').replace(/\bct\b/g, ' Cent')); return; }
+  if (e.target.closest('#speakBtn')) { speak(t.story, true); return; }
+  if (e.target.closest('#sayBtn')) { speak(numWord(t.say), true); return; }
+  if (e.target.closest('#speakHint')) { speak(('Richtig ist ' + t.answer + (t.unit ? ' ' + t.unit : '') + '. ' + t.hint).replace(/−/g, ' minus ').replace(/·/g, ' mal ').replace(/€/g, ' Euro').replace(/\bct\b/g, ' Cent'), true); return; }
   if (Q.locked) return;
   var bk = e.target.closest('[data-b]');
   if (bk && t.type === 'wall') { var bkey = bk.getAttribute('data-b'); if (t.done[bkey] !== true && bkey !== t.sel) { t.sel = bkey; Q.input = ''; showInput(t); } return; }
@@ -3202,13 +3281,13 @@ function wScreen(o) {
   W.acts = {}; (o.actions || []).forEach(function (a) { W.acts[a.id] = a.fn; });
   $('wStars').textContent = stars(); $('wRank').textContent = wRank().name;
   if (o.read && VOICE.auto && canSpeak) setTimeout(function () { if (W.read === o.read && !$('v-wache').hidden) speak(o.read); }, 200);
-  else if (canSpeak) { try { speechSynthesis.cancel(); } catch (e) {} }
+  else stopSpeak();
   window.scrollTo(0, 0);
 }
 $('wBody').addEventListener('click', function (e) {
   var b = e.target.closest('[data-w]'); if (!b) return;
   var id = b.getAttribute('data-w');
-  if (id === 'read') { speak(W.read); return; }
+  if (id === 'read') { speak(W.read, true); return; }
   if (W.acts && W.acts[id]) W.acts[id](b);
 });
 function dotsHTML(n, i) { var h = '<div class="wdots">'; for (var k = 0; k < n; k++) h += '<i class="' + (k < i ? 'done' : k === i ? 'on' : '') + '"></i>'; return h + '</div>'; }
@@ -3221,7 +3300,7 @@ function openWache() {
 }
 $('toWache').addEventListener('click', openWache);
 $('wBack').addEventListener('click', function () { if (W.mode && W.res) { wFinishCase(); } go('home'); });
-function wLeave() { try { speechSynthesis.cancel(); } catch (e) {} if (W.mode && W.res) wFinishCase(); W.img = null; W.mode = ''; W.res = null; if (W.rec) { try { W.rec.abort(); } catch (e) {} W.rec = null; } }
+function wLeave() { stopSpeak(); if (W.mode && W.res) wFinishCase(); W.img = null; W.mode = ''; W.res = null; if (W.rec) { try { W.rec.abort(); } catch (e) {} W.rec = null; } }
 
 function wCheck() {
   if (!window.fetch) { W.ready = false; W.why = 'Dieser Browser ist zu alt für die Wache.'; wStartScreen(); return; }
@@ -3600,7 +3679,7 @@ function wQuestion(q) {
 function wListen() {
   if (!SR) return;
   try {
-    try { speechSynthesis.cancel(); } catch (e) {}
+    stopSpeak();
     var rec = new SR(); W.rec = rec; rec.lang = 'de-DE'; rec.interimResults = false; rec.maxAlternatives = 1;
     var btn = document.querySelector('[data-w="mic"]'); if (btn) btn.textContent = '🎤 Ich höre zu …';
     rec.onresult = function (e) { var t = e.results && e.results[0] && e.results[0][0] ? e.results[0][0].transcript : ''; if (t) { var inp = $('wAskIn'); if (inp) inp.value = t; wQuestion(t); } };
@@ -3695,31 +3774,46 @@ function renderWacheParent() {
   for (var k in W_ACHTEN_KURZ) h += '<div class="row"><input type="checkbox" id="wa-' + k + '" data-wa="' + k + '" style="width:24px;height:24px"' + (st[k] ? ' checked' : '') + '><label for="wa-' + k + '">' + W_ACHTEN_KURZ[k] + '</label></div>';
   h += '<div class="row"><label for="waText">Eigener Hinweis</label><input type="text" id="waText" maxlength="200" style="flex:1;min-width:200px" placeholder="z. B. Er verwechselt b und d" value="' + esc(st.text || '') + '"><button class="btn ghost" id="waSave">Speichern</button></div>';
   h += '<h3>Vorlesen</h3><p class="muted">Gilt für die ganze App auf diesem Gerät.</p>';
-  h += '<div class="row"><label for="vVoice">Stimme</label><select id="vVoice"><option value="">Standard (Tablet-Stimme)</option></select></div>';
+  h += '<div class="row"><label for="vSrc">Wer liest vor?</label><select id="vSrc">' + [['auto', 'Automatisch (Tablet, sonst Synology)'], ['tablet', 'Immer das Tablet'], ['server', 'Immer die Synology']].map(function (o) { return '<option value="' + o[0] + '"' + (VOICE.src === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>';
+  h += '<div id="vStatus"></div>';
+  h += '<div class="row" id="vVoiceRow"><label for="vVoice">Tablet-Stimme</label><select id="vVoice"><option value="">Standard (Tablet-Stimme)</option></select></div>';
   h += '<div class="row"><label for="vRate">Tempo</label><input type="range" id="vRate" min="0.6" max="1.3" step="0.05" value="' + (VOICE.r || .9) + '" style="flex:1;min-width:160px"><span id="vRateV">' + Math.round((VOICE.r || .9) * 100) + ' %</span><button class="btn ghost" id="vTest">Probe hören</button></div>';
   h += '<div class="row"><input type="checkbox" id="vAuto" style="width:24px;height:24px"' + (VOICE.auto ? ' checked' : '') + '><label for="vAuto">Paul liest automatisch vor</label></div>';
-  if (!canSpeak) h += '<p class="danger">Dieser Browser kann nicht vorlesen.</p>';
   $('wacheParent').innerHTML = h + '</div>';
-  fillVoices();
+  fillVoices(); renderVoiceStatus(); ttsSrvCheck(false, true);
+}
+/* Klare Auskunft für die Eltern, statt dass das Vorlesen still ausfällt */
+function renderVoiceStatus() {
+  var el = $('vStatus'); if (!el) return;
+  var n = deVoices().length, s = TTS.srv, m = ttsMode(), h = '';
+  var tab = n ? 'Das Tablet hat ' + n + (n === 1 ? ' deutsche Stimme.' : ' deutsche Stimmen.') : (hasSynth ? 'Das Tablet hat keine deutsche Stimme' + (TTS.tab === null ? ' gefunden (wird noch geprüft).' : '.') : 'Dieser Browser kann selbst nicht vorlesen (z. B. Amazon Kids).');
+  var srv = !s ? 'Synology-Stimme: wird geprüft …' : s.ready ? 'Synology-Stimme: bereit.' : s.state === 'laedt' ? 'Synology-Stimme: ' + (s.msg || 'wird eingerichtet') + ' Einmalig ca. 90 MB, dauert ein bis zwei Minuten.' : s.state === 'keinserver' ? 'Synology-Stimme: nicht erreichbar. Sie geht nur, wenn die App von der Synology kommt und dort sprich.php liegt.' : 'Synology-Stimme: ' + (s.msg || 'nicht bereit.');
+  var now = m === 'tablet' ? '✅ Vorlesen läuft über das Tablet.' : m === 'server' ? '✅ Vorlesen läuft über die Synology.' : '⚠️ Im Moment kann auf diesem Gerät nichts vorgelesen werden. Phili sieht dann beim Vorlese-Knopf einen Hinweis.';
+  h = '<p class="' + (m ? 'muted' : 'danger') + '">' + esc(now) + '</p><p class="muted">' + esc(tab) + '<br>' + esc(srv) + '</p>';
+  if (s && !s.ready && (s.state === 'fehler' || s.state === 'fehlt')) h += '<div class="row"><button class="btn ghost" id="vSrvRetry">Synology-Stimme einrichten</button></div>';
+  el.innerHTML = h;
+  var row = $('vVoiceRow'); if (row) row.hidden = !n;
 }
 function fillVoices() {
-  var sel = $('vVoice'); if (!sel || !canSpeak) return;
-  var vs = (speechSynthesis.getVoices() || []).filter(function (v) { return /^de/i.test(v.lang); });
+  var sel = $('vVoice'); if (!sel || !hasSynth) return;
+  var vs = deVoices();
   sel.innerHTML = '<option value="">Standard (Tablet-Stimme)</option>' + vs.map(function (v) { return '<option value="' + esc(v.name) + '"' + (v.name === VOICE.v ? ' selected' : '') + '>' + esc(v.name) + '</option>'; }).join('');
 }
-if (canSpeak) try { speechSynthesis.addEventListener('voiceschanged', fillVoices); } catch (e) {}
+if (hasSynth) try { speechSynthesis.addEventListener('voiceschanged', function () { fillVoices(); renderVoiceStatus(); }); } catch (e) {}
 function saveVoice() { lsSet('philian-rechenheft-v1-voice', JSON.stringify(VOICE)); }
 $('wacheParent').addEventListener('change', function (e) {
   var t = e.target, k = t.getAttribute('data-wa'), ks = t.getAttribute('data-ws');
   if (ks) { wEnsure().set[ks] = +t.value; S.at.wacheSet = Date.now(); save(); var cur = strGet(); if (cur && ks === 'ziel') { cur.ziel = +t.value; cur.shownEnd = false; strPut(cur); } renderWacheParent(); return; }
   if (k) { wEnsure().set[k] = t.checked; S.at.wacheSet = Date.now(); save(); return; }
   if (t.id === 'vVoice') { VOICE.v = t.value; saveVoice(); }
+  if (t.id === 'vSrc') { VOICE.src = t.value; saveVoice(); ttsSrvCheck(); renderVoiceStatus(); }
   if (t.id === 'vAuto') { VOICE.auto = t.checked; saveVoice(); }
   if (t.id === 'vRate') { VOICE.r = +t.value; saveVoice(); }
 });
 $('wacheParent').addEventListener('input', function (e) { if (e.target.id === 'vRate') $('vRateV').textContent = Math.round(e.target.value * 100) + ' %'; });
 $('wacheParent').addEventListener('click', function (e) {
-  if (e.target.id === 'vTest') speak('Hallo ' + S.name + '! Ich bin Polizeihund Paul. So klinge ich.');
+  if (e.target.id === 'vTest') speak('Hallo ' + S.name + '! Ich bin Polizeihund Paul. So klinge ich.', true);
+  if (e.target.id === 'vSrvRetry') { TTS.srv = { ready: false, state: 'laedt', msg: 'Einrichtung startet' }; renderVoiceStatus(); ttsSrvCheck(true); }
   if (e.target.id === 'waSave') { wEnsure().set.text = $('waText').value.trim().slice(0, 200); S.at.wacheSet = Date.now(); save(); e.target.textContent = 'Gespeichert'; setTimeout(function () { e.target.textContent = 'Speichern'; }, 1200); }
 });
 
