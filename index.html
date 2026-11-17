@@ -534,6 +534,11 @@ select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px;
 .dcard.locked svg { filter: grayscale(.9); opacity: .55; }
 .dcard.locked .dtag { background: var(--grid); font-size: .85rem; }
 .dcard.sel { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), 0 4px 0 var(--accent); }
+.dsw svg { border-radius: 14px; box-shadow: 0 4px 0 var(--line); }
+.dbig.dsw { width: min(280px, 70vw); }
+.dskins .dcard svg { width: 100%; max-width: 150px; }
+.dswi { font-size: 2rem; width: 54px; text-align: center; flex: none; }
+.dneu.dfit { right: auto; left: -6px; background: #155130; }
 .dsea { position: absolute; top: 4px; left: 6px; font-size: 1.15rem; }
 .dneu { position: absolute; top: -10px; right: -6px; background: #c22b26; color: #ffffff; font-weight: 800; font-size: .85rem; border-radius: 999px; padding: 2px 9px; }
 #homeMascot { cursor: pointer; }
@@ -661,7 +666,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     </button>
   </div>
   <h2>Kleiderschrank</h2>
-  <button class="topic play dress-card" id="playDress"><span class="dress-mini" id="dressMini" aria-hidden="true"></span><div><h3>Olafs und Pauls Kleiderschrank</h3><p class="level">Mützen, Brillen, Umhänge und Hintergründe für Sterne</p><span class="badge" id="dressBadge"></span></div></button>
+  <button class="topic play dress-card" id="playDress"><span class="dress-mini" id="dressMini" aria-hidden="true"></span><div><h3>Olafs und Pauls Kleiderschrank</h3><p class="level">Outfits für Olaf und Paul, neue Farben fürs Heft</p><span class="badge" id="dressBadge"></span></div></button>
   <button class="parents-link" id="toParents">Für Eltern</button>
 </section>
 
@@ -867,6 +872,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <div class="row"><label for="nameIn">Name des Kindes</label><input type="text" id="nameIn" maxlength="20"><button class="btn ghost" id="nameSave">Speichern</button></div>
     <div class="row"><input type="checkbox" id="silbenIn" style="width:24px;height:24px"><label for="silbenIn">Silben in Sachaufgaben farbig markieren (Lesehilfe)</label></div>
     <div class="row"><input type="checkbox" id="dressIn" style="width:24px;height:24px"><label for="dressIn">Kleiderschrank: Olaf und Paul tragen Outfits (aus = immer im normalen Aussehen, Kleiderschrank ausgeblendet; Gekauftes bleibt erhalten)</label></div>
+    <div class="row"><input type="checkbox" id="skinIn" style="width:24px;height:24px"><label for="skinIn">Heft-Farben (Themes) erlauben (aus = immer das normale Karopapier; die Auswahl gilt pro Gerät)</label></div>
     <div class="row"><label for="codeIn">Familien-Code</label><input type="text" id="codeIn" maxlength="40" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="z. B. sonnenblume-42"><button class="btn ghost" id="codeSave">Speichern</button><button class="btn ghost" id="syncBtn">Jetzt abgleichen</button></div>
     <p id="syncStatus" class="muted"></p>
     <div class="row"><button class="btn ghost" id="updBtn">Jetzt aktualisieren</button><span class="muted" id="updMsg">Holt sofort die neueste Version auf die Synology, für alle Geräte. Die anderen Geräte bekommen sie beim nächsten Öffnen.</span></div>
@@ -973,7 +979,7 @@ function syncNow() {
     })
     .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); SYNC.state = 'ok'; SYNC.last = Date.now(); })
     .catch(function (e) { SYNC.state = 'error'; SYNC.err = String((e && e.message) || e); })
-    .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); if (!$('v-build').hidden && !BV.busy) renderBuild(); if (!$('v-island').hidden) renderIsland(); if (!$('v-sky').hidden && !SV.con) renderSky(); if (!$('v-dress').hidden) renderDress(); });
+    .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); if (!$('v-build').hidden && !BV.busy) renderBuild(); if (!$('v-island').hidden) renderIsland(); if (!$('v-sky').hidden && !SV.con) renderSky(); if (!$('v-dress').hidden) renderDress(); else skApply(); });
 }
 function scheduleSync() { if (!SYNC.code) return; clearTimeout(SYNC.timer); SYNC.timer = setTimeout(syncNow, 1200); }
 function showSync() {
@@ -1480,7 +1486,7 @@ var THEMES = {
 
 /* ---------- Navigation ---------- */
 var VIEWS = ['home', 'learn', 'quiz', 'result', 'chase', 'build', 'island', 'sky', 'wache', 'dress', 'badges', 'gate', 'parents'];
-function go(v) { if (v !== 'wache' && !$('v-wache').hidden) wLeave(); VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
+function go(v) { if (v !== 'wache' && !$('v-wache').hidden) wLeave(); if (v !== 'dress' && typeof skApply === 'function' && document.documentElement.getAttribute('data-skin') !== (skCur() === 'std' ? null : skCur())) skApply(); VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
 document.addEventListener('click', function (e) { var t = e.target.closest('[data-go]'); if (t) { stopGame(); go(t.getAttribute('data-go')); } });
 
 function renderHome() {
@@ -3373,7 +3379,7 @@ function renderParents() {
   var rw = rewardState();
   $('rewardNow').innerHTML = rw ? 'Aktuell: <strong>' + esc(rw.text) + '</strong> bei ' + rw.goal + ' Sternen · ' + rw.have + ' verdient' + (rw.done ? ' · <strong>erreicht!</strong>' : '') : 'Noch keine Belohnung festgelegt.';
   $('rewDone').hidden = !rw;
-  $('nameIn').value = S.name; $('codeIn').value = SYNC.code; $('silbenIn').checked = S.silben !== false; $('dressIn').checked = !dEnsure().off; showSync();
+  $('nameIn').value = S.name; $('codeIn').value = SYNC.code; $('silbenIn').checked = S.silben !== false; $('dressIn').checked = !dEnsure().off; $('skinIn').checked = !dEnsure().skinOff; showSync();
   var h = '<div class="sheet"><h3>Überblick</h3><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Rudi erwischt</span><strong>' + (S.best.caught || 0) + '×</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Schnellste Keks-Jagd</span><strong>' + (S.best.chase ? S.best.chase + ' s' : '–') + '</strong></div><div><span>Krümel-Rekord</span><strong>' + (S.best.crumbs || '–') + '</strong></div><div><span>Kleiderschrank</span><strong>' + Object.keys(dEnsure().own).length + ' Teile' + (dEnsure().off ? ' (ausgeschaltet)' : '') + '</strong></div><div><span>Sternwarte</span><strong>' + skyBuilt() + ' / ' + SKY_BUILD.length + '</strong></div><div><span>Sternschnuppen-Serie</span><strong>' + (skyEnsure().shoot.streak || 0) + ' (beste ' + (S.sky.shoot.best || 0) + ')</strong></div><div><span>Zahlendreher (letzte 20 Runden)</span><strong>' + swapCount() + '</strong></div></div><p class="muted">Zahlendreher heißt: Zehner und Einer vertauscht, z. B. 34 statt 43. Philian bekommt dann einen Tipp mit Stangen und Würfeln. Üben lässt sich das im Thema „Zehner und Einer“.</p></div>';
   Object.keys(THEMES).forEach(function (k) {
     var T = THEMES[k], hist = S.history.filter(function (x) { return x.theme === k; }), last5 = hist.slice(-5);
@@ -4256,6 +4262,7 @@ function dMerge(o, R) {
   for (var k in (rd.own || {})) if (rd.own[k]) d.own[k] = 1;
   if ((Ra.dress || 0) > (o.at.dress || 0) && rd.wear) { d.wear = rd.wear; o.at.dress = Ra.dress; }
   if ((Ra.dressOff || 0) > (o.at.dressOff || 0)) { d.off = !!rd.off; o.at.dressOff = Ra.dressOff; }
+  if ((Ra.skinOff || 0) > (o.at.skinOff || 0)) { d.skinOff = !!rd.skinOff; o.at.skinOff = Ra.skinOff; }
 }
 function dOwns(f, id) { var it = D_BY[id]; if (!it) return false; return !!dEnsure().own[f + '.' + id]; }
 function dFor(f) { return DRESS.filter(function (d) { return d.figs.indexOf(f) >= 0; }); }
@@ -4310,6 +4317,79 @@ function dLayers(f, look, noBg) {
   return L;
 }
 function dSvgTag(label, w) { return '<svg viewBox="0 0 120 130" role="img" aria-label="' + label + '"' + (w ? ' width="' + w + '"' : '') + '>'; }
+/* ---------- Heft-Farben (Themes für die ganze Oberfläche) ----------
+   Gekauft wird mit Sternen (S.dress.own['t.id'], wird beim Abgleich vereinigt), ausgewählt pro Gerät (KEY-skin: 'std', 'auto' oder id).
+   'auto' nimmt das gekaufte Theme, das zur Jahreszeit passt. Eltern können Themes abschalten (S.dress.skinOff, S.at.skinOff).
+   Jede Farbkombination ist auf Kontrast geprüft: Schrift auf Papier und Karten mindestens 4,5:1, Knopfschrift auf Knopf auch.
+   Muster im Hintergrund bleiben sehr blass, damit nichts von den Aufgaben ablenkt. */
+var SK_LIGHT = { good: '#23874c', 'good-soft': '#e2f4e9', bad: '#c73d3d', 'bad-soft': '#fbe6e6', star: '#e9a800', hour: '#c73d3d', 'good-dark': '#155130', syl1: '#1a56b8', syl2: '#c22b26', card: '#ffffff' };
+function skPat(inner, h) { h = h || 120; return 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="' + h + '" viewBox="0 0 120 ' + h + '">' + inner + '</svg>') + '")'; }
+function skStar(x, y, r, c) { var p = ''; for (var k = 0; k < 10; k++) { var an = Math.PI / 5 * k - Math.PI / 2, rr = k % 2 ? r * .45 : r; p += (k ? 'L' : 'M') + (x + Math.cos(an) * rr).toFixed(1) + ' ' + (y + Math.sin(an) * rr).toFixed(1); } return '<path d="' + p + 'Z" fill="' + c + '"/>'; }
+var SKINS = [
+  { id: 'std', name: 'Karopapier', price: 0, ico: '📓', pal: {} },
+  { id: 'polizei', name: 'Polizeirevier', price: 25, ico: '🚓',
+    deco: '<rect width="120" height="28" fill="#1d3f7a"/><rect y="18" width="120" height="5" fill="#d9e021"/><rect y="23" width="120" height="5" fill="#ffffff"/>' + skStar(60, 9, 6, '#ffd23f') + '<circle cx="14" cy="9" r="4" fill="#5aa0ff"/><circle cx="106" cy="9" r="4" fill="#5aa0ff"/>',
+    pal: { paper: '#eef3fa', grid: '#d6e0f0', ink: '#13213d', muted: '#3f4d6b', margin: '#2f6fd6', accent: '#1d3f7a', 'accent-ink': '#ffffff', 'accent-soft': '#dde7f6', 'accent-dark': '#0c1f40', line: '#b9c8e0' },
+    pat: skStar(30, 30, 7, 'rgba(29,63,122,.07)') + skStar(90, 90, 7, 'rgba(29,63,122,.07)') },
+  { id: 'weltraum', name: 'Weltraum', price: 30, ico: '🚀', dark: true,
+    deco: '<rect width="120" height="28" fill="#0b1028"/><circle cx="30" cy="14" r="7" fill="#d9a066"/><ellipse cx="30" cy="14" rx="13" ry="3.5" fill="none" stroke="#f2d29b" stroke-width="1.6"/><circle cx="88" cy="12" r="4" fill="#5aa0ff"/>' + skStar(62, 10, 4, '#fff6c2') + skStar(108, 20, 3, '#fff6c2') + '<circle cx="8" cy="6" r="1.2" fill="#fff"/><circle cx="50" cy="22" r="1.2" fill="#fff"/>',
+    pal: { paper: '#121a36', grid: '#1a2449', ink: '#f2f5ff', muted: '#bcc6e8', margin: '#a77ee8', accent: '#8fb8ff', 'accent-ink': '#0d1530', 'accent-soft': '#26335f', 'accent-dark': '#5a7fc0', card: '#1c2650', line: '#36457c', star: '#ffd23f', good: '#6fdc9a', 'good-soft': '#1d3b34', bad: '#ff8f8f', 'bad-soft': '#44283a', hour: '#ff8f8f', 'good-dark': '#3d8058', syl1: '#8cc0ff', syl2: '#ff9488' },
+    pat: '<circle cx="14" cy="20" r="1.4" fill="rgba(255,255,255,.35)"/><circle cx="70" cy="12" r="1" fill="rgba(255,255,255,.3)"/><circle cx="100" cy="64" r="1.4" fill="rgba(255,255,255,.35)"/><circle cx="40" cy="96" r="1" fill="rgba(255,255,255,.3)"/>' + skStar(52, 52, 4, 'rgba(255,230,150,.22)') },
+  { id: 'winter', name: 'Winterzauber', price: 20, ico: '❄️', seasons: ['advent', 'winter'],
+    deco: '<rect width="120" height="10" fill="#ffffff"/><path d="M0 10 Q10 16 20 10 Q30 18 40 10 Q50 15 60 10 Q70 18 80 10 Q90 16 100 10 Q110 17 120 10" fill="#ffffff" stroke="#c3d6ea" stroke-width="1.5"/><path d="M14 12 l3 12 3 -12Z M54 12 l2.5 9 2.5 -9Z M92 12 l3 13 3 -13Z" fill="#cfe6fb" stroke="#9cc3e6" stroke-width="1"/>',
+    pal: { paper: '#f3f8fd', grid: '#d9e8f5', ink: '#15263f', muted: '#43556e', margin: '#5aa0d8', accent: '#17609a', 'accent-ink': '#ffffff', 'accent-soft': '#dcebf8', 'accent-dark': '#0d3e66', line: '#c3d6ea' },
+    pat: '<g stroke="rgba(23,96,154,.13)" stroke-width="2" stroke-linecap="round"><path d="M24 18v16M16 26h16M18 20l12 12M30 20L18 32"/><path d="M86 78v16M78 86h16M80 80l12 12M92 80L80 92"/></g>' },
+  { id: 'sommer', name: 'Strand', price: 20, ico: '🏖️', seasons: ['sommer'],
+    deco: '<rect width="120" height="28" fill="#bfe6ff"/><path d="M0 16 q10 -6 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V28 H0Z" fill="#3fa7e0"/><path d="M0 22 q10 -5 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V28 H0Z" fill="#0b6f7e"/><circle cx="96" cy="8" r="5" fill="#ffd23f"/>',
+    pal: { paper: '#fff9ec', grid: '#f2e4c2', ink: '#2a2416', muted: '#5a4f35', margin: '#f08a24', accent: '#0b6f7e', 'accent-ink': '#ffffff', 'accent-soft': '#d9f0f2', 'accent-dark': '#064650', line: '#ead7a8' },
+    pat: '<path d="M10 30q10-6 20 0t20 0M70 90q10-6 20 0t20 0" stroke="rgba(11,111,126,.13)" stroke-width="2.5" fill="none"/><circle cx="96" cy="26" r="7" fill="rgba(240,138,36,.12)"/>' },
+  { id: 'herbst', name: 'Herbstwald', price: 20, ico: '🍂', seasons: ['herbst', 'halloween', 'martin'],
+    deco: '<path d="M0 6 Q30 18 60 6 Q90 18 120 6" stroke="#7a4d30" stroke-width="2" fill="none"/>' + [[14, 10, '#e0662b', -20], [36, 14, '#f2b134', 10], [60, 8, '#c4302b', 0], [84, 14, '#e0662b', -10], [106, 10, '#f2b134', 20]].map(function (l) { return '<path d="M0 0 Q6 6 0 16 Q-6 6 0 0Z" fill="' + l[2] + '" transform="translate(' + l[0] + ' ' + l[1] + ') rotate(' + l[3] + ')"/>'; }).join(''),
+    pal: { paper: '#fcf5ec', grid: '#efdfca', ink: '#2b1d12', muted: '#5c4836', margin: '#c4302b', accent: '#9a4210', 'accent-ink': '#ffffff', 'accent-soft': '#f6e3d2', 'accent-dark': '#642a08', line: '#e3cbb0' },
+    pat: '<path d="M28 34q9-8 0-20q-9 12 0 20Z" fill="rgba(196,48,43,.10)"/><path d="M92 94q9-8 0-20q-9 12 0 20Z" fill="rgba(224,102,43,.12)" transform="rotate(30 92 84)"/>' },
+  { id: 'fruehling', name: 'Frühlingswiese', price: 20, ico: '🌷', seasons: ['fruehling', 'ostern'],
+    deco: '<path d="M0 6 Q30 16 60 6 Q90 16 120 6" stroke="#3e9a4a" stroke-width="2.5" fill="none"/>' + [[14, 10, '#ef5b8a'], [38, 13, '#ffd23f'], [62, 8, '#7aa0ff'], [86, 13, '#ef5b8a'], [108, 10, '#a77ee8']].map(function (b) { return '<circle cx="' + b[0] + '" cy="' + (b[1] + 4) + '" r="6" fill="' + b[2] + '"/><circle cx="' + b[0] + '" cy="' + (b[1] + 4) + '" r="2.2" fill="#fff6c2"/>'; }).join(''),
+    pal: { paper: '#f5fbef', grid: '#dcebcd', ink: '#1c2a17', muted: '#475840', margin: '#e0527a', accent: '#2d6e35', 'accent-ink': '#ffffff', 'accent-soft': '#e1f1dc', 'accent-dark': '#1a4620', line: '#c7deb8' },
+    pat: '<g fill="rgba(224,82,122,.12)"><circle cx="24" cy="24" r="5"/><circle cx="32" cy="24" r="5"/><circle cx="28" cy="18" r="5"/><circle cx="28" cy="30" r="5"/></g><g fill="rgba(45,110,53,.10)"><circle cx="88" cy="88" r="5"/><circle cx="96" cy="88" r="5"/><circle cx="92" cy="82" r="5"/><circle cx="92" cy="94" r="5"/></g>' }
+];
+var SK_BY = {}; SKINS.forEach(function (k) { SK_BY[k.id] = k; });
+function skPal(k) { var p = {}, x; if (!k.dark) for (x in SK_LIGHT) p[x] = SK_LIGHT[x]; for (x in k.pal) p[x] = k.pal[x]; return p; }
+(function () {
+  var css = '';
+  SKINS.forEach(function (k) {
+    if (k.id === 'std') return;
+    var p = skPal(k), v = '';
+    for (var x in p) v += '--' + x + ':' + p[x] + ';';
+    css += ':root[data-skin="' + k.id + '"]{' + v + 'color-scheme:' + (k.dark ? 'dark' : 'light') + '}';
+    if (k.deco) css += ':root[data-skin="' + k.id + '"] body::before{content:"";display:block;height:28px;background:' + skPat(k.deco, 28) + ' repeat-x;background-size:120px 28px}';
+    css += ':root[data-skin="' + k.id + '"] body{background-image:' + skPat(k.pat || '') + ',linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:120px 120px,24px 24px,24px 24px}';
+  });
+  var st = document.createElement('style'); st.id = 'skinCss'; st.textContent = css; document.head.appendChild(st);
+})();
+var SKIN_KEY = KEY + '-skin';
+function skOwns(id) { return id === 'std' || !!dEnsure().own['t.' + id]; }
+function skFits(k) { var ss = dSeasons().map(function (s) { return s[0]; }); return !!(k.seasons && k.seasons.some(function (s) { return ss.indexOf(s) >= 0; })); }
+function skChoice() { return lsGet(SKIN_KEY) || 'std'; }
+function skCur() {
+  if (dEnsure().skinOff) return 'std';
+  var c = skChoice();
+  if (c === 'auto') { for (var i = 0; i < SKINS.length; i++) if (SKINS[i].seasons && skFits(SKINS[i]) && skOwns(SKINS[i].id)) return SKINS[i].id; return 'std'; }
+  return SK_BY[c] && skOwns(c) ? c : 'std';
+}
+function skApply(id) {
+  id = id || skCur(); var k = SK_BY[id] || SK_BY.std, root = document.documentElement;
+  if (id === 'std') root.removeAttribute('data-skin'); else root.setAttribute('data-skin', id);
+  var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', k.pal.accent || '#1d72b0');
+}
+/* Kleines Vorschaubild: Heftseite mit Karte, Knopf und Schrift in den Farben des Themes */
+function skSwatch(k) {
+  var p = k.id === 'std' ? { paper: '#fbfcfe', grid: '#dde6f2', ink: '#1f2a44', muted: '#5b6782', margin: '#e0525a', accent: '#1d72b0', 'accent-ink': '#ffffff', card: '#ffffff', line: '#cfd9e6', star: '#e9a800' } : skPal(k);
+  var g = ''; for (var i = 12; i < 120; i += 12) g += '<path d="M' + i + ' 0V90M0 ' + i + 'H120" stroke="' + p.grid + '" stroke-width="1"/>';
+  return '<svg viewBox="0 0 120 90" role="img" aria-label="' + esc(k.name) + '"><rect width="120" height="90" rx="10" fill="' + p.paper + '"/>' + g + '<path d="M10 0V90" stroke="' + p.margin + '" stroke-width="2"/>' +
+    '<rect x="18" y="12" width="90" height="40" rx="8" fill="' + p.card + '" stroke="' + p.line + '" stroke-width="2"/><text x="28" y="38" font-family="Baloo 2,sans-serif" font-weight="800" font-size="18" fill="' + p.ink + '">Aa</text><text x="62" y="38" font-size="14" fill="' + p.star + '">★</text><text x="78" y="38" font-family="Baloo 2,sans-serif" font-weight="800" font-size="13" fill="' + p.muted + '">12</text>' +
+    '<rect x="18" y="60" width="56" height="20" rx="6" fill="' + p.accent + '"/><text x="46" y="74" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="11" fill="' + p['accent-ink'] + '">Los!</text><text x="104" y="80" text-anchor="end" font-size="18">' + k.ico + '</text></svg>';
+}
+
 function figSVG(f, mood, look, noBg) { return f === 'p' ? paulSVG(mood, look, noBg) : owlSVG(mood, look, noBg); }
 
 /* Bildschirm Kleiderschrank */
@@ -4346,7 +4426,9 @@ function dSayText() {
 function renderDress() {
   var f = DV.f, look = dLook(f), it = D_BY[DV.sel], prev = it ? dWith(look, it.id) : look, st = stars(), d = dEnsure();
   $('dStars').textContent = st;
-  $('dFigs').innerHTML = ['o', 'p'].map(function (g) { return '<button class="' + (g === f ? 'on' : '') + '" data-df="' + g + '" aria-pressed="' + (g === f) + '">' + figSVG(g, 'happy', dLook(g), true) + '<span>' + D_FIG[g] + '</span></button>'; }).join('');
+  $('dFigs').innerHTML = ['o', 'p'].map(function (g) { return '<button class="' + (g === f ? 'on' : '') + '" data-df="' + g + '" aria-pressed="' + (g === f) + '">' + figSVG(g, 'happy', dLook(g), true) + '<span>' + D_FIG[g] + '</span></button>'; }).join('') +
+    (d.skinOff ? '' : '<button class="' + (f === 't' ? 'on' : '') + '" data-df="t" aria-pressed="' + (f === 't') + '"><span class="dswi">🎨</span><span>Heft-Farben</span></button>');
+  if (f === 't') { renderSkins(); return; }
   $('dBig').innerHTML = figSVG(f, DV.mood, prev);
   $('dBig').className = 'dbig' + (DV.mood === 'cheer' ? ' hop' : ' bob');
   $('dSay').textContent = dSayText();
@@ -4379,15 +4461,56 @@ function renderDress() {
   });
   $('dList').innerHTML = h;
 }
+function skSay() {
+  var k = SK_BY[DV.sel], st = stars(), c = skChoice();
+  if (DV.msg) return DV.msg;
+  if (!k) return c === 'auto' ? 'Dein Heft wechselt die Farben mit der Jahreszeit. Tippe auf ein Heft, dann siehst du es sofort!' : 'Such dir neue Farben für dein ganzes Heft aus. Tippe auf ein Heft, dann siehst du es sofort!';
+  if (k.id === skCur() && c !== 'auto') return 'So sieht dein Heft gerade aus: ' + k.name + '.';
+  if (skOwns(k.id)) return k.name + ' gehört dir. Willst du es nehmen?';
+  if (st >= k.price) return 'So sieht dein Heft mit ' + k.name + ' aus. Es kostet ' + k.price + ' Sterne. Du hast ' + st + '.';
+  return 'So sieht dein Heft mit ' + k.name + ' aus. Es kostet ' + k.price + ' Sterne. Dir fehlen noch ' + (k.price - st) + '.';
+}
+function renderSkins() {
+  var k = SK_BY[DV.sel], st = stars(), c = skChoice(), cur = skCur();
+  skApply(k ? k.id : cur);
+  $('dBig').className = 'dbig dsw'; $('dBig').innerHTML = skSwatch(k || SK_BY[cur]);
+  $('dSay').textContent = skSay();
+  var a = '';
+  if (k) {
+    if (skOwns(k.id)) { if (k.id !== cur || c === 'auto') a += '<button class="btn" data-ta="use">Nehmen</button>'; }
+    else a += st >= k.price ? '<button class="btn" data-ta="buy">Kaufen für ' + k.price + ' ★</button>' : '<button class="btn" disabled>Noch ' + (k.price - st) + ' ★ sammeln</button>';
+    a += '<button class="btn ghost" data-ta="close">' + (skOwns(k.id) && k.id === cur ? 'Fertig' : 'Zurück zu meinem Heft') + '</button>';
+  } else if (c !== 'auto') a += '<button class="btn ghost" data-ta="auto">🗓️ Wechseln mit der Jahreszeit</button>';
+  a += '<button class="btn ghost speak" data-ta="read" aria-label="Vorlesen">🔊</button>';
+  $('dActs').innerHTML = a;
+  var h = '<p class="dnote">Heft-Farben gelten für das ganze Rechenheft auf diesem Tablet. Gekaufte Farben gibt es auf allen Geräten.</p><h3 class="dslot">Heft-Farben</h3><div class="dgrid dskins">';
+  SKINS.forEach(function (x) {
+    var own = skOwns(x.id), on = x.id === cur, t = on ? ['on', c === 'auto' ? '✓ Jahreszeit' : '✓ Ausgewählt'] : own ? ['own', 'Gehört dir'] : [st >= x.price ? 'buy' : 'buy far', x.price + ' ★'];
+    h += '<button class="dcard ' + t[0] + (x.id === DV.sel ? ' sel' : '') + '" data-sk="' + x.id + '" aria-label="' + esc(x.name + ', ' + t[1]) + '">' + (skFits(x) ? '<span class="dneu dfit">Passt jetzt!</span>' : '') + (DV.neu.indexOf('t.' + x.id) >= 0 ? '<span class="dneu">Neu!</span>' : '') + skSwatch(x) + '<b>' + esc(x.name) + '</b><span class="dtag">' + esc(t[1]) + '</span></button>';
+  });
+  $('dList').innerHTML = h + '</div>';
+}
 function dSetWear(f, look) { var w = {}; D_SLOTS.forEach(function (sl) { if (look[sl[0]]) w[sl[0]] = look[sl[0]]; }); dEnsure().wear[f] = w; S.at.dress = Date.now(); save(); }
 $('dFigs').addEventListener('click', function (e) { var b = e.target.closest('[data-df]'); if (!b) return; DV.f = b.getAttribute('data-df'); DV.sel = ''; DV.msg = ''; DV.mood = 'happy'; stopSpeak(); renderDress(); });
 $('dList').addEventListener('click', function (e) {
+  var sk = e.target.closest('[data-sk]');
+  if (sk) { var sid = sk.getAttribute('data-sk'); DV.sel = DV.sel === sid ? '' : sid; DV.msg = ''; renderDress(); if (VOICE.auto) speak($('dSay').textContent); if (window.innerWidth < 900 || window.innerHeight > window.innerWidth) $('dStage').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
   var b = e.target.closest('[data-d]'); if (!b) return;
   var id = b.getAttribute('data-d'); DV.sel = DV.sel === id ? '' : id; DV.msg = ''; DV.mood = DV.sel ? 'wink' : 'happy';
   renderDress(); if (VOICE.auto) speak($('dSay').textContent);
   if (window.innerWidth < 900 || window.innerHeight > window.innerWidth) $('dStage').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 $('dActs').addEventListener('click', function (e) {
+  var tb = e.target.closest('[data-ta]');
+  if (tb) {
+    var ta = tb.getAttribute('data-ta'), k = SK_BY[DV.sel];
+    if (ta === 'read') { speak($('dSay').textContent, true); return; }
+    if (ta === 'close') { DV.sel = ''; DV.msg = ''; }
+    if (ta === 'auto') { lsSet(SKIN_KEY, 'auto'); DV.msg = 'Jetzt wechselt dein Heft mit der Jahreszeit, wenn du die passenden Farben hast.'; }
+    if (ta === 'use' && k) { lsSet(SKIN_KEY, k.id); DV.msg = 'Fertig! Dein Heft ist jetzt ' + k.name + '.'; DV.sel = ''; }
+    if (ta === 'buy' && k && !skOwns(k.id) && stars() >= k.price) { spendStars(k.price); dEnsure().own['t.' + k.id] = 1; S.at.dress = S.at.dress || 1; save(); dMarkSeen(); lsSet(SKIN_KEY, k.id); DV.msg = 'Juhu! Dein Heft ist jetzt ' + k.name + '.'; DV.sel = ''; chime(); }
+    renderDress(); if (DV.msg && VOICE.auto) speak(DV.msg); return;
+  }
   var b = e.target.closest('[data-da]'); if (!b) return;
   var a = b.getAttribute('data-da'), f = DV.f, it = D_BY[DV.sel], n = D_FIG[f].split(' ')[1];
   if (a === 'read') { speak($('dSay').textContent, true); return; }
@@ -4404,10 +4527,11 @@ $('dActs').addEventListener('click', function (e) {
   renderDress();
   if (DV.msg && VOICE.auto) speak(DV.msg);
 });
-$('dBack').addEventListener('click', function () { stopSpeak(); if (DV.from === 'wache') openWache(); else go('home'); });
+$('dBack').addEventListener('click', function () { stopSpeak(); DV.sel = ''; skApply(); if (DV.from === 'wache') openWache(); else go('home'); });
 $('playDress').addEventListener('click', function () { openDress('o'); });
 $('homeMascot').addEventListener('click', function () { if (!dEnsure().off) openDress('o'); });
 $('dressIn').addEventListener('change', function () { dEnsure().off = !$('dressIn').checked; S.at.dressOff = Date.now(); save(); });
+$('skinIn').addEventListener('change', function () { dEnsure().skinOff = !$('skinIn').checked; S.at.skinOff = Date.now(); save(); skApply(); });
 
 /* Ältere sync.php (json_decode mit assoc) macht aus leeren Objekten {} leere Listen [] und aus {"0":…} Listen.
    In einer Liste gehen später gesetzte Schlüssel (z. B. gekaufte Teile in Olafs Land) beim Speichern verloren.
@@ -4424,7 +4548,7 @@ function fixShapes(x, key) {
   return x;
 }
 S = fixShapes(S);
-ensure(); save(true);
+ensure(); save(true); skApply();
 go('home');
 syncNow();
 })();
