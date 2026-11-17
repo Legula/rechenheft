@@ -69,6 +69,8 @@ Apache gibt `claude.env`, `.env`, `docker-compose.yml` und andere Hilfsdateien n
 
 Datenschutz: Fotos werden nur im Arbeitsspeicher verarbeitet und nicht gespeichert, weder auf dem Tablet noch auf der Synology. Gespeichert werden nur kurze Notizen (Thema, Anzahl richtig, Fehlerarten, ein Satz für die Eltern) im Lernstand. Auf GitHub Pages gibt es kein PHP, dort zeigt die Wache „noch nicht eingerichtet“.
 
+**Foto mit dem Handy** (für das Kinderprofil, das keine Kamera und keine Dateiauswahl erlaubt): In der Wache auf „📱 Foto mit dem Handy“ tippen. Das Tablet zeigt eine Adresse (`<IP>:8088/foto.php`) und einen 4-stelligen Code. Auf dem Handy im Heim-WLAN die Adresse öffnen, Code eingeben, Foto machen; es erscheint nach ein paar Sekunden auf dem Tablet. `foto.php` legt das Foto nur kurz im Datenordner ab und löscht es, sobald das Tablet es abgeholt hat, spätestens nach 10 Minuten. Einmalig `foto.php` nach `docker/rechenheft` kopieren.
+
 Foto-Probleme eingrenzen: im Elternbereich unter **Hausaufgabenhilfe → Foto-Test** prüfen, ob auf diesem Gerät ein Bild ankommt (Kamera und Galerie), und den Ablauf mit einem Beispiel-Rechenblatt durchspielen. Kommt kein Foto an, sagt Paul das deutlich. Die Kamera direkt im Bild gibt es nur über HTTPS, sonst öffnen die Knöpfe die Kamera-App bzw. die Galerie des Tablets.
 
 Noch ungetestet auf dem Fire Tablet: Kamera über den Knopf „Foto machen“ (öffnet die Kamera über das Datei-Auswahlfeld) und das Mikrofon. Das Mikrofon braucht Spracherkennung im Browser und meist HTTPS; fehlt das, wird der Knopf ausgeblendet und Phili tippt eine Frage an oder schreibt sie.
