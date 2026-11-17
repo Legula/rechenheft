@@ -2251,7 +2251,7 @@ function stopGame() { if (CH) { cancelAnimationFrame(CH.raf); CH = null; } }
 
 /* ---------- Maskottchen: Eule Olaf ---------- */
 function owlSVG(mood, look, noBg) {
-  var up = mood === 'cheer', L = dLayers('o', look || dLook('o'), noBg), s = '<svg viewBox="0 0 120 130" role="img" aria-label="Eule Olaf">' + L.bg + L.back;
+  var up = mood === 'cheer', L = dLayers('o', look || dLook('o'), noBg), s = '<svg viewBox="' + L.vb + '" role="img" aria-label="Eule Olaf">' + L.bg + L.back;
   s += '<path d="M28 40 L30 12 L48 32Z M92 40 L90 12 L72 32Z" fill="#7a4d30"/>';
   s += up ? '<path d="M22 70 Q4 40 14 26 Q26 46 34 62Z M98 70 Q116 40 106 26 Q94 46 86 62Z" fill="#6a4228"/>'
           : '<path d="M22 64 Q8 84 22 104 Q30 90 32 72Z M98 64 Q112 84 98 104 Q90 90 88 72Z" fill="#6a4228"/>';
@@ -2686,7 +2686,7 @@ function conNum(C, i) { return C.s + C.d * i; }
 function stepWord(C) { var a = Math.abs(C.d); return C.d < 0 ? 'Zähle rückwärts in ' + (a === 10 ? 'Zehner' : a === 5 ? 'Fünfer' : a + 'er') + 'schritten' : a === 1 ? 'Zähle immer eins weiter' : 'Zähle in ' + (a === 10 ? 'Zehner' : a === 20 ? 'Zwanziger' : a === 5 ? 'Fünfer' : a === 2 ? 'Zweier' : a === 3 ? 'Dreier' : a + 'er') + 'schritten'; }
 function starPath(cx, cy, r) { var p = ''; for (var i = 0; i < 10; i++) { var a = Math.PI / 5 * i - Math.PI / 2, rr = i % 2 ? r * .45 : r; p += (i ? 'L' : 'M') + (cx + rr * Math.cos(a)).toFixed(1) + ' ' + (cy + rr * Math.sin(a)).toFixed(1); } return p + 'Z'; }
 var SKY_BG = (function () { var s = '', seed = 7; function r() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; } for (var i = 0; i < 46; i++) { var x = r() * 480, y = r() * 175, rad = .6 + r() * 1.1; s += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + rad.toFixed(1) + '"' + (i % 6 === 0 ? ' class="tw" style="animation-delay:' + (i % 5) * .6 + 's"' : '') + '/>'; } return s; })();
-function owlAt(x, y, w, mood) { return owlSVG(mood || 'happy', null, true).replace('<svg ', '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + (w * 130 / 120).toFixed(0) + '" '); }
+function owlAt(x, y, w, mood) { return owlSVG(mood || 'happy', null, true).replace(/viewBox="0 -?\d+ 120 \d+"/, 'viewBox="0 0 120 130" overflow="visible"').replace('<svg ', '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + (w * 130 / 120).toFixed(0) + '" '); }
 function conSmall(C, found) {
   var sx = SKY_SLOTS[SKY_CON.indexOf(C)], sc = .7, h = '<g transform="translate(' + sx[0] + ' ' + sx[1] + ') scale(' + sc + ')"' + (found ? '' : ' opacity=".35"') + '>';
   if (found) C.e.forEach(function (e) { var a = C.pts[e[0]], b = C.pts[e[1]]; h += '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="#9cc3ff" stroke-width="1.4" opacity=".75"/>'; });
@@ -3497,7 +3497,7 @@ function wAchten() { var st = wEnsure().set, a = []; for (var k in W_ACHTEN) if 
 
 /* Polizeihund Paul */
 function paulSVG(mood, look, noBg) {
-  var L = dLayers('p', look || dLook('p'), noBg), s = '<svg viewBox="0 0 120 130" role="img" aria-label="Polizeihund Paul">' + L.bg + L.back;
+  var L = dLayers('p', look || dLook('p'), noBg), s = '<svg viewBox="' + L.vb + '" role="img" aria-label="Polizeihund Paul">' + L.bg + L.back;
   s += '<ellipse cx="60" cy="120" rx="34" ry="12" fill="#b9773f"/>';
   s += '<path d="M28 46 Q8 52 12 86 Q16 98 29 90 Q31 68 38 54Z" fill="#7a4a24"/><path d="M92 46 Q112 52 108 86 Q104 98 91 90 Q89 68 82 54Z" fill="#7a4a24"/>';
   s += '<ellipse cx="60" cy="68" rx="34" ry="36" fill="#c98b4a"/><ellipse cx="75" cy="62" rx="11" ry="10" fill="#a8692f"/>';
@@ -4120,6 +4120,8 @@ var D_HAT = {
   geweih: '<path d="M-14 -2 L-20 -26 M-20 -26 L-30 -34 M-20 -26 L-14 -38 M-18 -16 L-28 -18 M14 -2 L20 -26 M20 -26 L30 -34 M20 -26 L14 -38 M18 -16 L28 -18" stroke="#8a5a2b" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M-30 2 Q0 -12 30 2" stroke="#d63a3a" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="0" cy="-4" r="4" fill="#ffd23f" stroke="#c99a0a"/>',
   zylinder: '<rect x="-20" y="-38" width="40" height="36" rx="3" fill="#1f2230"/><rect x="-20" y="-12" width="40" height="7" fill="#d64541"/><ellipse cx="0" cy="-2" rx="32" ry="6" fill="#1f2230"/><path d="M8 -12 l6 -6 2 7Z" fill="#2f9e5b"/>'
 };
+/* Wie weit jeder Hut über die Krempe nach oben reicht (für die Bildgröße) */
+var D_HAT_TOP = { polizei: -43, gold: -43, detektiv: -46, pirat: -37, zauber: -67, sek: -41, krone: -40, xmas: -43, pudel: -47, hase: -58, blumen: -20, sonnenhut: -29, laub: -23, kuerbis: -45, geweih: -41, zylinder: -39 };
 /* Brillen: Augen bei x = ±16, y = 0 */
 var D_EYE = {
   sonne: '<path d="M-36 -4 L-46 -6 M36 -4 L46 -6" stroke="#1f2a44" stroke-width="4" stroke-linecap="round"/><rect x="-33" y="-13" width="30" height="24" rx="10" fill="#1f2a44"/><rect x="3" y="-13" width="30" height="24" rx="10" fill="#1f2a44"/><path d="M-3 -4 Q0 -8 3 -4" stroke="#1f2a44" stroke-width="4" fill="none"/><path d="M-27 -7 l8 0 M9 -7 l8 0" stroke="#7fa6d9" stroke-width="3" stroke-linecap="round"/>',
@@ -4233,13 +4235,15 @@ function easter(y) { var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = M
 var D_NOW = null; // nur für Tests: festes Datum
 function dSeasons(now) {
   var t = now || D_NOW || new Date(), md = (t.getMonth() + 1) * 100 + t.getDate(), on = {};
-  if (md >= 1115 || md <= 106) on.advent = 1;
-  if (md >= 1115 || md <= 310) on.winter = 1;
+  /* Grundjahreszeiten schließen lückenlos aneinander an: Herbst 16.9.–30.11., Winter 1.12.–10.3., Frühling 11.3.–31.5., Sommer 1.6.–15.9.
+     Feste kommen obendrauf: Halloween 20.10.–1.11., Sankt Martin 2.11.–12.11., Weihnachtszeit 1.12.–6.1., Ostern 3 Wochen vorher bis 1 Woche nachher. */
+  if (md >= 916 && md <= 1130) on.herbst = 1;
+  if (md >= 1201 || md <= 310) on.winter = 1;
   if (md >= 311 && md <= 531) on.fruehling = 1;
   if (md >= 601 && md <= 915) on.sommer = 1;
-  if (md >= 916 && md <= 1114) on.herbst = 1;
-  if (md >= 1015 && md <= 1102) on.halloween = 1;
-  if (md >= 1025 && md <= 1114) on.martin = 1;
+  if (md >= 1020 && md <= 1101) on.halloween = 1;
+  if (md >= 1102 && md <= 1112) on.martin = 1;
+  if (md >= 1201 || md <= 106) on.advent = 1;
   var day = new Date(t.getFullYear(), t.getMonth(), t.getDate()), ea = easter(t.getFullYear()), diff = Math.round((day - ea) / 864e5);
   if (diff >= -21 && diff <= 7) on.ostern = 1;
   return D_SEASONS.filter(function (s) { return on[s[0]]; });
@@ -4301,7 +4305,7 @@ function dWith(look, id) { var o = {}, it = D_BY[id], k; for (k in look) o[k] = 
 function dIds(look) { var ids = []; D_SLOTS.forEach(function (sl) { var id = look[sl[0]]; if (id && ids.indexOf(id) < 0) ids.push(id); }); return ids; }
 /* Ebenen für die Figur: bg (ganz hinten), back (hinter dem Körper), front (vor allem). hat/body sagen, ob Mütze bzw. Halsband der Figur ersetzt werden. */
 function dLayers(f, look, noBg) {
-  var L = { bg: '', back: '', front: '', hat: false, body: false };
+  var L = { bg: '', back: '', front: '', hat: false, body: false, top: 0, bot: f === 'p' ? 134 : 130 };
   dIds(look).forEach(function (id) {
     var it = D_BY[id];
     if (it.bg && !noBg) L.bg += D_BGS[it.bg];
@@ -4311,9 +4315,14 @@ function dLayers(f, look, noBg) {
     if (it.neck) L.front += dAt(f, 'hals', D_BODY[it.neck]);
     if (it.beard) L.front += dAt(f, 'bart', D_BEARD);
     if (it.eye) L.front += dAt(f, 'auge', D_EYE[it.eye]);
-    if (it.hat) { L.front += dAt(f, 'kopf', D_HAT[it.hat]); L.hat = true; }
+    var dn = it.cape ? 63 : it.neck === 'medaille' ? 42 : it.body === 'schneemann' ? 56 : 0;
+    if (dn) { var H = D_AN[f].hals; L.bot = Math.max(L.bot, Math.ceil(H[1] + dn * H[2]) + 2); }
+    if (it.hat) { L.front += dAt(f, 'kopf', D_HAT[it.hat]); L.hat = true; var A = D_AN[f].kopf; L.top = Math.min(L.top, Math.floor(A[1] + D_HAT_TOP[it.hat] * A[2]) - 3); }
     if (id === 'astro') { L.hat = true; L.front += dAt(f, 'mitte', '<circle cx="0" cy="0" r="50" fill="#bfe3ff" fill-opacity=".28" stroke="#e3e9f1" stroke-width="7"/><circle cx="0" cy="0" r="50" fill="none" stroke="#8a97ab" stroke-width="2"/><path d="M-34 -24 Q-24 -40 -6 -44" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9"/><rect x="-20" y="44" width="40" height="10" rx="4" fill="#d64541"/>'); }
   });
+  /* Hohe Hüte ragen über das Bild hinaus: dann wird das Bild nach oben größer (viewBox), nichts wird abgeschnitten */
+  if (L.top < 0 || L.bot > 130) L.bg = L.bg.replace(/y="0" width="120" height="130"/g, 'y="' + L.top + '" width="120" height="' + (L.bot - L.top) + '"');
+  L.vb = '0 ' + L.top + ' 120 ' + (L.bot - L.top);
   return L;
 }
 function dSvgTag(label, w) { return '<svg viewBox="0 0 120 130" role="img" aria-label="' + label + '"' + (w ? ' width="' + w + '"' : '') + '>'; }
