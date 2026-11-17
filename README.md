@@ -65,6 +65,16 @@ Datenschutz: Fotos werden nur im Arbeitsspeicher verarbeitet und nicht gespeiche
 
 Noch ungetestet auf dem Fire Tablet: Kamera über den Knopf „Foto machen“ (öffnet die Kamera über das Datei-Auswahlfeld) und das Mikrofon. Das Mikrofon braucht Spracherkennung im Browser und meist HTTPS; fehlt das, wird der Knopf ausgeblendet und Phili tippt eine Frage an oder schreibt sie.
 
+## Vorlesen auf dem Fire Tablet (Kinderprofil)
+
+Der Browser im Amazon-Kids-Profil kann selbst nicht vorlesen. Dann liest die Synology vor: `sprich.php` wandelt den Text mit [Piper](https://github.com/rhasspy/piper) (kostenlos, offline, deutsche Stimme „Thorsten“) in eine Audiodatei, und das Tablet spielt sie wie einen normalen Ton ab. Das braucht keine Sprachfunktion im Browser.
+
+1. Einmalig `sprich.php` nach `docker/rechenheft` kopieren (am einfachsten: neues ZIP einspielen wie oben). Ein Neuerstellen des Projekts ist dafür nicht nötig.
+2. Beim ersten Bedarf lädt die Synology Piper und die Stimme selbst herunter (einmalig ca. 90 MB von GitHub und huggingface.co, ein bis zwei Minuten) und legt sie im Volume unter `stimme/` ab. Danach geht das Vorlesen ohne Internet. Läuft auf Synologys mit Intel/AMD- und mit ARM-Prozessor (64 und 32 Bit).
+3. Im Elternbereich unter **Hausaufgabenhilfe → Vorlesen** steht, wer gerade vorliest (Tablet oder Synology) und ob die Synology-Stimme bereit ist. Dort lässt sich die Quelle auch fest einstellen. Kann gar nichts vorlesen, sieht Phili beim Vorlese-Knopf einen kurzen Hinweis statt Stille.
+
+Fertige Sätze werden auf der Synology zwischengespeichert, beim zweiten Mal kommt der Ton sofort. Weil manche Kinder-Browser Töne erst nach einem Tipp erlauben, schaltet die App das Abspielen beim ersten Tipp frei; klappt automatisches Vorlesen trotzdem nicht, geht „Nochmal hören“ immer. Optional in der `docker-compose.yml`: `SPRICH_STIMME` (z. B. `de_DE-kerstin-low`), `SPRICH_AUS: "1"` zum Abschalten.
+
 ## Aufbau
 
-Die App steckt komplett in `index.html` (HTML, CSS und JavaScript). `sync.php` speichert den Lernstand pro Familien-Code als JSON-Datei. `wache.php` reicht Fotos der Hausaufgaben-Wache an die Claude-API weiter (Schlüssel aus `ANTHROPIC_API_KEY`). `docker-compose.yml` startet beides auf der Synology. Zusätzlich gehostet über GitHub Pages vom Branch `main` (dort ohne Abgleich).
+Die App steckt komplett in `index.html` (HTML, CSS und JavaScript). `sync.php` speichert den Lernstand pro Familien-Code als JSON-Datei. `wache.php` reicht Fotos der Hausaufgaben-Wache an die Claude-API weiter (Schlüssel aus `ANTHROPIC_API_KEY`). `sprich.php` liest Texte mit Piper vor, wenn das Tablet es nicht selbst kann. `docker-compose.yml` startet beides auf der Synology. Zusätzlich gehostet über GitHub Pages vom Branch `main` (dort ohne Abgleich).
