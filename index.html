@@ -514,6 +514,11 @@ select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px;
 .wtbar i.over { background: var(--star); }
 .wtbar b { position: absolute; top: -4px; bottom: -4px; width: 3px; background: var(--ink); border-radius: 2px; }
 @media (max-width: 560px) { .wtrow { grid-template-columns: 70px 1fr; } .wtrow > span:last-child { grid-column: 1 / -1; } }
+.ptabs { display: flex; gap: 8px; flex-wrap: wrap; position: sticky; top: 0; z-index: 5; background: var(--paper); padding: 6px 0; }
+.ptabs button { flex: 1; min-width: 120px; font-family: var(--f-display); font-weight: 800; font-size: 1.1rem; padding: 10px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); color: var(--ink); }
+.ptabs button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.ppane { display: flex; flex-direction: column; gap: 16px; }
+.ppane[hidden] { display: none; }
 @media (prefers-reduced-motion: reduce) { .wdog.walk { animation: none; left: 50%; } .wpaul svg, .wpaws span { animation: none !important; opacity: 1; } }
 </style>
 
@@ -731,10 +736,15 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
 <!-- ELTERN -->
 <section id="v-parents" hidden>
   <button class="back" data-go="home">← Zurück</button>
-  <h2>Lernstand</h2>
+  <h2>Für Eltern</h2>
   <p class="muted">Alles wird auf diesem Gerät gespeichert. Mit Familien-Code zusätzlich nur auf eurer Synology, sonst wird nichts verschickt.</p>
+  <div class="ptabs" role="tablist">
+    <button role="tab" data-ptab="rechen">Rechenheft</button>
+    <button role="tab" data-ptab="wache">Hausaufgabenhilfe</button>
+    <button role="tab" data-ptab="allg">Allgemein</button>
+  </div>
+  <div class="ppane" data-pane="rechen">
   <div id="parentBody" style="display:flex;flex-direction:column;gap:16px"></div>
-  <div class="sheet" id="wacheParent"></div>
   <div class="sheet">
     <h3>Belohnung</h3>
     <p class="muted">Leg eine echte Belohnung fest. Philian sieht auf der Startseite, wie viele Sterne noch fehlen. Es zählen alle Sterne, die ab jetzt verdient werden. Ausgeben im Spielzimmer zieht nichts ab.</p>
@@ -742,6 +752,11 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <div class="row"><label for="rewText">Was gibt es?</label><input type="text" id="rewText" maxlength="40" placeholder="z. B. Eis essen gehen"></div>
     <div class="row"><label for="rewGoal">Wie viele Sterne?</label><input type="number" id="rewGoal" min="10" max="2000" step="10" value="200" style="width:110px" inputmode="numeric"><button class="btn ghost" id="rewSave">Belohnung festlegen</button><button class="btn ghost" id="rewDone" hidden>Eingelöst, Ziel entfernen</button></div>
   </div>
+  </div>
+  <div class="ppane" data-pane="wache" hidden>
+  <div id="wacheParent" style="display:flex;flex-direction:column;gap:16px"></div>
+  </div>
+  <div class="ppane" data-pane="allg" hidden>
   <div class="sheet">
     <h3>Einstellungen</h3>
     <div class="row"><label for="nameIn">Name des Kindes</label><input type="text" id="nameIn" maxlength="20"><button class="btn ghost" id="nameSave">Speichern</button></div>
@@ -752,6 +767,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <div class="row"><button class="btn ghost" id="testBtn">Testmodus starten</button><span class="muted">Alles ausprobieren mit 999 Sternen, ohne Philians Stand zu verändern.</span></div>
     <div class="row"><button class="btn ghost" id="resetAsk">Alles zurücksetzen</button>
       <span id="resetConfirm" hidden class="row"><span class="danger">Wirklich alles löschen?</span><button class="btn" id="resetYes">Ja, löschen</button><button class="btn ghost" id="resetNo">Nein</button></span></div>
+  </div>
   </div>
 </section>
 
@@ -3040,12 +3056,21 @@ $('gateIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') $(
 
 function swapCount() { var n = 0; S.history.slice(-20).forEach(function (h) { (h.wrong || []).forEach(function (w) { if (w.swap || isSwap(w.given, w.answer)) n++; }); }); return n; }
 function fmtDate(iso) { var d = new Date(iso); return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }); }
+var PTAB_KEY = KEY + '-ptab';
+function showPTab(t) {
+  if (['rechen', 'wache', 'allg'].indexOf(t) < 0) t = 'rechen';
+  document.querySelectorAll('[data-ptab]').forEach(function (b) { var on = b.getAttribute('data-ptab') === t; b.className = on ? 'on' : ''; b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+  document.querySelectorAll('[data-pane]').forEach(function (p) { p.hidden = p.getAttribute('data-pane') !== t; });
+  lsSet(PTAB_KEY, t);
+}
+document.querySelector('.ptabs').addEventListener('click', function (e) { var b = e.target.closest('[data-ptab]'); if (b) { showPTab(b.getAttribute('data-ptab')); window.scrollTo(0, 0); } });
 function renderParents() {
+  showPTab(lsGet(PTAB_KEY) || 'rechen');
   var rw = rewardState();
   $('rewardNow').innerHTML = rw ? 'Aktuell: <strong>' + esc(rw.text) + '</strong> bei ' + rw.goal + ' Sternen · ' + rw.have + ' verdient' + (rw.done ? ' · <strong>erreicht!</strong>' : '') : 'Noch keine Belohnung festgelegt.';
   $('rewDone').hidden = !rw;
   $('nameIn').value = S.name; $('codeIn').value = SYNC.code; $('silbenIn').checked = S.silben !== false; showSync();
-  var h = '<div class="sheet"><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Rudi erwischt</span><strong>' + (S.best.caught || 0) + '×</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Schnellste Keks-Jagd</span><strong>' + (S.best.chase ? S.best.chase + ' s' : '–') + '</strong></div><div><span>Krümel-Rekord</span><strong>' + (S.best.crumbs || '–') + '</strong></div><div><span>Sternwarte</span><strong>' + skyBuilt() + ' / ' + SKY_BUILD.length + '</strong></div><div><span>Sternschnuppen-Serie</span><strong>' + (skyEnsure().shoot.streak || 0) + ' (beste ' + (S.sky.shoot.best || 0) + ')</strong></div><div><span>Zahlendreher (letzte 20 Runden)</span><strong>' + swapCount() + '</strong></div></div><p class="muted">Zahlendreher heißt: Zehner und Einer vertauscht, z. B. 34 statt 43. Philian bekommt dann einen Tipp mit Stangen und Würfeln. Üben lässt sich das im Thema „Zehner und Einer“.</p></div>';
+  var h = '<div class="sheet"><h3>Überblick</h3><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Rudi erwischt</span><strong>' + (S.best.caught || 0) + '×</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Schnellste Keks-Jagd</span><strong>' + (S.best.chase ? S.best.chase + ' s' : '–') + '</strong></div><div><span>Krümel-Rekord</span><strong>' + (S.best.crumbs || '–') + '</strong></div><div><span>Sternwarte</span><strong>' + skyBuilt() + ' / ' + SKY_BUILD.length + '</strong></div><div><span>Sternschnuppen-Serie</span><strong>' + (skyEnsure().shoot.streak || 0) + ' (beste ' + (S.sky.shoot.best || 0) + ')</strong></div><div><span>Zahlendreher (letzte 20 Runden)</span><strong>' + swapCount() + '</strong></div></div><p class="muted">Zahlendreher heißt: Zehner und Einer vertauscht, z. B. 34 statt 43. Philian bekommt dann einen Tipp mit Stangen und Würfeln. Üben lässt sich das im Thema „Zehner und Einer“.</p></div>';
   Object.keys(THEMES).forEach(function (k) {
     var T = THEMES[k], hist = S.history.filter(function (x) { return x.theme === k; }), last5 = hist.slice(-5);
     var rate = last5.length ? Math.round(last5.reduce(function (s, x) { return s + x.score; }, 0) / (last5.length * ROUND) * 100) + ' %' : '–';
@@ -3639,7 +3664,7 @@ function wTimeHTML() {
   return h;
 }
 function renderWacheParent() {
-  var w = wEnsure(), cs = w.cases, st = w.set, h = '<h3>Hausaufgaben-Wache</h3>';
+  var w = wEnsure(), cs = w.cases, st = w.set, h = '<div class="sheet"><h3>Überblick</h3>';
   h += '<p class="muted" id="wStatus">' + (W.ready === true ? 'Eingerichtet: Paul ist im Dienst.' : W.ready === false ? (W.why === 'nokey' ? 'Noch nicht eingerichtet: Auf der Synology fehlt der API-Schlüssel (ANTHROPIC_API_KEY in docker-compose bzw. .env, siehe README).' : 'Nicht erreichbar: Die Wache läuft nur über die Synology (wache.php), nicht über GitHub Pages.') : 'Status wird geprüft …') + ' Fotos werden nie gespeichert, nur kurze Notizen.</p>';
   if (W.ready === null) setTimeout(function () { wCheck(); setTimeout(function () { if (!$('v-parents').hidden) renderWacheParent(); }, 1500); }, 0);
   var days = {}, dur = 0, n = 0, ok = 0, kinds = {}, tips = [], kon = 0;
@@ -3650,7 +3675,7 @@ function renderWacheParent() {
   kc.slice().reverse().forEach(function (c) { if (c.tipp && tips.indexOf(c.tipp) < 0 && tips.length < 3) tips.push(c.tipp); });
   var nd = Object.keys(days).length, rk = wRank();
   h += '<div class="kv"><div><span>Einsätze</span><strong>' + cs.length + ' (' + (cs.length - kc.length) + ' Hilfe, ' + kc.length + ' Kontrolle)</strong></div><div><span>Tage mit Wache</span><strong>' + nd + '</strong></div><div><span>Trefferquote (letzte 10 Kontrollen)</span><strong>' + (n ? Math.round(ok / n * 100) + ' %' : '–') + '</strong></div><div><span>Dienstgrad</span><strong>' + esc(rk.name) + '</strong></div></div>';
-  h += wTimeHTML();
+  h += '</div><div class="sheet">' + wTimeHTML() + '</div><div class="sheet"><h3>Einsätze und Fehler</h3>';
   var top = Object.keys(kinds).sort(function (a, b) { return kinds[b] - kinds[a]; }).slice(0, 5);
   if (top.length) h += '<p><strong>Häufige Fehlerarten:</strong> ' + top.map(function (k) { return esc(k) + ' (' + kinds[k] + '×)'; }).join(', ') + '</p>';
   if (tips.length) h += '<p><strong>Übungstipps für zu Hause:</strong></p><ul class="wlist">' + tips.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>';
@@ -3663,7 +3688,7 @@ function renderWacheParent() {
     h += '</tbody></table></div>';
   } else h += '<p class="muted">Noch kein Einsatz.</p>';
   var ws = wSet(), zo = [0, 15, 20, 30, 45, 60], po = [0, 10, 12, 15, 20];
-  h += '<h3>Zeit einstellen</h3><div class="row"><label for="wsZiel">Zielzeit pro Tag</label><select id="wsZiel" data-ws="ziel">' + zo.map(function (z) { return '<option value="' + z + '"' + (ws.ziel === z ? ' selected' : '') + '>' + (z ? z + ' Minuten' : 'keine') + '</option>'; }).join('') + '</select></div>';
+  h += '</div><div class="sheet"><h3>Einstellungen der Hausaufgabenhilfe</h3><h3 style="font-size:1.1rem">Zeit</h3><div class="row"><label for="wsZiel">Zielzeit pro Tag</label><select id="wsZiel" data-ws="ziel">' + zo.map(function (z) { return '<option value="' + z + '"' + (ws.ziel === z ? ' selected' : '') + '>' + (z ? z + ' Minuten' : 'keine') + '</option>'; }).join('') + '</select></div>';
   h += '<div class="row"><label for="wsPause">Bewegungspause alle</label><select id="wsPause" data-ws="pause">' + po.map(function (z) { return '<option value="' + z + '"' + (ws.pause === z ? ' selected' : '') + '>' + (z ? z + ' Minuten' : 'nie') + '</option>'; }).join('') + '</select></div>';
   h += '<p class="muted">Phili sieht eine ruhige Streifen-Leiste (kein Countdown). Bei Ablauf fragt Paul freundlich nach Feierabend. Wer in der Zeit fertig ist, bekommt einmal am Tag 3 Sterne. Länger dauern wird nicht bestraft, es steht hier nur als Hinweis.</p>';
   h += '<h3>Worauf soll Paul achten?</h3>';
@@ -3674,7 +3699,7 @@ function renderWacheParent() {
   h += '<div class="row"><label for="vRate">Tempo</label><input type="range" id="vRate" min="0.6" max="1.3" step="0.05" value="' + (VOICE.r || .9) + '" style="flex:1;min-width:160px"><span id="vRateV">' + Math.round((VOICE.r || .9) * 100) + ' %</span><button class="btn ghost" id="vTest">Probe hören</button></div>';
   h += '<div class="row"><input type="checkbox" id="vAuto" style="width:24px;height:24px"' + (VOICE.auto ? ' checked' : '') + '><label for="vAuto">Paul liest automatisch vor</label></div>';
   if (!canSpeak) h += '<p class="danger">Dieser Browser kann nicht vorlesen.</p>';
-  $('wacheParent').innerHTML = h;
+  $('wacheParent').innerHTML = h + '</div>';
   fillVoices();
 }
 function fillVoices() {
