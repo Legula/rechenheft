@@ -73,7 +73,9 @@ Der Browser im Amazon-Kids-Profil kann selbst nicht vorlesen. Dann liest die Syn
 2. Beim ersten Bedarf lädt die Synology Piper und die Stimme selbst herunter (einmalig ca. 90 MB von GitHub und huggingface.co, ein bis zwei Minuten) und legt sie im Volume unter `stimme/` ab. Danach geht das Vorlesen ohne Internet. Läuft auf Synologys mit Intel/AMD- und mit ARM-Prozessor (64 und 32 Bit).
 3. Im Elternbereich unter **Hausaufgabenhilfe → Vorlesen** steht, wer gerade vorliest (Tablet oder Synology) und ob die Synology-Stimme bereit ist. Dort lässt sich die Quelle auch fest einstellen. Kann gar nichts vorlesen, sieht Phili beim Vorlese-Knopf einen kurzen Hinweis statt Stille.
 
-Fertige Sätze werden auf der Synology zwischengespeichert, beim zweiten Mal kommt der Ton sofort. Weil manche Kinder-Browser Töne erst nach einem Tipp erlauben, schaltet die App das Abspielen beim ersten Tipp frei; klappt automatisches Vorlesen trotzdem nicht, geht „Nochmal hören“ immer. Optional in der `docker-compose.yml`: `SPRICH_STIMME` (z. B. `de_DE-kerstin-low`), `SPRICH_AUS: "1"` zum Abschalten.
+Fertige Sätze werden auf der Synology zwischengespeichert, beim zweiten Mal kommt der Ton sofort. Weil manche Kinder-Browser Töne erst nach einem Tipp erlauben, schaltet die App das Abspielen beim ersten Tipp frei; klappt automatisches Vorlesen trotzdem nicht, geht „Nochmal hören“ immer. Stimme und Tonhöhe stellt man im Elternbereich unter **Hausaufgabenhilfe → Vorlesen** ein, mit Knopf „Anhören“. Zur Wahl stehen die deutschen Piper-Stimmen Thorsten (ruhig, fröhlich, beste Qualität), Kerstin, Ramona, Eva, Karlsson und Pavoque. Eine neue Stimme lädt die Synology beim ersten Auswählen einmal herunter (20 bis 115 MB). Die Tonhöhe ändert das Tablet beim Abspielen, das Tempo bleibt dabei gleich.
+
+Optional in der `docker-compose.yml`: `SPRICH_STIMME` (Standardstimme für alle Geräte, z. B. `thorsten_froh` oder `kerstin`), `SPRICH_AUS: "1"` zum Abschalten.
 
 ## Aufbau
 

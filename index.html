@@ -1101,7 +1101,7 @@ function silbenHTML(text) {
    liest die Synology über sprich.php vor (Piper, offline). Stimme, Tempo und Quelle stellt man im Elternbereich ein (pro Gerät). */
 var hasSynth = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
 var canSpeak = true; // Vorlese-Knöpfe immer zeigen; geht es nicht, sagt die App das freundlich
-var VOICE = { v: '', r: .9, auto: true, src: 'auto' }; try { VOICE = merge(VOICE, JSON.parse(localStorage.getItem('philian-rechenheft-v1-voice') || '{}')); } catch (e) {}
+var VOICE = { v: '', r: .9, auto: true, src: 'auto', sv: '', p: 1 }; try { VOICE = merge(VOICE, JSON.parse(localStorage.getItem('philian-rechenheft-v1-voice') || '{}')); } catch (e) {}
 var TTS = { tab: null, srv: null, aud: null, gen: 0, warned: 0 }; // tab: true/false/null (noch unklar), srv: Antwort von sprich.php
 function deVoices() { if (!hasSynth) return []; try { return (speechSynthesis.getVoices() || []).filter(function (v) { return /^de/i.test(v.lang); }); } catch (e) { return []; } }
 function ttsCheckTab() { var n = deVoices().length; if (n) TTS.tab = true; else if (TTS.tab === null && (!hasSynth || TTS.waited)) TTS.tab = false; return TTS.tab; }
@@ -1113,7 +1113,7 @@ function ttsSrvCheck(force, peek) {
   var need = force || VOICE.src === 'server' || TTS.tab === false;
   if (!need && !peek) return;
   if (TTS.srvBusy) return; TTS.srvBusy = true;
-  fetch('sprich.php?status=1' + (need ? '&install=1' : '') + (force ? '&nochmal=1' : ''), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { TTS.srv = j; }).catch(function () { TTS.srv = { ready: false, state: 'keinserver' }; }).then(function () {
+  fetch('sprich.php?status=1' + (VOICE.sv ? '&v=' + encodeURIComponent(VOICE.sv) : '') + (need ? '&install=1' : '') + (force ? '&nochmal=1' : ''), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { TTS.srv = j; }).catch(function () { TTS.srv = { ready: false, state: 'keinserver' }; }).then(function () {
     TTS.srvBusy = false; if (typeof renderVoiceStatus === 'function') renderVoiceStatus();
     if (TTS.srv && TTS.srv.state === 'laedt') setTimeout(function () { ttsSrvCheck(false, true); }, 8000);
   });
@@ -1136,7 +1136,9 @@ function ttsChunks(text) {
   parts.forEach(function (p) { p = p.trim(); if (!p) return; if (out.length && (out[out.length - 1].length < 25 || p.length < 8) && out[out.length - 1].length + p.length < 300) out[out.length - 1] += ' ' + p; else out.push(p); });
   return out.map(function (p) { return p.length > 480 ? p.slice(0, 480) : p; });
 }
-function ttsURL(t) { return 'sprich.php?r=' + (VOICE.r || .9) + '&t=' + encodeURIComponent(t); }
+/* Tonhöhe: der Server spricht entsprechend langsamer, das Tablet spielt schneller ab, ohne die Tonhöhe zu halten. Das Tempo bleibt gleich. */
+function ttsPitch() { return Math.max(.85, Math.min(1.25, +VOICE.p || 1)); }
+function ttsURL(t) { return 'sprich.php?r=' + Math.round((VOICE.r || .9) / ttsPitch() * 100) / 100 + (VOICE.sv ? '&v=' + encodeURIComponent(VOICE.sv) : '') + '&t=' + encodeURIComponent(t); }
 /* Ein einziges Audio-Element für die ganze App. Beim ersten Tipp wird es mit Stille "freigeschaltet",
    damit Browser mit Autoplay-Sperre (z. B. Amazon Kids) später auch automatisch vorlesen dürfen. */
 var SILENCE = 'data:audio/wav;base64,UklGRmQGAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
@@ -1153,6 +1155,7 @@ function speakServer(text, manual) {
     TTS.aud = a; a.onended = next;
     a.onerror = function () { if (gen === TTS.gen) { TTS.aud = null; if (manual) speakFail('server'); } };
     a.src = ttsURL(parts[i]); i++;
+    try { var pr = ttsPitch(); a.preservesPitch = a.webkitPreservesPitch = a.mozPreservesPitch = pr === 1; a.defaultPlaybackRate = pr; a.playbackRate = pr; } catch (e) {}
     if (i < parts.length && window.fetch) fetch(ttsURL(parts[i])).catch(function () {}); // nächsten Satz schon erzeugen lassen
     var p = a.play();
     if (p && p.catch) p.catch(function (e) {
@@ -3783,14 +3786,22 @@ function renderWacheParent() {
   fillVoices(); renderVoiceStatus(); ttsSrvCheck(false, true);
 }
 /* Klare Auskunft für die Eltern, statt dass das Vorlesen still ausfällt */
+function ttsPitchTxt(p) { p = +p; return p === 1 ? 'normal' : (p > 1 ? '+' : '') + Math.round((p - 1) * 100) + ' %'; }
 function renderVoiceStatus() {
   var el = $('vStatus'); if (!el) return;
   var n = deVoices().length, s = TTS.srv, m = ttsMode(), h = '';
   var tab = n ? 'Das Tablet hat ' + n + (n === 1 ? ' deutsche Stimme.' : ' deutsche Stimmen.') : (hasSynth ? 'Das Tablet hat keine deutsche Stimme' + (TTS.tab === null ? ' gefunden (wird noch geprüft).' : '.') : 'Dieser Browser kann selbst nicht vorlesen (z. B. Amazon Kids).');
-  var srv = !s ? 'Synology-Stimme: wird geprüft …' : s.ready ? 'Synology-Stimme: bereit.' : s.state === 'laedt' ? 'Synology-Stimme: ' + (s.msg || 'wird eingerichtet') + ' Einmalig ca. 90 MB, dauert ein bis zwei Minuten.' : s.state === 'keinserver' ? 'Synology-Stimme: nicht erreichbar. Sie geht nur, wenn die App von der Synology kommt und dort sprich.php liegt.' : 'Synology-Stimme: ' + (s.msg || 'nicht bereit.');
+  var srv = !s ? 'Synology-Stimme: wird geprüft …' : s.ready ? 'Synology-Stimme: bereit.' : s.state === 'laedt' ? 'Synology-Stimme: ' + (s.msg || 'wird eingerichtet') + ' Das dauert einmalig ein bis zwei Minuten.' : s.state === 'keinserver' ? 'Synology-Stimme: nicht erreichbar. Sie geht nur, wenn die App von der Synology kommt und dort sprich.php liegt.' : 'Synology-Stimme: ' + (s.msg || 'nicht bereit.');
   var now = m === 'tablet' ? '✅ Vorlesen läuft über das Tablet.' : m === 'server' ? '✅ Vorlesen läuft über die Synology.' : '⚠️ Im Moment kann auf diesem Gerät nichts vorgelesen werden. Phili sieht dann beim Vorlese-Knopf einen Hinweis.';
   h = '<p class="' + (m ? 'muted' : 'danger') + '">' + esc(now) + '</p><p class="muted">' + esc(tab) + '<br>' + esc(srv) + '</p>';
   if (s && !s.ready && (s.state === 'fehler' || s.state === 'fehlt')) h += '<div class="row"><button class="btn ghost" id="vSrvRetry">Synology-Stimme einrichten</button></div>';
+  if (s && s.voices && s.voices.length) {
+    var cur = VOICE.sv || s.default || '', pr = ttsPitch();
+    h += '<div class="row"><label for="vSv">Synology-Stimme</label><select id="vSv">' + s.voices.map(function (v) { return '<option value="' + esc(v.key) + '"' + (v.key === cur ? ' selected' : '') + '>' + esc(v.label) + (v.ready ? '' : ' (wird geladen, ca. ' + v.mb + ' MB)') + '</option>'; }).join('') + '</select></div>';
+    h += '<div class="row"><label for="vPitch">Tonhöhe</label><input type="range" id="vPitch" min="0.9" max="1.2" step="0.02" value="' + pr + '" style="flex:1;min-width:160px"><span id="vPitchV">' + ttsPitchTxt(pr) + '</span><button class="btn ghost" id="vSrvTest"' + (s.ready ? '' : ' disabled') + '>Anhören</button></div>';
+    h += '<p class="muted">Eine neue Stimme lädt die Synology beim ersten Auswählen einmal herunter. Etwas höher klingt oft freundlicher und jünger, zu hoch klingt nach Zeichentrick.</p>';
+  }
+  var ae = document.activeElement; if (ae && el.contains(ae) && ae.id === 'vPitch') return; // nicht beim Schieben neu aufbauen
   el.innerHTML = h;
   var row = $('vVoiceRow'); if (row) row.hidden = !n;
 }
@@ -3809,10 +3820,13 @@ $('wacheParent').addEventListener('change', function (e) {
   if (t.id === 'vSrc') { VOICE.src = t.value; saveVoice(); ttsSrvCheck(); renderVoiceStatus(); }
   if (t.id === 'vAuto') { VOICE.auto = t.checked; saveVoice(); }
   if (t.id === 'vRate') { VOICE.r = +t.value; saveVoice(); }
+  if (t.id === 'vSv') { VOICE.sv = t.value; saveVoice(); var old = TTS.srv; TTS.srv = { ready: false, state: 'laedt', msg: 'Stimme wird geprüft', voices: old && old.voices, default: old && old.default }; renderVoiceStatus(); ttsSrvCheck(true); }
+  if (t.id === 'vPitch') { VOICE.p = +t.value; saveVoice(); }
 });
-$('wacheParent').addEventListener('input', function (e) { if (e.target.id === 'vRate') $('vRateV').textContent = Math.round(e.target.value * 100) + ' %'; });
+$('wacheParent').addEventListener('input', function (e) { if (e.target.id === 'vRate') $('vRateV').textContent = Math.round(e.target.value * 100) + ' %'; if (e.target.id === 'vPitch') { VOICE.p = +e.target.value; $('vPitchV').textContent = ttsPitchTxt(e.target.value); } });
 $('wacheParent').addEventListener('click', function (e) {
   if (e.target.id === 'vTest') speak('Hallo ' + S.name + '! Ich bin Polizeihund Paul. So klinge ich.', true);
+  if (e.target.id === 'vSrvTest') { stopSpeak(); speakServer('Hallo ' + S.name + '! Ich bin Polizeihund Paul. Wollen wir zusammen deine Hausaufgaben anschauen? Du schaffst das!', true); }
   if (e.target.id === 'vSrvRetry') { TTS.srv = { ready: false, state: 'laedt', msg: 'Einrichtung startet' }; renderVoiceStatus(); ttsSrvCheck(true); }
   if (e.target.id === 'waSave') { wEnsure().set.text = $('waText').value.trim().slice(0, 200); S.at.wacheSet = Date.now(); save(); e.target.textContent = 'Gespeichert'; setTimeout(function () { e.target.textContent = 'Speichern'; }, 1200); }
 });
