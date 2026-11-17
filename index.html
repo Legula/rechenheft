@@ -583,6 +583,9 @@ select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px;
 .wdots i.on { background: var(--accent); border-color: var(--accent); }
 .wdots i.done { background: var(--good); border-color: var(--good); }
 .wphoto { display: flex; justify-content: center; }
+.wfile { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.wfile input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 200px; }
+.wfilehint { text-align: center; color: var(--bad, #b91c1c); font-weight: 600; }
 .wphoto img { max-width: 100%; max-height: 52vh; border-radius: 12px; border: 2px solid var(--line); }
 .wchips { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 10px; }
 .wchips button { font-family: var(--f-display); font-weight: 800; font-size: 1.6rem; padding: 14px 0; border-radius: 14px; border: 2px solid var(--line); background: var(--card); box-shadow: 0 4px 0 var(--line); }
@@ -811,8 +814,6 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   <div class="wtop"><button class="back" id="wBack">← Zurück</button><span class="wrank" id="wRank"></span><div class="stars"><b>★</b><span id="wStars">0</span></div></div>
   <div id="wStreife"></div>
   <div id="wBody"></div>
-  <input type="file" id="wCam" accept="image/*" capture="environment" hidden>
-  <input type="file" id="wPick" accept="image/*" hidden>
 </section>
 
 <section id="v-dress" hidden>
@@ -3548,7 +3549,7 @@ function openWache() {
 }
 $('toWache').addEventListener('click', openWache);
 $('wBack').addEventListener('click', function () { if (W.mode && W.res) { wFinishCase(); } go('home'); });
-function wLeave() { stopSpeak(); if (W.mode && W.res) wFinishCase(); W.img = null; W.mode = ''; W.res = null; if (W.rec) { try { W.rec.abort(); } catch (e) {} W.rec = null; } }
+function wLeave() { stopSpeak(); wLiveStop(); wFileWatchStop(); if (W.mode && W.res) wFinishCase(); W.img = null; W.mode = ''; W.res = null; if (W.rec) { try { W.rec.abort(); } catch (e) {} W.rec = null; } }
 
 function wCheck() {
   if (!window.fetch) { W.ready = false; W.why = 'Dieser Browser ist zu alt für die Wache.'; wStartScreen(); return; }
@@ -3579,30 +3580,74 @@ function wStartScreen() {
 }
 
 /* Foto */
+/* Echte Datei-Felder in einem <label>: Ein Tipp öffnet die Kamera direkt, ohne JavaScript-Klick auf ein verstecktes Feld.
+   Manche Kinder-Browser (Amazon Kids) blockieren solche Klicks oder Dateifelder ganz; dann sagt Paul das deutlich. */
+var W_CAM_LIVE = !!(window.isSecureContext && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+function wFileBtn(id, label, cap, ghost) {
+  return '<label class="btn wfile' + (ghost ? ' ghost' : '') + '" data-wf="' + id + '"><input type="file" accept="image/*"' + (cap ? ' capture="environment"' : '') + ' data-wfile="' + id + '">' + esc(label) + '</label>';
+}
 function wPhoto(mode) {
   W.mode = mode; W.img = null;
   if (mode !== 'nach') { W.caseId = new Date().toISOString() + '-' + DEV.slice(-4); W.start = Date.now(); W.res = null; W.nachDone = false; W.qa = []; }
   var say = mode === 'hilfe' ? 'Mach ein Foto von der Aufgabe, die du nicht verstehst. Halte das Tablet ganz ruhig.'
     : mode === 'nach' ? 'Super! Mach jetzt ein Foto von deiner verbesserten Seite.'
     : 'Mach ein Foto von deiner fertigen Seite. Die ganze Seite soll drauf sein.';
-  wScreen({ mood: 'normal', say: say, read: say,
-    actions: [{ id: 'cam', label: '📷 Foto machen', fn: function () { $('wCam').value = ''; $('wCam').click(); } },
-      { id: 'pick', label: 'Bild aussuchen', ghost: true, fn: function () { $('wPick').value = ''; $('wPick').click(); } },
-      { id: 'cancel', label: 'Abbrechen', ghost: true, fn: function () { if (mode === 'nach') wEndScreen(); else wStartScreen(); } }] });
+  var body = '<div class="wactions">' + (W_CAM_LIVE ? '<button class="btn" data-w="live">📷 Foto machen</button>' + wFileBtn('cam', 'Kamera-App', true, true) : wFileBtn('cam', '📷 Foto machen', true, false))
+    + wFileBtn('pick', '🖼️ Bild aus der Galerie', false, true) + '</div><p class="muted wfilehint" id="wFileHint" hidden></p>';
+  wScreen({ mood: 'normal', say: say, read: say, body: body,
+    actions: [{ id: 'cancel', label: 'Abbrechen', ghost: true, fn: function () { wFileWatchStop(); if (mode === 'nach') wEndScreen(); else wStartScreen(); } }] });
+  W.acts.live = wLiveCam;
 }
+/* Kommt nach dem Tipp kein Foto an, sagt Paul das, statt still zu bleiben */
+function wFileWatchStop() { if (W.fw) { clearTimeout(W.fw.t); document.removeEventListener('visibilitychange', W.fw.vis); window.removeEventListener('focus', W.fw.foc); W.fw = null; } }
+function wFileWatch(kind) {
+  wFileWatchStop();
+  var fw = W.fw = { left: false, kind: kind };
+  function hint(t) { var el = $('wFileHint'); if (el && W.fw === fw) { el.hidden = false; el.textContent = t; } }
+  fw.vis = function () { if (document.hidden) fw.left = true; else if (fw.left) back(); };
+  fw.foc = function () { if (fw.left) back(); };
+  function back() { clearTimeout(fw.t); fw.t = setTimeout(function () { if (W.fw === fw) hint('Es ist kein Foto angekommen. Probier es nochmal' + (kind === 'cam' ? ' oder nimm „Bild aus der Galerie“.' : '.') + ' Klappt es gar nicht, frag Mama oder Papa.'); }, 2500); }
+  document.addEventListener('visibilitychange', fw.vis); window.addEventListener('blur', function b() { fw.left = true; window.removeEventListener('blur', b); });
+  window.addEventListener('focus', fw.foc);
+  fw.t = setTimeout(function () { if (W.fw === fw && !fw.left) hint('Hier öffnet sich keine Kamera. Dieses Tablet erlaubt im Kinderprofil vielleicht keine Fotos. Sag Mama oder Papa Bescheid.'); }, 5000);
+}
+$('wBody').addEventListener('click', function (e) { var l = e.target.closest('[data-wf]'); if (l) wFileWatch(l.getAttribute('data-wf')); });
+$('wBody').addEventListener('change', function (e) { if (e.target.matches && e.target.matches('[data-wfile]')) { wFileWatchStop(); wFile(e); } });
 function wFile(e) {
   var f = e.target.files && e.target.files[0]; if (!f) return;
-  wScreen({ mood: 'sniff', say: 'Ich schaue mir das Foto an …' });
+  wGotFile(f);
+}
+function wGotFile(f) {
+  wScreen({ mood: 'sniff', say: 'Foto ist angekommen! Ich mache es bereit …', body: '<div class="wpaws"><span>🐾</span><span>🐾</span><span>🐾</span></div>' });
   wResize(f, function (url) {
-    if (!url) { wError('Das Foto konnte ich nicht öffnen. Versuch es nochmal.'); return; }
-    W.img = url;
-    wScreen({ mood: 'normal', say: 'Kann man alles gut lesen?', read: 'Kann man alles gut lesen?', body: '<div class="wphoto"><img alt="Dein Foto" src="' + url + '"></div>',
-      actions: [{ id: 'ok', label: 'Ja, passt!', fn: function () { if (W.mode === 'hilfe') wWhich(); else wSend(); } },
-        { id: 'again', label: 'Neues Foto', ghost: true, fn: function () { wPhoto(W.mode); } }] });
+    if (!url) { var t = 'Oh je. ' + (/heic|heif/i.test(f.type || f.name || '') ? 'Dieses Bildformat kann ich nicht lesen. Mach bitte ein neues Foto mit der Kamera.' : 'Das Foto konnte ich nicht öffnen. Versuch es nochmal.'); wScreen({ mood: 'sad', say: t, read: t, actions: [{ id: 'again', label: 'Neues Foto', fn: function () { wPhoto(W.mode); } }, { id: 'home', label: 'Zur Wache', ghost: true, fn: wStartScreen }] }); return; }
+    wShowPhoto(url);
   });
 }
-$('wCam').addEventListener('change', wFile);
-$('wPick').addEventListener('change', wFile);
+function wShowPhoto(url) {
+  W.img = url;
+  wScreen({ mood: 'normal', say: 'Kann man alles gut lesen?', read: 'Kann man alles gut lesen?', body: '<div class="wphoto"><img alt="Dein Foto" src="' + url + '"></div>',
+    actions: [{ id: 'ok', label: 'Ja, passt!', fn: function () { if (W.mode === 'hilfe') wWhich(); else wSend(); } },
+      { id: 'again', label: 'Neues Foto', ghost: true, fn: function () { wPhoto(W.mode); } }] });
+}
+/* Kamera direkt im Bild (nur über HTTPS möglich) */
+function wLiveStop() { if (W.stream) { try { W.stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {} W.stream = null; } }
+function wLiveCam() {
+  var mode = W.mode;
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1440 } }, audio: false }).then(function (st) {
+    W.stream = st;
+    wScreen({ mood: 'normal', say: 'Halte das Tablet ruhig über die Seite und tipp auf Klick!', body: '<div class="wphoto"><video id="wVid" autoplay playsinline muted style="max-width:100%;max-height:52vh;border-radius:12px"></video></div>',
+      actions: [{ id: 'shot', label: '📸 Klick!', fn: function () {
+        var v = $('wVid'); if (!v || !v.videoWidth) return;
+        var m = 1600, k = Math.min(1, m / Math.max(v.videoWidth, v.videoHeight)), c = document.createElement('canvas');
+        c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k); c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+        wLiveStop(); wShowPhoto(c.toDataURL('image/jpeg', .85));
+      } }, { id: 'back', label: 'Zurück', ghost: true, fn: function () { wLiveStop(); wPhoto(mode); } }] });
+    var v = $('wVid'); if (v) { v.srcObject = st; try { v.play(); } catch (e) {} }
+  }).catch(function (err) {
+    var el = $('wFileHint'); if (el) { el.hidden = false; el.textContent = err && err.name === 'NotAllowedError' ? 'Die Kamera ist nicht erlaubt. Nimm „Kamera-App“ oder „Bild aus der Galerie“, oder frag Mama oder Papa.' : 'Die Kamera geht hier nicht. Nimm „Kamera-App“ oder „Bild aus der Galerie“.'; }
+  });
+}
 function wResize(file, cb) {
   var url; try { url = URL.createObjectURL(file); } catch (e) { cb(null); return; }
   var im = new Image();
@@ -4027,6 +4072,10 @@ function renderWacheParent() {
   h += '<div class="row" id="vVoiceRow"><label for="vVoice">Tablet-Stimme</label><select id="vVoice"><option value="">Standard (Tablet-Stimme)</option></select></div>';
   h += '<div class="row"><label for="vRate">Tempo</label><input type="range" id="vRate" min="0.6" max="1.3" step="0.05" value="' + (VOICE.r || .9) + '" style="flex:1;min-width:160px"><span id="vRateV">' + Math.round((VOICE.r || .9) * 100) + ' %</span><button class="btn ghost" id="vTest">Probe hören</button></div>';
   h += '<div class="row"><input type="checkbox" id="vAuto" style="width:24px;height:24px"' + (VOICE.auto ? ' checked' : '') + '><label for="vAuto">Paul liest automatisch vor</label></div>';
+  h += '</div><div class="sheet"><h3>Foto-Test</h3><p class="muted">Prüft auf diesem Gerät, ob Fotos bei Paul ankommen. Nichts wird gespeichert oder verschickt.</p>';
+  h += '<div class="wactions" style="justify-content:flex-start">' + wFileBtn('tcam', '📷 Kamera testen', true, true).replace('data-wfile=', 'data-pft=').replace('data-wf=', 'data-x=') + wFileBtn('tpick', '🖼️ Galerie testen', false, true).replace('data-wfile=', 'data-pft=').replace('data-wf=', 'data-x=') + '<button class="btn ghost" id="pftLive"' + (W_CAM_LIVE ? '' : ' disabled title="Nur über HTTPS"') + '>Kamera im Bild</button></div>';
+  h += '<div id="pftOut" class="muted"></div>';
+  h += '<div class="row"><button class="btn ghost" id="pftRun">Ablauf mit Beispielbild durchspielen</button></div><p class="muted">Öffnet die Wache mit einem Beispiel-Rechenblatt, als hätte Phili es fotografiert. Wer dort „Ja, passt!“ tippt, schickt es wirklich an Paul (kostet ein paar Cent).</p>';
   $('wacheParent').innerHTML = h + '</div>';
   fillVoices(); renderVoiceStatus(); ttsSrvCheck(false, true);
 }
@@ -4068,6 +4117,41 @@ $('wacheParent').addEventListener('change', function (e) {
   if (t.id === 'vSv') { VOICE.sv = t.value; saveVoice(); var old = TTS.srv; TTS.srv = { ready: false, state: 'laedt', msg: 'Stimme wird geprüft', voices: old && old.voices, default: old && old.default }; renderVoiceStatus(); ttsSrvCheck(true); }
   if (t.id === 'vPitch') { VOICE.p = +t.value; saveVoice(); }
 });
+/* Foto-Test für Eltern */
+function pftOut(t, bad) { var el = $('pftOut'); if (el) el.innerHTML = '<p' + (bad ? ' class="danger"' : '') + '>' + t + '</p>'; }
+$('wacheParent').addEventListener('change', function (e) {
+  if (!e.target.matches || !e.target.matches('[data-pft]')) return;
+  var f = e.target.files && e.target.files[0], t0 = Date.now();
+  if (!f) { pftOut('Kein Bild angekommen (Auswahl abgebrochen?).', true); return; }
+  pftOut('Bild angekommen: ' + esc(f.type || 'unbekannter Typ') + ', ' + Math.round(f.size / 1024) + ' KB. Wird verkleinert …');
+  wResize(f, function (url) {
+    if (!url) { pftOut('Bild angekommen (' + esc(f.type || '?') + '), aber es ließ sich nicht öffnen. Anderes Format probieren.', true); return; }
+    var im = new Image(); im.onload = function () { pftOut('✅ Klappt: Bild angekommen und verkleinert auf ' + im.naturalWidth + ' × ' + im.naturalHeight + ' Pixel, ' + Math.round(url.length * .75 / 1024) + ' KB, in ' + (Date.now() - t0) + ' ms.<br><img src="' + url + '" alt="" style="max-width:220px;border-radius:8px;margin-top:6px">'); }; im.src = url;
+  });
+});
+$('wacheParent').addEventListener('click', function (e) {
+  if (e.target.closest('[data-x]')) {
+    pftOut('Warte auf ein Bild … Öffnet sich nichts, blockiert der Browser in diesem Profil die Dateiauswahl.');
+    var f0 = function () { setTimeout(function () { var el = $('pftOut'); if (el && /Warte auf/.test(el.textContent)) pftOut('Es ist kein Bild angekommen. Öffnet sich gar keine Auswahl, erlaubt der Browser (z. B. Amazon Kids) hier keine Fotos.', true); }, 3000); window.removeEventListener('focus', f0); };
+    window.addEventListener('focus', f0);
+    setTimeout(function () { var el = $('pftOut'); if (el && /Warte auf/.test(el.textContent) && document.hasFocus()) pftOut('Es hat sich keine Kamera und keine Auswahl geöffnet. Der Browser blockiert in diesem Profil vermutlich Fotos.', true); }, 6000);
+  }
+  if (e.target.id === 'pftLive') {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function (st) { st.getTracks().forEach(function (t) { t.stop(); }); pftOut('✅ Kamera im Bild ist erlaubt.'); }).catch(function (err) { pftOut('Kamera im Bild geht nicht: ' + esc(err && err.name || 'Fehler'), true); });
+  }
+  if (e.target.id === 'pftRun') { openWache(); setTimeout(function () { wPhoto('kontrolle'); wShowPhoto(wSample()); }, 700); }
+});
+/* Beispiel-Rechenblatt als Bild */
+function wSample() {
+  var c = document.createElement('canvas'); c.width = 1200; c.height = 900; var g = c.getContext('2d');
+  g.fillStyle = '#fdfdf8'; g.fillRect(0, 0, c.width, c.height); g.strokeStyle = '#c7d7ee'; g.lineWidth = 2;
+  for (var y = 60; y < c.height; y += 40) { g.beginPath(); g.moveTo(0, y); g.lineTo(c.width, y); g.stroke(); }
+  for (var x = 40; x < c.width; x += 40) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, c.height); g.stroke(); }
+  g.fillStyle = '#1e3a8a'; g.font = 'bold 44px sans-serif'; g.fillText('Rechne!', 80, 110);
+  g.font = '48px "Comic Sans MS", cursive, sans-serif'; g.fillStyle = '#222';
+  [['1)  23 + 14 = 37', 1], ['2)  45 + 32 = 77', 1], ['3)  56 − 21 = 35', 1], ['4)  38 + 25 = 53', 0], ['5)  70 − 26 = 44', 1], ['6)  64 + 19 = 83', 1]].forEach(function (r, i) { g.fillText(r[0], 100, 220 + i * 105); });
+  return c.toDataURL('image/jpeg', .85);
+}
 $('wacheParent').addEventListener('input', function (e) { if (e.target.id === 'vRate') $('vRateV').textContent = Math.round(e.target.value * 100) + ' %'; if (e.target.id === 'vPitch') { VOICE.p = +e.target.value; $('vPitchV').textContent = ttsPitchTxt(e.target.value); } });
 $('wacheParent').addEventListener('click', function (e) {
   if (e.target.id === 'vTest') speak('Hallo ' + S.name + '! Ich bin Polizeihund Paul. So klinge ich.', true);
