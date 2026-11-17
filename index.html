@@ -497,6 +497,54 @@ th { color: var(--muted); font-weight: 700; font-size: .85rem; text-transform: u
 .kv strong { font-family: var(--f-display); font-size: 1.6rem; }
 select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); max-width: 100%; min-width: 0; }
 .danger { color: var(--bad); }
+/* Kleiderschrank */
+.dress-card { flex-direction: row !important; align-items: center; text-align: left !important; gap: 14px; background: #fff0e0; border-color: #e6b37a; box-shadow: 0 5px 0 #e6b37a; }
+.dress-card .badge { align-self: flex-start !important; }
+.dress-card.neu .badge { background: #c22b26 !important; color: #ffffff !important; }
+.dress-mini { flex: none; display: flex; width: 150px; }
+.dress-mini svg { width: 50%; height: auto; display: block; }
+.dfigs { display: flex; gap: 10px; }
+.dfigs button { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 8px 14px; min-height: 76px; border-radius: 16px; border: 3px solid var(--line); background: var(--card); color: var(--ink); font-family: var(--f-display); font-weight: 800; font-size: 1.25rem; line-height: 1.1; text-align: left; }
+.dfigs button.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 4px 0 var(--accent); }
+.dfigs svg { width: 54px; height: auto; flex: none; }
+.dlayout { display: flex; flex-direction: column; gap: 16px; }
+.dstage { background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; scroll-margin-top: 8px; }
+.dbig { width: min(230px, 56vw); }
+.dbig svg { width: 100%; height: auto; display: block; }
+.dbig.bob svg { animation: bob 2.4s ease-in-out infinite; transform-origin: 50% 100%; }
+.dbig.hop svg { animation: dhop .6s cubic-bezier(.3, 1.5, .5, 1) 2; transform-origin: 50% 100%; }
+@keyframes dhop { 40% { transform: translateY(-14px) scale(1.04); } }
+.dsay { align-self: stretch; text-align: center; flex: none; }
+.dsay::before { display: none; }
+.dacts { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.dacts .speak { padding: 14px 18px; }
+.dnote { background: var(--card); border: 2px dashed var(--line); border-radius: 14px; padding: 10px 14px; font-size: 1.05rem; }
+.dslot { margin: 6px 0 2px; font-family: var(--f-display); font-weight: 800; font-size: 1.4rem; }
+.dlist { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.dgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.dcard { position: relative; background: var(--card); color: var(--ink); border: 3px solid var(--line); border-radius: 16px; padding: 8px 8px 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; box-shadow: 0 4px 0 var(--line); }
+.dcard:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
+.dcard svg { width: 92px; height: auto; display: block; }
+.dcard b { font-family: var(--f-display); font-size: 1.08rem; line-height: 1.15; text-align: center; max-width: 100%; overflow-wrap: anywhere; -webkit-hyphens: auto; hyphens: auto; }
+.dcard .dtag { font-size: .95rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--ink); text-align: center; }
+.dcard.buy .dtag { background: #fff3c4; color: #1f2a44; border: 1px solid #e9a800; }
+.dcard.far .dtag { background: var(--grid); color: var(--ink); border-color: var(--line); }
+.dcard.on { border-color: var(--good); box-shadow: 0 4px 0 var(--good); }
+.dcard.on .dtag { background: var(--good-soft); color: var(--ink); border: 1px solid var(--good); }
+.dcard.locked svg { filter: grayscale(.9); opacity: .55; }
+.dcard.locked .dtag { background: var(--grid); font-size: .85rem; }
+.dcard.sel { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), 0 4px 0 var(--accent); }
+.dsw svg { border-radius: 14px; box-shadow: 0 4px 0 var(--line); }
+.dbig.dsw { width: min(280px, 70vw); }
+.dskins .dcard svg { width: 100%; max-width: 150px; }
+.dswi { font-size: 2rem; width: 54px; text-align: center; flex: none; }
+.dneu.dfit { right: auto; left: -6px; background: #155130; }
+.dsea { position: absolute; top: 4px; left: 6px; font-size: 1.15rem; }
+.dneu { position: absolute; top: -10px; right: -6px; background: #c22b26; color: #ffffff; font-weight: 800; font-size: .85rem; border-radius: 999px; padding: 2px 9px; }
+#homeMascot { cursor: pointer; }
+@media (min-width: 900px) and (orientation: landscape) { .dlayout { display: grid; grid-template-columns: 320px minmax(0, 1fr); align-items: start; } .dstage { position: sticky; top: 8px; } }
+@media (max-width: 520px) { .dress-mini { width: 110px; } .dfigs button { font-size: 1.05rem; padding: 8px; } .dfigs svg { width: 44px; } }
+@media (prefers-reduced-motion: reduce) { .dbig.bob svg, .dbig.hop svg { animation: none; } }
 @media (prefers-reduced-motion: reduce) { .animal, .c.fresh, .flash { animation: none; } .starrow span, .burst, .drop, .trophy svg, .result-big.perfect, .mascot.bob svg, .popcard { animation: none; } .topic, .btn { transition: none; } }
 
 /* Hausaufgaben-Wache: Polizeihund Paul. Immer nur eine Sache auf dem Bildschirm, große Schrift, große Knöpfe. */
@@ -617,6 +665,8 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
       <span class="badge" id="skyBadge"></span>
     </button>
   </div>
+  <h2>Kleiderschrank</h2>
+  <button class="topic play dress-card" id="playDress"><span class="dress-mini" id="dressMini" aria-hidden="true"></span><div><h3>Olafs und Pauls Kleiderschrank</h3><p class="level">Outfits für Olaf und Paul, neue Farben fürs Heft</p><span class="badge" id="dressBadge"></span></div></button>
   <button class="parents-link" id="toParents">Für Eltern</button>
 </section>
 
@@ -765,6 +815,16 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   <input type="file" id="wPick" accept="image/*" hidden>
 </section>
 
+<section id="v-dress" hidden>
+  <div class="topbar"><button class="back" id="dBack">← Zurück</button><div class="stars"><b>★</b><span id="dStars">0</span></div></div>
+  <h2>Kleiderschrank</h2>
+  <div class="dfigs" id="dFigs" role="group" aria-label="Wen ziehst du an?"></div>
+  <div class="dlayout">
+    <div class="dstage" id="dStage"><div class="dbig" id="dBig"></div><p class="bubble dsay" id="dSay" aria-live="polite"></p><div class="dacts" id="dActs"></div></div>
+    <div class="dlist" id="dList"></div>
+  </div>
+</section>
+
 <section id="v-badges" hidden>
   <button class="back" data-go="home">← Zurück</button>
   <h2>Deine Abzeichen</h2>
@@ -811,6 +871,8 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <h3>Einstellungen</h3>
     <div class="row"><label for="nameIn">Name des Kindes</label><input type="text" id="nameIn" maxlength="20"><button class="btn ghost" id="nameSave">Speichern</button></div>
     <div class="row"><input type="checkbox" id="silbenIn" style="width:24px;height:24px"><label for="silbenIn">Silben in Sachaufgaben farbig markieren (Lesehilfe)</label></div>
+    <div class="row"><input type="checkbox" id="dressIn" style="width:24px;height:24px"><label for="dressIn">Kleiderschrank: Olaf und Paul tragen Outfits (aus = immer im normalen Aussehen, Kleiderschrank ausgeblendet; Gekauftes bleibt erhalten)</label></div>
+    <div class="row"><input type="checkbox" id="skinIn" style="width:24px;height:24px"><label for="skinIn">Heft-Farben (Themes) erlauben (aus = immer das normale Karopapier; die Auswahl gilt pro Gerät)</label></div>
     <div class="row"><label for="codeIn">Familien-Code</label><input type="text" id="codeIn" maxlength="40" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="z. B. sonnenblume-42"><button class="btn ghost" id="codeSave">Speichern</button><button class="btn ghost" id="syncBtn">Jetzt abgleichen</button></div>
     <p id="syncStatus" class="muted"></p>
     <div class="row"><button class="btn ghost" id="updBtn">Jetzt aktualisieren</button><span class="muted" id="updMsg">Holt sofort die neueste Version auf die Synology, für alle Geräte. Die anderen Geräte bekommen sie beim nächsten Öffnen.</span></div>
@@ -868,7 +930,7 @@ function ensure() {
   S.best = merge({ caught: 0, chase: 0, crumbs: 0 }, S.best || {});
   if (!S.mastered) S.mastered = {};
   if (!S.history) S.history = [];
-  wEnsure();
+  wEnsure(); dEnsure();
 }
 function stars() { var t = 0; for (var k in S.dev) t += (S.dev[k].e || 0) - (S.dev[k].s || 0); return Math.max(0, t); }
 function addStars(n) { S.dev[DEV].e += n; }
@@ -889,6 +951,7 @@ function mergeState(L, R) {
   if ((Ra.island || 0) > (o.at.island || 0) && R.island) { o.island = R.island; o.at.island = Ra.island; }
   if ((Ra.sky || 0) > (o.at.sky || 0) && R.sky) { o.sky = R.sky; o.at.sky = Ra.sky; }
   wMerge(o, R);
+  dMerge(o, R); // Kleiderschrank: Gekauftes wird vereinigt, Angezogenes nach Zeitstempel
   var seen = {}, all = [];
   o.history.concat(R.history || []).forEach(function (h) { var id = h.d + h.theme; if (!seen[id]) { seen[id] = 1; all.push(h); } });
   all.sort(function (x, y) { return x.d < y.d ? -1 : x.d > y.d ? 1 : 0; });
@@ -916,7 +979,7 @@ function syncNow() {
     })
     .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); SYNC.state = 'ok'; SYNC.last = Date.now(); })
     .catch(function (e) { SYNC.state = 'error'; SYNC.err = String((e && e.message) || e); })
-    .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); if (!$('v-build').hidden && !BV.busy) renderBuild(); if (!$('v-island').hidden) renderIsland(); if (!$('v-sky').hidden && !SV.con) renderSky(); });
+    .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); if (!$('v-build').hidden && !BV.busy) renderBuild(); if (!$('v-island').hidden) renderIsland(); if (!$('v-sky').hidden && !SV.con) renderSky(); if (!$('v-dress').hidden) renderDress(); else skApply(); });
 }
 function scheduleSync() { if (!SYNC.code) return; clearTimeout(SYNC.timer); SYNC.timer = setTimeout(syncNow, 1200); }
 function showSync() {
@@ -1422,15 +1485,19 @@ var THEMES = {
 };
 
 /* ---------- Navigation ---------- */
-var VIEWS = ['home', 'learn', 'quiz', 'result', 'chase', 'build', 'island', 'sky', 'wache', 'badges', 'gate', 'parents'];
-function go(v) { if (v !== 'wache' && !$('v-wache').hidden) wLeave(); VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
+var VIEWS = ['home', 'learn', 'quiz', 'result', 'chase', 'build', 'island', 'sky', 'wache', 'dress', 'badges', 'gate', 'parents'];
+function go(v) { if (v !== 'wache' && !$('v-wache').hidden) wLeave(); if (v !== 'dress' && typeof skApply === 'function' && document.documentElement.getAttribute('data-skin') !== (skCur() === 'std' ? null : skCur())) skApply(); VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
 document.addEventListener('click', function (e) { var t = e.target.closest('[data-go]'); if (t) { stopGame(); go(t.getAttribute('data-go')); } });
 
 function renderHome() {
   $('hello').textContent = 'Hallo ' + S.name + '!';
-  if (!$('wacheIco').innerHTML) $('wacheIco').innerHTML = paulSVG('happy');
+  dUnlock(); var dOff = dEnsure().off, dNeu = dOff ? [] : dUnseen();
+  $('wacheIco').innerHTML = paulSVG('happy');
   $('wacheBadge').textContent = 'Dienstgrad: ' + wRank().name;
-  if (!$('homeMascot').innerHTML) $('homeMascot').innerHTML = owlSVG('happy');
+  $('homeMascot').innerHTML = owlSVG('happy');
+  $('playDress').hidden = dOff; $('dressMini').innerHTML = owlSVG('happy', null, true) + paulSVG('happy', null, true);
+  $('dressBadge').textContent = dNeu.length ? (dNeu.length === 1 ? '1 neues Teil!' : dNeu.length + ' neue Teile!') : dSeasons().length ? dSeasons()[0][2] + ' Jetzt mit ' + dSeasons()[0][1] : 'Outfits für Olaf und Paul';
+  $('playDress').classList.toggle('neu', dNeu.length > 0);
   $('homeMascot').className = 'mascot bob';
   $('homeBubble').textContent = hello();
   var td = roundsToday(), sk = dayStreak(), dots = '';
@@ -2183,8 +2250,8 @@ function chAgainBtn() { $('chAgain').hidden = stars() < COST; }
 function stopGame() { if (CH) { cancelAnimationFrame(CH.raf); CH = null; } }
 
 /* ---------- Maskottchen: Eule Olaf ---------- */
-function owlSVG(mood) {
-  var up = mood === 'cheer', s = '<svg viewBox="0 0 120 130" role="img" aria-label="Eule Olaf">';
+function owlSVG(mood, look, noBg) {
+  var up = mood === 'cheer', L = dLayers('o', look || dLook('o'), noBg), s = '<svg viewBox="0 0 120 130" role="img" aria-label="Eule Olaf">' + L.bg + L.back;
   s += '<path d="M28 40 L30 12 L48 32Z M92 40 L90 12 L72 32Z" fill="#7a4d30"/>';
   s += up ? '<path d="M22 70 Q4 40 14 26 Q26 46 34 62Z M98 70 Q116 40 106 26 Q94 46 86 62Z" fill="#6a4228"/>'
           : '<path d="M22 64 Q8 84 22 104 Q30 90 32 72Z M98 64 Q112 84 98 104 Q90 90 88 72Z" fill="#6a4228"/>';
@@ -2195,8 +2262,8 @@ function owlSVG(mood) {
   else s += '<circle cx="45" cy="54" r="7" fill="#1f2a44"/><circle cx="75" cy="54" r="7" fill="#1f2a44"/><circle cx="47" cy="51" r="2.5" fill="#fff"/><circle cx="77" cy="51" r="2.5" fill="#fff"/>';
   s += '<path d="M54 64 L66 64 L60 74Z" fill="#f2a024"/>';
   s += '<path d="M44 116 l-6 8 M50 117 l0 9 M70 117 l0 9 M76 116 l6 8" stroke="#f2a024" stroke-width="4" stroke-linecap="round"/>';
-  s += '<path d="M40 30 L60 22 L80 30 L60 38Z" fill="#1d72b0"/><rect x="58" y="30" width="4" height="10" fill="#1d72b0"/><path d="M80 30 v12" stroke="#ffd23f" stroke-width="2.5"/><circle cx="80" cy="44" r="3" fill="#ffd23f"/>';
-  return s + '</svg>';
+  if (!L.hat) s += '<path d="M40 30 L60 22 L80 30 L60 38Z" fill="#1d72b0"/><rect x="58" y="30" width="4" height="10" fill="#1d72b0"/><path d="M80 30 v12" stroke="#ffd23f" stroke-width="2.5"/><circle cx="80" cy="44" r="3" fill="#ffd23f"/>';
+  return s + L.front + '</svg>';
 }
 function hello() {
   var n = S.name, st = stars(), r = rewardState(), opts = [
@@ -2207,6 +2274,7 @@ function hello() {
   ];
   if (r && !r.done && r.goal - r.have <= 30) return 'Hallo ' + n + '! Nur noch ' + (r.goal - r.have) + ' Sterne bis zu deiner Belohnung!';
   if (r && r.done) return 'Juhu, ' + n + '! Du hast genug Sterne für deine Belohnung. Sag Mama oder Papa Bescheid!';
+  if (!dEnsure().off && dUnseen().length) return 'Hallo ' + n + '! In meinem Kleiderschrank ist etwas Neues. Tipp auf mich oder auf den Kleiderschrank!';
   if (shootReady() && Math.random() < .35) return 'Psst, ' + n + '! Heute fliegt in meiner Sternwarte eine Sternschnuppe. Fang sie dir!';
   if (st >= COST && Math.random() < .4) return 'Du hast ' + st + ' Sterne, ' + n + '! Damit kannst du im Spielzimmer spielen oder auf der Baustelle bauen.';
   return pick(opts);
@@ -2618,7 +2686,7 @@ function conNum(C, i) { return C.s + C.d * i; }
 function stepWord(C) { var a = Math.abs(C.d); return C.d < 0 ? 'Zähle rückwärts in ' + (a === 10 ? 'Zehner' : a === 5 ? 'Fünfer' : a + 'er') + 'schritten' : a === 1 ? 'Zähle immer eins weiter' : 'Zähle in ' + (a === 10 ? 'Zehner' : a === 20 ? 'Zwanziger' : a === 5 ? 'Fünfer' : a === 2 ? 'Zweier' : a === 3 ? 'Dreier' : a + 'er') + 'schritten'; }
 function starPath(cx, cy, r) { var p = ''; for (var i = 0; i < 10; i++) { var a = Math.PI / 5 * i - Math.PI / 2, rr = i % 2 ? r * .45 : r; p += (i ? 'L' : 'M') + (cx + rr * Math.cos(a)).toFixed(1) + ' ' + (cy + rr * Math.sin(a)).toFixed(1); } return p + 'Z'; }
 var SKY_BG = (function () { var s = '', seed = 7; function r() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; } for (var i = 0; i < 46; i++) { var x = r() * 480, y = r() * 175, rad = .6 + r() * 1.1; s += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + rad.toFixed(1) + '"' + (i % 6 === 0 ? ' class="tw" style="animation-delay:' + (i % 5) * .6 + 's"' : '') + '/>'; } return s; })();
-function owlAt(x, y, w, mood) { return owlSVG(mood || 'happy').replace('<svg ', '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + (w * 130 / 120).toFixed(0) + '" '); }
+function owlAt(x, y, w, mood) { return owlSVG(mood || 'happy', null, true).replace('<svg ', '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + (w * 130 / 120).toFixed(0) + '" '); }
 function conSmall(C, found) {
   var sx = SKY_SLOTS[SKY_CON.indexOf(C)], sc = .7, h = '<g transform="translate(' + sx[0] + ' ' + sx[1] + ') scale(' + sc + ')"' + (found ? '' : ' opacity=".35"') + '>';
   if (found) C.e.forEach(function (e) { var a = C.pts[e[0]], b = C.pts[e[1]]; h += '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="#9cc3ff" stroke-width="1.4" opacity=".75"/>'; });
@@ -3311,8 +3379,8 @@ function renderParents() {
   var rw = rewardState();
   $('rewardNow').innerHTML = rw ? 'Aktuell: <strong>' + esc(rw.text) + '</strong> bei ' + rw.goal + ' Sternen · ' + rw.have + ' verdient' + (rw.done ? ' · <strong>erreicht!</strong>' : '') : 'Noch keine Belohnung festgelegt.';
   $('rewDone').hidden = !rw;
-  $('nameIn').value = S.name; $('codeIn').value = SYNC.code; $('silbenIn').checked = S.silben !== false; showSync();
-  var h = '<div class="sheet"><h3>Überblick</h3><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Rudi erwischt</span><strong>' + (S.best.caught || 0) + '×</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Schnellste Keks-Jagd</span><strong>' + (S.best.chase ? S.best.chase + ' s' : '–') + '</strong></div><div><span>Krümel-Rekord</span><strong>' + (S.best.crumbs || '–') + '</strong></div><div><span>Sternwarte</span><strong>' + skyBuilt() + ' / ' + SKY_BUILD.length + '</strong></div><div><span>Sternschnuppen-Serie</span><strong>' + (skyEnsure().shoot.streak || 0) + ' (beste ' + (S.sky.shoot.best || 0) + ')</strong></div><div><span>Zahlendreher (letzte 20 Runden)</span><strong>' + swapCount() + '</strong></div></div><p class="muted">Zahlendreher heißt: Zehner und Einer vertauscht, z. B. 34 statt 43. Philian bekommt dann einen Tipp mit Stangen und Würfeln. Üben lässt sich das im Thema „Zehner und Einer“.</p></div>';
+  $('nameIn').value = S.name; $('codeIn').value = SYNC.code; $('silbenIn').checked = S.silben !== false; $('dressIn').checked = !dEnsure().off; $('skinIn').checked = !dEnsure().skinOff; showSync();
+  var h = '<div class="sheet"><h3>Überblick</h3><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Rudi erwischt</span><strong>' + (S.best.caught || 0) + '×</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Schnellste Keks-Jagd</span><strong>' + (S.best.chase ? S.best.chase + ' s' : '–') + '</strong></div><div><span>Krümel-Rekord</span><strong>' + (S.best.crumbs || '–') + '</strong></div><div><span>Kleiderschrank</span><strong>' + Object.keys(dEnsure().own).length + ' Teile' + (dEnsure().off ? ' (ausgeschaltet)' : '') + '</strong></div><div><span>Sternwarte</span><strong>' + skyBuilt() + ' / ' + SKY_BUILD.length + '</strong></div><div><span>Sternschnuppen-Serie</span><strong>' + (skyEnsure().shoot.streak || 0) + ' (beste ' + (S.sky.shoot.best || 0) + ')</strong></div><div><span>Zahlendreher (letzte 20 Runden)</span><strong>' + swapCount() + '</strong></div></div><p class="muted">Zahlendreher heißt: Zehner und Einer vertauscht, z. B. 34 statt 43. Philian bekommt dann einen Tipp mit Stangen und Würfeln. Üben lässt sich das im Thema „Zehner und Einer“.</p></div>';
   Object.keys(THEMES).forEach(function (k) {
     var T = THEMES[k], hist = S.history.filter(function (x) { return x.theme === k; }), last5 = hist.slice(-5);
     var rate = last5.length ? Math.round(last5.reduce(function (s, x) { return s + x.score; }, 0) / (last5.length * ROUND) * 100) + ' %' : '–';
@@ -3428,8 +3496,8 @@ function wRank() {
 function wAchten() { var st = wEnsure().set, a = []; for (var k in W_ACHTEN) if (st[k]) a.push(W_ACHTEN[k]); return a; }
 
 /* Polizeihund Paul */
-function paulSVG(mood) {
-  var s = '<svg viewBox="0 0 120 130" role="img" aria-label="Polizeihund Paul">';
+function paulSVG(mood, look, noBg) {
+  var L = dLayers('p', look || dLook('p'), noBg), s = '<svg viewBox="0 0 120 130" role="img" aria-label="Polizeihund Paul">' + L.bg + L.back;
   s += '<ellipse cx="60" cy="120" rx="34" ry="12" fill="#b9773f"/>';
   s += '<path d="M28 46 Q8 52 12 86 Q16 98 29 90 Q31 68 38 54Z" fill="#7a4a24"/><path d="M92 46 Q112 52 108 86 Q104 98 91 90 Q89 68 82 54Z" fill="#7a4a24"/>';
   s += '<ellipse cx="60" cy="68" rx="34" ry="36" fill="#c98b4a"/><ellipse cx="75" cy="62" rx="11" ry="10" fill="#a8692f"/>';
@@ -3441,10 +3509,10 @@ function paulSVG(mood) {
   if (mood === 'happy') s += '<path d="M48 88 Q60 100 72 88" stroke="#5a3418" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M55 92 Q60 108 65 92Z" fill="#ef7d8a"/>';
   else if (mood === 'sad') s += '<path d="M50 96 Q60 88 70 96" stroke="#5a3418" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
   else s += '<path d="M52 90 Q60 96 68 90" stroke="#5a3418" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
-  s += '<path d="M28 38 Q60 2 92 38Z" fill="#1d3f7a"/><rect x="27" y="36" width="66" height="10" rx="3" fill="#13305f"/><path d="M30 45 Q60 56 90 45 L88 51 Q60 61 32 51Z" fill="#0c1f40"/>';
-  s += '<path d="M60 14 l3 6.5 7 .6 -5.3 4.6 1.6 6.9 -6.3 -3.7 -6.3 3.7 1.6 -6.9 -5.3 -4.6 7 -.6z" fill="#ffd23f" stroke="#c99a0a" stroke-width="1"/>';
-  s += '<path d="M34 100 Q60 112 86 100 L86 107 Q60 119 34 107Z" fill="#1d72b0"/><circle cx="60" cy="114" r="5" fill="#ffd23f" stroke="#c99a0a"/>';
-  return s + '</svg>';
+  if (!L.hat) s += '<path d="M28 38 Q60 2 92 38Z" fill="#1d3f7a"/><rect x="27" y="36" width="66" height="10" rx="3" fill="#13305f"/><path d="M30 45 Q60 56 90 45 L88 51 Q60 61 32 51Z" fill="#0c1f40"/>';
+  if (!L.hat) s += '<path d="M60 14 l3 6.5 7 .6 -5.3 4.6 1.6 6.9 -6.3 -3.7 -6.3 3.7 1.6 -6.9 -5.3 -4.6 7 -.6z" fill="#ffd23f" stroke="#c99a0a" stroke-width="1"/>';
+  if (!L.body) s += '<path d="M34 100 Q60 112 86 100 L86 107 Q60 119 34 107Z" fill="#1d72b0"/><circle cx="60" cy="114" r="5" fill="#ffd23f" stroke="#c99a0a"/>';
+  return s + L.front + '</svg>';
 }
 
 /* Bildschirm: Paul + Sprechblase + ein Inhalt + Knöpfe */
@@ -3505,7 +3573,7 @@ function wStartScreen() {
     body: '<button class="wbig help" data-w="hilfe"><span class="wi">🔍</span><span><b>Was soll ich machen?</b><span>Ich verstehe eine Aufgabe nicht.</span></span></button>' +
       '<button class="wbig check" data-w="kontrolle"><span class="wi">✅</span><span><b>Kontrolle!</b><span>Ich bin fertig. Paul, schau nach!</span></span></button>' +
       '<p class="muted" style="text-align:center">Dienstgrad: <strong>' + esc(rk.name) + '</strong>' + (rk.next ? ' · noch ' + rk.left + (rk.left === 1 ? ' Einsatz' : ' Einsätze') + ' bis ' + esc(rk.next) : ' · höchster Dienstgrad!') + '</p>',
-    actions: [{ id: 'fa', label: '🏁 Feierabend: alle Hausaufgaben fertig', ghost: true, fn: wFeierabend }] });
+    actions: [{ id: 'fa', label: '🏁 Feierabend: alle Hausaufgaben fertig', ghost: true, fn: wFeierabend }].concat(dEnsure().off ? [] : [{ id: 'dress', label: '👕 Paul umziehen', ghost: true, fn: function () { openDress('p', 'wache'); } }]) });
   W.acts.hilfe = function () { wPhoto('hilfe'); }; W.acts.kontrolle = wSelfCheck;
   W.onStart = true; wDue();
 }
@@ -4015,6 +4083,456 @@ BADGES.push(
   { id: 'polizeichef', name: 'Polizeichef', desc: 'Höchster Dienstgrad bei der Wache', col: '#c99a0a', sym: '★', test: function () { return wEnsure().cases.length >= 60; } }
 );
 
+/* ---------- Kleiderschrank: Outfits für Eule Olaf und Polizeihund Paul ----------
+   Speicher: S.dress = { own: { 'o.cape': 1, 'p.weste': 1 }, wear: { o: { auto: 1 } | { kopf: id, gesicht: id, koerper: id, bg: id }, p: … }, off: false }
+   Nur Objekte, keine Listen. own wird beim Abgleich vereinigt (gekauft bleibt gekauft), wear gewinnt nach S.at.dress, off nach S.at.dressOff.
+   Jahreszeiten: Saison-Sachen gibt es nur in ihrem Zeitraum (Datum des Geräts) zu kaufen, gekauft bleiben sie für immer.
+   Jede Jahreszeit bringt ein Geschenk mit. Solange das Kind nichts selbst anzieht (wear.auto), tragen die Figuren das Geschenk der Jahreszeit. */
+var D_SLOTS = [['kopf', 'Kopf'], ['gesicht', 'Augen'], ['koerper', 'Körper'], ['bg', 'Hintergrund']];
+var D_FIG = { o: 'Eule Olaf', p: 'Polizeihund Paul' };
+/* Ankerpunkte: wo Kopf, Augen, Hals und Bauch der Figur sitzen (x, y, Maßstab). Jedes Teil ist um (0,0) gezeichnet. */
+var D_AN = {
+  o: { kopf: [60, 31, 1], auge: [60, 53, 1], hals: [60, 77, 1], bauch: [60, 104, 1], mitte: [60, 62, 1], bart: [60, 53, 1] },
+  p: { kopf: [60, 41, 1.05], auge: [60, 62, .88], hals: [60, 103, .78], bauch: [60, 118, .78], mitte: [60, 66, .95], bart: [60, 70, .85] }
+};
+function dAt(f, a, inner) { var A = D_AN[f][a]; return '<g transform="translate(' + A[0] + ' ' + A[1] + ') scale(' + A[2] + ')">' + inner + '</g>'; }
+function dStar(cx, cy, r, fill, stroke) {
+  var p = ''; for (var k = 0; k < 10; k++) { var an = Math.PI / 5 * k - Math.PI / 2, rr = k % 2 ? r * .45 : r; p += (k ? 'L' : 'M') + (cx + Math.cos(an) * rr).toFixed(1) + ' ' + (cy + Math.sin(an) * rr).toFixed(1); }
+  return '<path d="' + p + 'Z" fill="' + fill + '"' + (stroke ? ' stroke="' + stroke + '" stroke-width="1.2"' : '') + '/>';
+}
+function dBg(fill, inner) { return '<rect x="0" y="0" width="120" height="130" rx="16" fill="' + fill + '"/>' + (inner || ''); }
+/* Hüte: Krempe bei y = 0 */
+var D_HAT = {
+  polizei: '<path d="M-31 -4 Q0 -42 31 -4Z" fill="#1d3f7a"/><rect x="-32" y="-9" width="64" height="11" rx="3" fill="#13305f"/><path d="M-29 1 Q0 12 29 1 L27 7 Q0 18 -27 7Z" fill="#0c1f40"/>' + dStar(0, -24, 7, '#ffd23f', '#c99a0a'),
+  gold: '<path d="M-31 -4 Q0 -42 31 -4Z" fill="#f2c230" stroke="#b8860b" stroke-width="2"/><rect x="-32" y="-9" width="64" height="11" rx="3" fill="#1d3f7a"/><path d="M-12 -4 h24" stroke="#ffd23f" stroke-width="3"/><path d="M-29 1 Q0 12 29 1 L27 7 Q0 18 -27 7Z" fill="#0c1f40"/>' + dStar(0, -24, 9, '#ffffff', '#b8860b'),
+  detektiv: '<path d="M-31 0 Q-31 -36 0 -37 Q31 -36 31 0Z" fill="#a8783f"/><path d="M-20 -30 L-20 0 M-6 -36 L-6 0 M8 -36 L8 0 M22 -30 L22 0 M-30 -10 H30 M-27 -22 H27" stroke="#6e4a22" stroke-width="2" opacity=".7"/><path d="M-26 0 Q0 12 26 0 Q0 4 -26 0Z" fill="#7a5328"/><path d="M-8 -37 q8 -8 16 0" stroke="#6e4a22" stroke-width="3" fill="none"/>',
+  pirat: '<path d="M-44 -2 Q-36 -34 0 -34 Q36 -34 44 -2 Q0 -16 -44 -2Z" fill="#1f2230" stroke="#e9b93a" stroke-width="3"/><circle cx="0" cy="-20" r="7" fill="#fff"/><circle cx="-2.5" cy="-21" r="1.8" fill="#1f2230"/><circle cx="2.5" cy="-21" r="1.8" fill="#1f2230"/><path d="M-8 -10 L8 -6 M8 -10 L-8 -6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>',
+  zauber: '<path d="M-28 0 L6 -64 L28 0Z" fill="#5a3fb0"/><path d="M6 -64 q10 2 12 10" stroke="#5a3fb0" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="0" rx="42" ry="8" fill="#46309a"/>' + dStar(-6, -22, 6, '#ffd23f') + dStar(10, -38, 4.5, '#ffd23f') + dStar(8, -10, 3.5, '#fff6c2') + '<circle cx="-12" cy="-6" r="2" fill="#fff6c2"/>',
+  sek: '<path d="M-35 4 Q-35 -40 0 -40 Q35 -40 35 4Z" fill="#2b3340"/><rect x="-36" y="-4" width="72" height="9" rx="3" fill="#11161e"/><text x="0" y="-15" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="11" fill="#ffffff">POLIZEI</text>',
+  krone: '<path d="M-28 0 L-32 -30 L-15 -14 L0 -36 L15 -14 L32 -30 L28 0Z" fill="#ffd23f" stroke="#c99a0a" stroke-width="2.5" stroke-linejoin="round"/><circle cx="0" cy="-8" r="4.5" fill="#d64541"/><circle cx="-16" cy="-6" r="3.5" fill="#2f6fd6"/><circle cx="16" cy="-6" r="3.5" fill="#2f9e5b"/><circle cx="0" cy="-36" r="3" fill="#fff"/>',
+  xmas: '<path d="M-30 0 Q-24 -40 6 -42 Q32 -42 42 -12 L33 -8 Q22 -28 6 -26 Q22 -12 30 0Z" fill="#d63a3a"/><rect x="-35" y="-7" width="70" height="13" rx="6.5" fill="#ffffff" stroke="#d8dde5" stroke-width="1.5"/><circle cx="41" cy="-10" r="8" fill="#ffffff" stroke="#d8dde5" stroke-width="1.5"/>',
+  pudel: '<path d="M-31 2 Q-31 -34 0 -34 Q31 -34 31 2Z" fill="#2f6fd6"/><path d="M-26 -16 H26 M-29 -6 H29" stroke="#ffffff" stroke-width="3.5"/><rect x="-33" y="-6" width="66" height="12" rx="5" fill="#1d4f9c"/><circle cx="0" cy="-37" r="9" fill="#ffffff" stroke="#c8d2e0" stroke-width="1.5"/>',
+  hase: '<g transform="rotate(-14 -12 -4)"><ellipse cx="-12" cy="-30" rx="9" ry="26" fill="#ffffff" stroke="#c8d2e0" stroke-width="2"/><ellipse cx="-12" cy="-28" rx="4.5" ry="19" fill="#f5a3b8"/></g><g transform="rotate(14 12 -4)"><ellipse cx="12" cy="-30" rx="9" ry="26" fill="#ffffff" stroke="#c8d2e0" stroke-width="2"/><ellipse cx="12" cy="-28" rx="4.5" ry="19" fill="#f5a3b8"/></g><path d="M-30 0 Q0 -16 30 0" stroke="#f5a3b8" stroke-width="6" fill="none" stroke-linecap="round"/>',
+  blumen: '<path d="M-32 2 Q0 -18 32 2" stroke="#3e9a4a" stroke-width="4" fill="none"/>' + [[-28, -2, '#ef5b8a'], [-16, -9, '#ffd23f'], [-3, -12, '#7aa0ff'], [10, -11, '#ef5b8a'], [22, -7, '#ffd23f'], [31, 0, '#a77ee8']].map(function (b) { return '<circle cx="' + b[0] + '" cy="' + b[1] + '" r="6.5" fill="' + b[2] + '"/><circle cx="' + b[0] + '" cy="' + b[1] + '" r="2.4" fill="#fff6c2"/>'; }).join(''),
+  sonnenhut: '<ellipse cx="0" cy="0" rx="48" ry="10" fill="#f0d58c" stroke="#b8923e" stroke-width="2"/><path d="M-24 -1 Q-24 -28 0 -28 Q24 -28 24 -1Z" fill="#f4dd9c" stroke="#b8923e" stroke-width="2"/><path d="M-24 -6 Q0 0 24 -6 L24 -1 Q0 5 -24 -1Z" fill="#d64541"/><circle cx="18" cy="-6" r="4" fill="#ffffff"/>',
+  laub: '<path d="M-32 2 Q0 -18 32 2" stroke="#7a4d30" stroke-width="3" fill="none"/>' + [[-28, -3, '#e0662b', -40], [-15, -10, '#f2b134', -15], [-1, -13, '#c4302b', 5], [13, -11, '#e0662b', 20], [26, -5, '#f2b134', 40]].map(function (l) { return '<path d="M0 0 Q7 -6 0 -16 Q-7 -6 0 0Z" fill="' + l[2] + '" transform="translate(' + l[0] + ' ' + (l[1] + 6) + ') rotate(' + l[3] + ')"/>'; }).join(''),
+  kuerbis: '<path d="M2 -34 q2 -8 9 -9" stroke="#3e7a2a" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="-12" cy="-15" rx="14" ry="17" fill="#e8781f"/><ellipse cx="12" cy="-15" rx="14" ry="17" fill="#e8781f"/><ellipse cx="0" cy="-15" rx="13" ry="18" fill="#f28c28"/><path d="M-12 -32 Q-20 -15 -12 2 M12 -32 Q20 -15 12 2" stroke="#c45f12" stroke-width="2" fill="none"/><path d="M-9 -18 l4 -5 4 5Z M5 -18 l4 -5 4 5Z" fill="#5a2a0a"/><path d="M-10 -9 Q0 -2 10 -9" stroke="#5a2a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>',
+  geweih: '<path d="M-14 -2 L-20 -26 M-20 -26 L-30 -34 M-20 -26 L-14 -38 M-18 -16 L-28 -18 M14 -2 L20 -26 M20 -26 L30 -34 M20 -26 L14 -38 M18 -16 L28 -18" stroke="#8a5a2b" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M-30 2 Q0 -12 30 2" stroke="#d63a3a" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="0" cy="-4" r="4" fill="#ffd23f" stroke="#c99a0a"/>',
+  zylinder: '<rect x="-20" y="-38" width="40" height="36" rx="3" fill="#1f2230"/><rect x="-20" y="-12" width="40" height="7" fill="#d64541"/><ellipse cx="0" cy="-2" rx="32" ry="6" fill="#1f2230"/><path d="M8 -12 l6 -6 2 7Z" fill="#2f9e5b"/>'
+};
+/* Brillen: Augen bei x = ±16, y = 0 */
+var D_EYE = {
+  sonne: '<path d="M-36 -4 L-46 -6 M36 -4 L46 -6" stroke="#1f2a44" stroke-width="4" stroke-linecap="round"/><rect x="-33" y="-13" width="30" height="24" rx="10" fill="#1f2a44"/><rect x="3" y="-13" width="30" height="24" rx="10" fill="#1f2a44"/><path d="M-3 -4 Q0 -8 3 -4" stroke="#1f2a44" stroke-width="4" fill="none"/><path d="M-27 -7 l8 0 M9 -7 l8 0" stroke="#7fa6d9" stroke-width="3" stroke-linecap="round"/>',
+  taucher: '<path d="M-36 -2 L-48 -4 M36 -2 L48 -4" stroke="#1f2a44" stroke-width="5" stroke-linecap="round"/><rect x="-36" y="-17" width="72" height="32" rx="14" fill="#8fd3ff" fill-opacity=".45" stroke="#f08a24" stroke-width="5"/><path d="M-26 -8 l10 0" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/><path d="M38 6 Q46 4 46 -10 L46 -40" stroke="#f2c230" stroke-width="6" fill="none" stroke-linecap="round"/>',
+  klappe: '<path d="M-40 -16 L40 10" stroke="#1f2230" stroke-width="3"/><ellipse cx="16" cy="1" rx="14" ry="13" fill="#1f2230"/>',
+  sternbrille: [-16, 16].map(function (x) { var p = ''; for (var k = 0; k < 10; k++) { var an = Math.PI / 5 * k - Math.PI / 2, rr = k % 2 ? 10.5 : 21; p += (k ? 'L' : 'M') + (x + Math.cos(an) * rr).toFixed(1) + ' ' + (Math.sin(an) * rr + 1).toFixed(1); } return '<path fill-rule="evenodd" d="' + p + 'Z M' + (x + 9) + ' 1 a9 9 0 1 0 -18 0 a9 9 0 1 0 18 0Z" fill="#ff5fa2" stroke="#b8236a" stroke-width="1.5"/>'; }).join('') + '<path d="M-6 -2 Q0 -6 6 -2" stroke="#b8236a" stroke-width="3" fill="none"/>'
+};
+var D_BEARD = '<path d="M-27 13 Q-34 48 0 58 Q34 48 27 13 Q14 24 0 22 Q-14 24 -27 13Z" fill="#ffffff" stroke="#c8d2e0" stroke-width="2"/><path d="M-14 34 q4 6 8 0 M6 34 q4 6 8 0 M-4 46 q4 6 8 0" stroke="#d8dde5" stroke-width="2" fill="none"/>';
+/* Kleidung am Hals (0,0) bzw. Bauch */
+var D_BODY = {
+  schal: '<path d="M-38 -5 Q0 9 38 -5 L38 6 Q0 20 -38 6Z" fill="#d64541"/><path d="M-26 0 l0 10 M-10 4 l0 11 M10 4 l0 11 M26 0 l0 10" stroke="#ffffff" stroke-width="4"/><path d="M14 8 L24 8 L28 36 L16 36Z" fill="#d64541"/><path d="M16 18 h10 M17 28 h10" stroke="#ffffff" stroke-width="4"/>',
+  fliege: '<path d="M0 4 L-18 -6 L-18 14Z M0 4 L18 -6 L18 14Z" fill="#d64541" stroke="#8f2421" stroke-width="2" stroke-linejoin="round"/><circle cx="0" cy="4" r="5" fill="#b02e2b"/><circle cx="-11" cy="2" r="1.8" fill="#fff"/><circle cx="11" cy="6" r="1.8" fill="#fff"/>',
+  medaille: '<path d="M-14 -4 L-3 22 L3 22 L14 -4 L6 -4 L0 12 L-6 -4Z" fill="#2f6fd6"/><path d="M-10 -4 L-2 16 M10 -4 L2 16" stroke="#d64541" stroke-width="3"/><circle cx="0" cy="30" r="11" fill="#ffd23f" stroke="#c99a0a" stroke-width="2.5"/>' + dStar(0, 30, 6.5, '#ffffff'),
+  marke: '<path d="M0 -2 L14 4 L14 16 Q14 26 0 32 Q-14 26 -14 16 L-14 4Z" fill="#ffd23f" stroke="#a87b06" stroke-width="2.5"/>' + dStar(0, 14, 7, '#1d3f7a'),
+  laterne: '<path d="M14 6 Q34 -14 52 -8" stroke="#7a4d30" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M48 -8 L48 0" stroke="#5a3a24" stroke-width="2"/><rect x="38" y="0" width="20" height="26" rx="6" fill="#ffd23f" stroke="#d6741d" stroke-width="2.5"/><circle cx="48" cy="13" r="5" fill="#ffffff" opacity=".8"/><rect x="36" y="-2" width="24" height="5" rx="2" fill="#d64541"/><rect x="36" y="24" width="24" height="5" rx="2" fill="#d64541"/>'
+};
+/* Umhänge liegen hinter der Figur (Hals = 0,0) */
+var D_CAPE = function (col, edge) { return '<path d="M-26 -6 Q-58 40 -50 62 ' + (edge ? 'Q-40 54 -30 62 Q-20 54 -10 62 Q0 54 10 62 Q20 54 30 62 Q40 54 50 62' : 'L50 62') + ' Q58 40 26 -6Z" fill="' + col + '"/>'; };
+function dOlafBody(id) {
+  if (id === 'weste') return '<path d="M-30 -2 Q0 -10 30 -2 L36 36 L-36 36Z" fill="#1d2b45"/><rect x="-36" y="8" width="72" height="16" fill="#1d2b45"/><text x="0" y="21" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="12" fill="#ffffff">POLIZEI</text><path d="M-36 30 H36" stroke="#d9e021" stroke-width="3"/>';
+  if (id === 'mantel') return '<path d="M-32 -4 Q0 -10 32 -4 L40 40 L-40 40Z" fill="#c8a46a"/><path d="M-14 -6 L0 22 L14 -6" fill="#efd3a8" stroke="#8a6a36" stroke-width="2"/><path d="M-40 28 H40" stroke="#7a5328" stroke-width="5"/><circle cx="-8" cy="32" r="2.5" fill="#5a3a1a"/><circle cx="8" cy="32" r="2.5" fill="#5a3a1a"/>';
+  if (id === 'wmann') return '<path d="M-32 0 Q0 -8 32 0 Q44 24 38 48 L-38 48 Q-44 24 -32 0Z" fill="#d63a3a"/><rect x="-5" y="-2" width="10" height="50" fill="#ffffff"/><rect x="-42" y="22" width="84" height="9" fill="#1f2230"/><rect x="-8" y="19" width="16" height="15" rx="2" fill="none" stroke="#ffd23f" stroke-width="3"/><rect x="-40" y="42" width="80" height="9" rx="4.5" fill="#ffffff" stroke="#d8dde5"/>';
+  if (id === 'schneemann') return '<circle cx="0" cy="24" r="31" fill="#ffffff" stroke="#c8d2e0" stroke-width="2.5"/><circle cx="0" cy="10" r="3.5" fill="#1f2230"/><circle cx="0" cy="23" r="3.5" fill="#1f2230"/><circle cx="0" cy="36" r="3.5" fill="#1f2230"/><path d="M-30 -2 Q0 10 30 -2 L30 6 Q0 18 -30 6Z" fill="#d64541"/>';
+  if (id === 'badehose') return '<path d="M-31 26 L31 26 L33 44 L5 44 L0 37 L-5 44 L-33 44Z" fill="#e94c4c" stroke="#9e2a2a" stroke-width="2"/><circle cx="-18" cy="34" r="2.6" fill="#fff"/><circle cx="-6" cy="30" r="2.6" fill="#fff"/><circle cx="8" cy="31" r="2.6" fill="#fff"/><circle cx="20" cy="36" r="2.6" fill="#fff"/><g transform="translate(46 34)"><ellipse cx="0" cy="4" rx="10" ry="7" fill="#ffd23f" stroke="#c99a0a" stroke-width="1.5"/><circle cx="-6" cy="-4" r="6" fill="#ffd23f" stroke="#c99a0a" stroke-width="1.5"/><path d="M-12 -4 l-5 1 5 2Z" fill="#f08a24"/><circle cx="-7" cy="-5" r="1.4" fill="#1f2230"/></g>';
+  return '';
+}
+function dPaulBody(id) {
+  if (id === 'weste') return '<path d="M-40 -4 Q0 6 40 -4 L42 26 Q0 34 -42 26Z" fill="#1d2b45"/><text x="0" y="16" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="13" fill="#ffffff">POLIZEI</text><path d="M-40 22 Q0 30 40 22" stroke="#d9e021" stroke-width="3.5" fill="none"/>';
+  if (id === 'mantel') return '<path d="M-42 -4 Q0 8 42 -4 L46 30 Q0 38 -46 30Z" fill="#c8a46a"/><path d="M-16 0 L0 24 L16 0" fill="#f3dfc3" stroke="#8a6a36" stroke-width="2"/><path d="M-44 18 Q0 26 44 18" stroke="#7a5328" stroke-width="5" fill="none"/>';
+  if (id === 'wmann') return '<path d="M-42 -4 Q0 8 42 -4 L46 30 Q0 38 -46 30Z" fill="#d63a3a"/><path d="M-44 14 Q0 22 44 14" stroke="#1f2230" stroke-width="7" fill="none"/><rect x="-7" y="12" width="14" height="12" rx="2" fill="none" stroke="#ffd23f" stroke-width="3"/><path d="M-42 -4 Q0 8 42 -4" stroke="#ffffff" stroke-width="7" fill="none" stroke-linecap="round"/>';
+  if (id === 'schneemann') return '<path d="M-44 -2 Q0 10 44 -2 L44 32 L-44 32Z" fill="#ffffff" stroke="#c8d2e0" stroke-width="2.5"/><circle cx="-14" cy="18" r="3.5" fill="#1f2230"/><circle cx="0" cy="20" r="3.5" fill="#1f2230"/><circle cx="14" cy="18" r="3.5" fill="#1f2230"/><path d="M-36 0 Q0 12 36 0 L36 7 Q0 19 -36 7Z" fill="#d64541"/>';
+  if (id === 'badehose') return '<path d="M-42 4 Q0 14 42 4 L44 30 Q0 38 -44 30Z" fill="#e94c4c" stroke="#9e2a2a" stroke-width="2"/><circle cx="-24" cy="18" r="3" fill="#fff"/><circle cx="-8" cy="22" r="3" fill="#fff"/><circle cx="8" cy="22" r="3" fill="#fff"/><circle cx="24" cy="18" r="3" fill="#fff"/>';
+  return '';
+}
+var D_BGS = {
+  sterne: dBg('#1f2f6b', '<circle cx="98" cy="20" r="10" fill="#fdf3c4"/><circle cx="103" cy="17" r="9" fill="#1f2f6b"/>' + dStar(16, 18, 5, '#fff6c2') + dStar(104, 72, 4, '#fff6c2') + dStar(12, 92, 3.5, '#fff6c2') + '<circle cx="34" cy="8" r="1.5" fill="#fff"/><circle cx="84" cy="44" r="1.3" fill="#fff"/><circle cx="20" cy="54" r="1.3" fill="#fff"/><circle cx="108" cy="108" r="1.5" fill="#fff"/>'),
+  streife: dBg('#cfe6fb', '<rect x="0" y="104" width="120" height="26" fill="#7a7f87"/><path d="M8 117 h16 M40 117 h16 M72 117 h16 M104 117 h12" stroke="#ffffff" stroke-width="3"/><g transform="translate(70 76)"><rect x="4" y="8" width="44" height="18" rx="6" fill="#ffffff" stroke="#1d4f9c" stroke-width="2"/><path d="M12 8 L18 -2 H36 L42 8Z" fill="#e6f0fb" stroke="#1d4f9c" stroke-width="2"/><rect x="4" y="15" width="44" height="5" fill="#1d72b0"/><rect x="21" y="-7" width="10" height="5" rx="2" fill="#2f6fd6"/><circle cx="14" cy="27" r="5" fill="#1f2230"/><circle cx="38" cy="27" r="5" fill="#1f2230"/></g>'),
+  revier: dBg('#e9edf3', '<rect x="0" y="96" width="120" height="34" fill="#c9d1dd"/><path d="M0 0 H120 V8 H0Z" fill="#1d3f7a"/><rect x="88" y="10" width="30" height="13" rx="3" fill="#1d3f7a"/><text x="103" y="20" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="7.5" fill="#ffffff">POLIZEI</text><rect x="6" y="40" width="14" height="18" fill="#9cc3ff" stroke="#5a6b85" stroke-width="2"/><rect x="100" y="40" width="14" height="18" fill="#9cc3ff" stroke="#5a6b85" stroke-width="2"/><circle cx="13" cy="32" r="4" fill="#2f6fd6"/><circle cx="107" cy="32" r="4" fill="#2f6fd6"/>'),
+  blaulicht: dBg('#18234a', '<path d="M0 0 L40 0 L0 50Z" fill="#2f6fd6" opacity=".45"/><path d="M120 0 L80 0 L120 50Z" fill="#2f6fd6" opacity=".45"/><circle cx="10" cy="10" r="9" fill="#5aa0ff"/><circle cx="110" cy="10" r="9" fill="#5aa0ff"/><circle cx="10" cy="10" r="4" fill="#ffffff"/><circle cx="110" cy="10" r="4" fill="#ffffff"/>' + dStar(20, 100, 3, '#fff6c2') + dStar(100, 96, 3, '#fff6c2')),
+  regenbogen: dBg('#e6f4ff', [['#ef5b5b', 52], ['#f7b733', 46], ['#ffd23f', 40], ['#59c27a', 34], ['#3fa7e0', 28], ['#a77ee8', 22]].map(function (r) { return '<path d="M' + (60 - r[1]) + ' 76 A' + r[1] + ' ' + r[1] + ' 0 0 1 ' + (60 + r[1]) + ' 76" stroke="' + r[0] + '" stroke-width="6" fill="none"/>'; }).join('') + '<ellipse cx="14" cy="80" rx="16" ry="8" fill="#fff"/><ellipse cx="106" cy="80" rx="16" ry="8" fill="#fff"/>'),
+  schnee: dBg('#dcecfa', '<path d="M0 108 Q30 98 60 106 Q90 114 120 104 V130 H0Z" fill="#ffffff"/>' + [[14, 18], [100, 14], [26, 60], [104, 58], [60, 8], [10, 92], [110, 90]].map(function (f) { return '<g transform="translate(' + f[0] + ' ' + f[1] + ')" stroke="#7fa6d9" stroke-width="2" stroke-linecap="round"><path d="M-5 0 H5 M0 -5 V5 M-3.5 -3.5 L3.5 3.5 M-3.5 3.5 L3.5 -3.5"/></g>'; }).join('')),
+  strand: dBg('#bfe6ff', '<circle cx="100" cy="18" r="11" fill="#ffd23f"/><rect x="0" y="86" width="120" height="18" fill="#3fa7e0"/><path d="M0 92 q10 -4 20 0 t20 0 t20 0 t20 0 t20 0 t20 0" stroke="#ffffff" stroke-width="2" fill="none"/><path d="M0 104 H120 V130 H0Z" fill="#f4dd9c"/><g transform="translate(14 108)"><path d="M0 0 L-8 16 M0 0 L8 16" stroke="#7a4d30" stroke-width="2"/><path d="M-12 2 Q0 -12 12 2Z" fill="#ef5b5b"/></g>'),
+  baum: dBg('#fbeee0', '<path d="M98 24 L116 60 L106 60 L118 88 L78 88 L90 60 L80 60Z" fill="#2f8a4a"/><rect x="94" y="88" width="8" height="10" fill="#7a4d30"/>' + dStar(98, 22, 6, '#ffd23f', '#c99a0a') + '<circle cx="92" cy="54" r="3" fill="#d64541"/><circle cx="104" cy="66" r="3" fill="#2f6fd6"/><circle cx="90" cy="80" r="3" fill="#ffd23f"/><circle cx="110" cy="80" r="3" fill="#d64541"/><path d="M0 12 Q15 22 30 12 Q45 22 60 12" stroke="#2f8a4a" stroke-width="3" fill="none"/><circle cx="15" cy="18" r="3" fill="#d64541"/><circle cx="45" cy="18" r="3" fill="#ffd23f"/><rect x="6" y="104" width="18" height="16" fill="#d64541"/><path d="M15 104 V120 M6 112 H24" stroke="#ffd23f" stroke-width="3"/>'),
+  eier: dBg('#e9f7e1', '<path d="M0 106 Q60 96 120 106 V130 H0Z" fill="#8fd27a"/>' + [[14, 112, '#ef5b8a'], [30, 118, '#7aa0ff'], [92, 116, '#ffd23f'], [108, 110, '#a77ee8']].map(function (e) { return '<ellipse cx="' + e[0] + '" cy="' + e[1] + '" rx="7" ry="9" fill="' + e[2] + '"/><path d="M' + (e[0] - 6) + ' ' + e[1] + ' q3 -3 6 0 t6 0" stroke="#ffffff" stroke-width="2" fill="none"/>'; }).join('') + '<circle cx="104" cy="18" r="10" fill="#ffd23f"/>'),
+  wiese: dBg('#e6f4ff', '<path d="M0 100 Q60 90 120 100 V130 H0Z" fill="#7cc66a"/>' + [[10, 108, '#ef5b8a'], [24, 120, '#ffd23f'], [96, 110, '#a77ee8'], [110, 122, '#ef5b8a'], [84, 124, '#ffffff']].map(function (b) { return '<circle cx="' + b[0] + '" cy="' + b[1] + '" r="5" fill="' + b[2] + '"/><circle cx="' + b[0] + '" cy="' + b[1] + '" r="2" fill="#f2a024"/>'; }).join('') + '<path d="M14 22 q4 -6 8 0 q4 -6 8 0" stroke="#5b6782" stroke-width="2" fill="none"/>'),
+  herbst: dBg('#fdf0dc', '<path d="M0 108 Q60 100 120 108 V130 H0Z" fill="#d9a066"/><g transform="translate(96 22) rotate(20)"><path d="M0 -14 L10 0 L0 14 L-10 0Z" fill="#d64541" stroke="#8f2421" stroke-width="1.5"/><path d="M0 -14 V14 M-10 0 H10" stroke="#8f2421" stroke-width="1"/></g><path d="M92 36 Q80 60 100 80 Q110 96 98 106" stroke="#5b6782" stroke-width="1.5" fill="none"/>' + [[14, 24, '#e0662b', 20], [20, 70, '#f2b134', -30], [106, 64, '#c4302b', 50], [30, 112, '#e0662b', 10], [86, 116, '#f2b134', -20]].map(function (l) { return '<path d="M0 0 Q7 -6 0 -16 Q-7 -6 0 0Z" fill="' + l[2] + '" transform="translate(' + l[0] + ' ' + l[1] + ') rotate(' + l[3] + ')"/>'; }).join('')),
+  kuerbisse: dBg('#3b2a5c', '<circle cx="100" cy="18" r="11" fill="#fdf3c4"/><path d="M0 110 Q60 102 120 110 V130 H0Z" fill="#2a1d40"/>' + [[16, 110], [104, 112]].map(function (k) { return '<ellipse cx="' + k[0] + '" cy="' + k[1] + '" rx="12" ry="10" fill="#f28c28"/><path d="M' + k[0] + ' ' + (k[1] - 10) + ' v-5" stroke="#3e7a2a" stroke-width="3"/><path d="M' + (k[0] - 6) + ' ' + (k[1] - 2) + ' l3 -4 3 4Z M' + (k[0] + 1) + ' ' + (k[1] - 2) + ' l3 -4 3 4Z" fill="#ffd23f"/>'; }).join('') + '<path d="M18 30 q6 -6 12 0 q6 -6 12 0 q-6 2 -12 6 q-6 -4 -12 -6Z" fill="#1a1230"/>')
+};
+/* Kostüm-Katalog. figs: wer es tragen kann. slots: welche Stellen es belegt. Preis in Sternen; season: nur dann kaufbar; gift: Geschenk der Jahreszeit; reward: wird verdient */
+var DRESS = [
+  { id: 'polizei', name: 'Polizei\u00admütze', figs: 'o', slots: ['kopf'], price: 8, hat: 'polizei' },
+  { id: 'detektiv', name: 'Detektivhut', figs: 'op', slots: ['kopf'], price: 10, hat: 'detektiv' },
+  { id: 'pirat', name: 'Piratenhut', figs: 'op', slots: ['kopf'], price: 12, hat: 'pirat' },
+  { id: 'sek', name: 'Einsatzhelm', figs: 'op', slots: ['kopf'], price: 12, hat: 'sek' },
+  { id: 'zauber', name: 'Zauberhut', figs: 'op', slots: ['kopf'], price: 15, hat: 'zauber' },
+  { id: 'astro', name: 'Astronauten\u00adhelm', figs: 'op', slots: ['kopf'], price: 30 },
+  { id: 'krone', name: 'Krone', figs: 'op', slots: ['kopf'], reward: 'perfect5', hat: 'krone' },
+  { id: 'gold', name: 'Goldene Chef\u00admütze', figs: 'p', slots: ['kopf'], reward: 'rank60', hat: 'gold' },
+  { id: 'sonne', name: 'Sonnenbrille', figs: 'op', slots: ['gesicht'], price: 6, eye: 'sonne' },
+  { id: 'klappe', name: 'Augenklappe', figs: 'op', slots: ['gesicht'], price: 5, eye: 'klappe' },
+  { id: 'taucher', name: 'Taucherbrille', figs: 'op', slots: ['gesicht'], price: 8, eye: 'taucher' },
+  { id: 'sternbrille', name: 'Sternenbrille', figs: 'op', slots: ['gesicht'], reward: 'perfect1', eye: 'sternbrille' },
+  { id: 'fliege', name: 'Fliege', figs: 'op', slots: ['koerper'], price: 6, neck: 'fliege' },
+  { id: 'cape', name: 'Helden-Umhang', figs: 'op', slots: ['koerper'], price: 12, cape: '#d64541' },
+  { id: 'weste', name: 'Einsatzweste', figs: 'op', slots: ['koerper'], price: 15, body: 'weste' },
+  { id: 'marke', name: 'Dienstmarke', figs: 'p', slots: ['koerper'], reward: 'rank3', neck: 'marke' },
+  { id: 'mantel', name: 'Detektiv-Mantel', figs: 'p', slots: ['koerper'], reward: 'rank25', body: 'mantel' },
+  { id: 'medaille', name: 'Goldmedaille', figs: 'op', slots: ['koerper'], reward: 'streak5', neck: 'medaille' },
+  { id: 'sterne', name: 'Sternen\u00adhimmel', figs: 'op', slots: ['bg'], price: 15, bg: 'sterne' },
+  { id: 'streife', name: 'Streifen\u00adwagen', figs: 'op', slots: ['bg'], price: 20, bg: 'streife' },
+  { id: 'revier', name: 'Polizei\u00adwache', figs: 'p', slots: ['bg'], price: 15, bg: 'revier' },
+  { id: 'blaulicht', name: 'Blaulicht', figs: 'p', slots: ['bg'], reward: 'rank8', bg: 'blaulicht' },
+  { id: 'regenbogen', name: 'Regenbogen', figs: 'op', slots: ['bg'], reward: 'goal10', bg: 'regenbogen' },
+  /* Jahreszeiten */
+  { id: 'xmuetze', name: 'Weihnachts\u00admütze', figs: 'op', slots: ['kopf'], season: 'advent', gift: 1, hat: 'xmas' },
+  { id: 'wmann', name: 'Weihnachts\u00admann', figs: 'op', slots: ['kopf', 'gesicht', 'koerper'], season: 'advent', price: 25, hat: 'xmas', beard: 1, body: 'wmann' },
+  { id: 'geweih', name: 'Rentier-Geweih', figs: 'op', slots: ['kopf'], season: 'advent', price: 10, hat: 'geweih' },
+  { id: 'baum', name: 'Weihnachts\u00adbaum', figs: 'op', slots: ['bg'], season: 'advent', price: 15, bg: 'baum' },
+  { id: 'pudel', name: 'Pudelmütze', figs: 'op', slots: ['kopf'], season: 'winter', gift: 1, hat: 'pudel' },
+  { id: 'schal', name: 'Wollschal', figs: 'op', slots: ['koerper'], season: 'winter', gift: 1, neck: 'schal' },
+  { id: 'schneemann', name: 'Schneemann', figs: 'op', slots: ['kopf', 'koerper'], season: 'winter', price: 20, hat: 'zylinder', body: 'schneemann' },
+  { id: 'schnee', name: 'Schnee\u00adflocken', figs: 'op', slots: ['bg'], season: 'winter', price: 12, bg: 'schnee' },
+  { id: 'hase', name: 'Hasenohren', figs: 'op', slots: ['kopf'], season: 'ostern', gift: 1, hat: 'hase' },
+  { id: 'eier', name: 'Ostereier', figs: 'op', slots: ['bg'], season: 'ostern', price: 12, bg: 'eier' },
+  { id: 'blumen', name: 'Blumenkranz', figs: 'op', slots: ['kopf'], season: 'fruehling', gift: 1, hat: 'blumen' },
+  { id: 'wiese', name: 'Blumenwiese', figs: 'op', slots: ['bg'], season: 'fruehling', price: 12, bg: 'wiese' },
+  { id: 'sonnenhut', name: 'Sonnenhut', figs: 'op', slots: ['kopf'], season: 'sommer', gift: 1, hat: 'sonnenhut' },
+  { id: 'badehose', name: 'Badehose mit Ente', figs: 'op', slots: ['koerper'], season: 'sommer', price: 10, body: 'badehose' },
+  { id: 'strand', name: 'Strand', figs: 'op', slots: ['bg'], season: 'sommer', price: 15, bg: 'strand' },
+  { id: 'laub', name: 'Blätter\u00adkranz', figs: 'op', slots: ['kopf'], season: 'herbst', gift: 1, hat: 'laub' },
+  { id: 'herbst', name: 'Drachen\u00adwiese', figs: 'op', slots: ['bg'], season: 'herbst', price: 12, bg: 'herbst' },
+  { id: 'laterne', name: 'Laterne', figs: 'op', slots: ['koerper'], season: 'martin', gift: 1, neck: 'laterne' },
+  { id: 'kuerbis', name: 'Kürbismütze', figs: 'op', slots: ['kopf'], season: 'halloween', gift: 1, hat: 'kuerbis' },
+  { id: 'fledermaus', name: 'Fledermaus-Umhang', figs: 'op', slots: ['koerper'], season: 'halloween', price: 12, cape: '#4a2f7a', edge: 1 },
+  { id: 'kuerbisse', name: 'Kürbisnacht', figs: 'op', slots: ['bg'], season: 'halloween', price: 12, bg: 'kuerbisse' }
+];
+var D_BY = {}; DRESS.forEach(function (d) { D_BY[d.id] = d; });
+var D_REWARD = {
+  perfect1: ['1 Runde mit 10 von 10', function () { return perfectCount() >= 1; }],
+  perfect5: ['5 Runden mit 10 von 10', function () { return perfectCount() >= 5; }],
+  streak5: ['5 Tage hintereinander üben', function () { return dayStreak() >= 5; }],
+  goal10: ['10-mal das Tagesziel schaffen', function () { return goalDays() >= 10; }],
+  rank3: ['Dienstgrad Polizeianwärter bei Paul', function () { return wEnsure().cases.length >= 3; }],
+  rank8: ['Dienstgrad Wachtmeister bei Paul', function () { return wEnsure().cases.length >= 8; }],
+  rank25: ['Dienstgrad Kommissar bei Paul', function () { return wEnsure().cases.length >= 25; }],
+  rank60: ['Dienstgrad Polizeichef bei Paul', function () { return wEnsure().cases.length >= 60; }]
+};
+/* Jahreszeiten nach Datum des Geräts. Feste vor allgemeinen Jahreszeiten (Reihenfolge = Vorrang beim Jahreszeiten-Look). */
+var D_SEASONS = [['advent', 'Weihnachtszeit', '🎄'], ['ostern', 'Osterzeit', '🐣'], ['halloween', 'Halloween', '🎃'], ['martin', 'Sankt Martin', '🏮'], ['winter', 'Winter', '❄️'], ['fruehling', 'Frühling', '🌷'], ['sommer', 'Sommer', '☀️'], ['herbst', 'Herbst', '🍂']];
+function easter(y) { var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451); return new Date(y, Math.floor((h + l - 7 * m + 114) / 31) - 1, ((h + l - 7 * m + 114) % 31) + 1); }
+var D_NOW = null; // nur für Tests: festes Datum
+function dSeasons(now) {
+  var t = now || D_NOW || new Date(), md = (t.getMonth() + 1) * 100 + t.getDate(), on = {};
+  if (md >= 1115 || md <= 106) on.advent = 1;
+  if (md >= 1115 || md <= 310) on.winter = 1;
+  if (md >= 311 && md <= 531) on.fruehling = 1;
+  if (md >= 601 && md <= 915) on.sommer = 1;
+  if (md >= 916 && md <= 1114) on.herbst = 1;
+  if (md >= 1015 && md <= 1102) on.halloween = 1;
+  if (md >= 1025 && md <= 1114) on.martin = 1;
+  var day = new Date(t.getFullYear(), t.getMonth(), t.getDate()), ea = easter(t.getFullYear()), diff = Math.round((day - ea) / 864e5);
+  if (diff >= -21 && diff <= 7) on.ostern = 1;
+  return D_SEASONS.filter(function (s) { return on[s[0]]; });
+}
+function dSeasonOn(id) { return dSeasons().some(function (s) { return s[0] === id; }); }
+function dSeasonName(id) { for (var i = 0; i < D_SEASONS.length; i++) if (D_SEASONS[i][0] === id) return D_SEASONS[i]; return ['', '', '']; }
+function goalDays() { var c = {}; S.history.forEach(function (h) { if (h.level !== 'test') { var k = hKey(h.d); c[k] = (c[k] || 0) + 1; } }); var n = 0; for (var k in c) if (c[k] >= DAILY) n++; return n; }
+
+function dEnsure() {
+  if (!S.dress || typeof S.dress !== 'object' || Array.isArray(S.dress)) S.dress = {};
+  var d = S.dress;
+  if (!d.own || typeof d.own !== 'object' || Array.isArray(d.own)) d.own = {};
+  if (!d.wear || typeof d.wear !== 'object' || Array.isArray(d.wear)) d.wear = {};
+  ['o', 'p'].forEach(function (f) { if (!d.wear[f] || typeof d.wear[f] !== 'object' || Array.isArray(d.wear[f])) d.wear[f] = { auto: 1 }; });
+  return d;
+}
+function dMerge(o, R) {
+  var rd = R.dress; if (!rd || typeof rd !== 'object') return;
+  var Ra = R.at || {}, keep = S; S = o; var d = dEnsure(); S = keep;
+  for (var k in (rd.own || {})) if (rd.own[k]) d.own[k] = 1;
+  if ((Ra.dress || 0) > (o.at.dress || 0) && rd.wear) { d.wear = rd.wear; o.at.dress = Ra.dress; }
+  if ((Ra.dressOff || 0) > (o.at.dressOff || 0)) { d.off = !!rd.off; o.at.dressOff = Ra.dressOff; }
+  if ((Ra.skinOff || 0) > (o.at.skinOff || 0)) { d.skinOff = !!rd.skinOff; o.at.skinOff = Ra.skinOff; }
+}
+function dOwns(f, id) { var it = D_BY[id]; if (!it) return false; return !!dEnsure().own[f + '.' + id]; }
+function dFor(f) { return DRESS.filter(function (d) { return d.figs.indexOf(f) >= 0; }); }
+/* Belohnungen und Geschenke der Jahreszeit freischalten; gibt neue Teile zurück */
+function dUnlock() {
+  var d = dEnsure(), got = [];
+  ['o', 'p'].forEach(function (f) {
+    dFor(f).forEach(function (it) {
+      var k = f + '.' + it.id; if (d.own[k]) return;
+      if ((it.reward && D_REWARD[it.reward][1]()) || (it.gift && dSeasonOn(it.season))) { d.own[k] = 1; got.push(k); }
+    });
+  });
+  if (got.length) save();
+  return got;
+}
+var DSEEN_KEY = KEY + '-dress-seen';
+function dUnseen() {
+  var seen; try { seen = JSON.parse(lsGet(DSEEN_KEY) || 'null'); } catch (e) { seen = null; }
+  var own = Object.keys(dEnsure().own);
+  if (!seen) { lsSet(DSEEN_KEY, JSON.stringify(own)); return []; }
+  return own.filter(function (k) { return seen.indexOf(k) < 0; });
+}
+function dMarkSeen() { lsSet(DSEEN_KEY, JSON.stringify(Object.keys(dEnsure().own))); }
+/* Was trägt die Figur gerade? { kopf: id, … } */
+function dLook(f) {
+  var d = dEnsure(); if (d.off) return {};
+  var w = d.wear[f] || { auto: 1 }, look = {};
+  if (w.auto) {
+    dSeasons().forEach(function (s) { dFor(f).forEach(function (it) { if (it.gift && it.season === s[0] && dOwns(f, it.id) && it.slots.every(function (sl) { return !look[sl]; })) it.slots.forEach(function (sl) { look[sl] = it.id; }); }); });
+    return look;
+  }
+  D_SLOTS.forEach(function (sl) { var id = w[sl[0]]; if (id && D_BY[id] && dOwns(f, id) && D_BY[id].figs.indexOf(f) >= 0) look[sl[0]] = id; });
+  return look;
+}
+function dWith(look, id) { var o = {}, it = D_BY[id], k; for (k in look) o[k] = look[k]; for (k in o) if (D_BY[o[k]] && D_BY[o[k]].slots.some(function (sl) { return it.slots.indexOf(sl) >= 0; })) delete o[k]; it.slots.forEach(function (sl) { o[sl] = id; }); return o; }
+function dIds(look) { var ids = []; D_SLOTS.forEach(function (sl) { var id = look[sl[0]]; if (id && ids.indexOf(id) < 0) ids.push(id); }); return ids; }
+/* Ebenen für die Figur: bg (ganz hinten), back (hinter dem Körper), front (vor allem). hat/body sagen, ob Mütze bzw. Halsband der Figur ersetzt werden. */
+function dLayers(f, look, noBg) {
+  var L = { bg: '', back: '', front: '', hat: false, body: false };
+  dIds(look).forEach(function (id) {
+    var it = D_BY[id];
+    if (it.bg && !noBg) L.bg += D_BGS[it.bg];
+    if (it.cape) L.back += dAt(f, 'hals', D_CAPE(it.cape, it.edge)) ;
+    if (it.cape) L.front += dAt(f, 'hals', '<circle cx="0" cy="0" r="5" fill="#ffd23f" stroke="#c99a0a" stroke-width="1.5"/>');
+    if (it.body) { L.front += f === 'o' ? dAt(f, 'hals', dOlafBody(it.body)) : dAt(f, 'hals', dPaulBody(it.body)); L.body = true; }
+    if (it.neck) L.front += dAt(f, 'hals', D_BODY[it.neck]);
+    if (it.beard) L.front += dAt(f, 'bart', D_BEARD);
+    if (it.eye) L.front += dAt(f, 'auge', D_EYE[it.eye]);
+    if (it.hat) { L.front += dAt(f, 'kopf', D_HAT[it.hat]); L.hat = true; }
+    if (id === 'astro') { L.hat = true; L.front += dAt(f, 'mitte', '<circle cx="0" cy="0" r="50" fill="#bfe3ff" fill-opacity=".28" stroke="#e3e9f1" stroke-width="7"/><circle cx="0" cy="0" r="50" fill="none" stroke="#8a97ab" stroke-width="2"/><path d="M-34 -24 Q-24 -40 -6 -44" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9"/><rect x="-20" y="44" width="40" height="10" rx="4" fill="#d64541"/>'); }
+  });
+  return L;
+}
+function dSvgTag(label, w) { return '<svg viewBox="0 0 120 130" role="img" aria-label="' + label + '"' + (w ? ' width="' + w + '"' : '') + '>'; }
+/* ---------- Heft-Farben (Themes für die ganze Oberfläche) ----------
+   Gekauft wird mit Sternen (S.dress.own['t.id'], wird beim Abgleich vereinigt), ausgewählt pro Gerät (KEY-skin: 'std', 'auto' oder id).
+   'auto' nimmt das gekaufte Theme, das zur Jahreszeit passt. Eltern können Themes abschalten (S.dress.skinOff, S.at.skinOff).
+   Jede Farbkombination ist auf Kontrast geprüft: Schrift auf Papier und Karten mindestens 4,5:1, Knopfschrift auf Knopf auch.
+   Muster im Hintergrund bleiben sehr blass, damit nichts von den Aufgaben ablenkt. */
+var SK_LIGHT = { good: '#23874c', 'good-soft': '#e2f4e9', bad: '#c73d3d', 'bad-soft': '#fbe6e6', star: '#e9a800', hour: '#c73d3d', 'good-dark': '#155130', syl1: '#1a56b8', syl2: '#c22b26', card: '#ffffff' };
+function skPat(inner, h) { h = h || 120; return 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="' + h + '" viewBox="0 0 120 ' + h + '">' + inner + '</svg>') + '")'; }
+function skStar(x, y, r, c) { var p = ''; for (var k = 0; k < 10; k++) { var an = Math.PI / 5 * k - Math.PI / 2, rr = k % 2 ? r * .45 : r; p += (k ? 'L' : 'M') + (x + Math.cos(an) * rr).toFixed(1) + ' ' + (y + Math.sin(an) * rr).toFixed(1); } return '<path d="' + p + 'Z" fill="' + c + '"/>'; }
+var SKINS = [
+  { id: 'std', name: 'Karopapier', price: 0, ico: '📓', pal: {} },
+  { id: 'polizei', name: 'Polizeirevier', price: 25, ico: '🚓',
+    deco: '<rect width="120" height="28" fill="#1d3f7a"/><rect y="18" width="120" height="5" fill="#d9e021"/><rect y="23" width="120" height="5" fill="#ffffff"/>' + skStar(60, 9, 6, '#ffd23f') + '<circle cx="14" cy="9" r="4" fill="#5aa0ff"/><circle cx="106" cy="9" r="4" fill="#5aa0ff"/>',
+    pal: { paper: '#eef3fa', grid: '#d6e0f0', ink: '#13213d', muted: '#3f4d6b', margin: '#2f6fd6', accent: '#1d3f7a', 'accent-ink': '#ffffff', 'accent-soft': '#dde7f6', 'accent-dark': '#0c1f40', line: '#b9c8e0' },
+    pat: skStar(30, 30, 7, 'rgba(29,63,122,.07)') + skStar(90, 90, 7, 'rgba(29,63,122,.07)') },
+  { id: 'weltraum', name: 'Weltraum', price: 30, ico: '🚀', dark: true,
+    deco: '<rect width="120" height="28" fill="#0b1028"/><circle cx="30" cy="14" r="7" fill="#d9a066"/><ellipse cx="30" cy="14" rx="13" ry="3.5" fill="none" stroke="#f2d29b" stroke-width="1.6"/><circle cx="88" cy="12" r="4" fill="#5aa0ff"/>' + skStar(62, 10, 4, '#fff6c2') + skStar(108, 20, 3, '#fff6c2') + '<circle cx="8" cy="6" r="1.2" fill="#fff"/><circle cx="50" cy="22" r="1.2" fill="#fff"/>',
+    pal: { paper: '#121a36', grid: '#1a2449', ink: '#f2f5ff', muted: '#bcc6e8', margin: '#a77ee8', accent: '#8fb8ff', 'accent-ink': '#0d1530', 'accent-soft': '#26335f', 'accent-dark': '#5a7fc0', card: '#1c2650', line: '#36457c', star: '#ffd23f', good: '#6fdc9a', 'good-soft': '#1d3b34', bad: '#ff8f8f', 'bad-soft': '#44283a', hour: '#ff8f8f', 'good-dark': '#3d8058', syl1: '#8cc0ff', syl2: '#ff9488' },
+    pat: '<circle cx="14" cy="20" r="1.4" fill="rgba(255,255,255,.35)"/><circle cx="70" cy="12" r="1" fill="rgba(255,255,255,.3)"/><circle cx="100" cy="64" r="1.4" fill="rgba(255,255,255,.35)"/><circle cx="40" cy="96" r="1" fill="rgba(255,255,255,.3)"/>' + skStar(52, 52, 4, 'rgba(255,230,150,.22)') },
+  { id: 'winter', name: 'Winterzauber', price: 20, ico: '❄️', seasons: ['advent', 'winter'],
+    deco: '<rect width="120" height="10" fill="#ffffff"/><path d="M0 10 Q10 16 20 10 Q30 18 40 10 Q50 15 60 10 Q70 18 80 10 Q90 16 100 10 Q110 17 120 10" fill="#ffffff" stroke="#c3d6ea" stroke-width="1.5"/><path d="M14 12 l3 12 3 -12Z M54 12 l2.5 9 2.5 -9Z M92 12 l3 13 3 -13Z" fill="#cfe6fb" stroke="#9cc3e6" stroke-width="1"/>',
+    pal: { paper: '#f3f8fd', grid: '#d9e8f5', ink: '#15263f', muted: '#43556e', margin: '#5aa0d8', accent: '#17609a', 'accent-ink': '#ffffff', 'accent-soft': '#dcebf8', 'accent-dark': '#0d3e66', line: '#c3d6ea' },
+    pat: '<g stroke="rgba(23,96,154,.13)" stroke-width="2" stroke-linecap="round"><path d="M24 18v16M16 26h16M18 20l12 12M30 20L18 32"/><path d="M86 78v16M78 86h16M80 80l12 12M92 80L80 92"/></g>' },
+  { id: 'sommer', name: 'Strand', price: 20, ico: '🏖️', seasons: ['sommer'],
+    deco: '<rect width="120" height="28" fill="#bfe6ff"/><path d="M0 16 q10 -6 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V28 H0Z" fill="#3fa7e0"/><path d="M0 22 q10 -5 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V28 H0Z" fill="#0b6f7e"/><circle cx="96" cy="8" r="5" fill="#ffd23f"/>',
+    pal: { paper: '#fff9ec', grid: '#f2e4c2', ink: '#2a2416', muted: '#5a4f35', margin: '#f08a24', accent: '#0b6f7e', 'accent-ink': '#ffffff', 'accent-soft': '#d9f0f2', 'accent-dark': '#064650', line: '#ead7a8' },
+    pat: '<path d="M10 30q10-6 20 0t20 0M70 90q10-6 20 0t20 0" stroke="rgba(11,111,126,.13)" stroke-width="2.5" fill="none"/><circle cx="96" cy="26" r="7" fill="rgba(240,138,36,.12)"/>' },
+  { id: 'herbst', name: 'Herbstwald', price: 20, ico: '🍂', seasons: ['herbst', 'halloween', 'martin'],
+    deco: '<path d="M0 6 Q30 18 60 6 Q90 18 120 6" stroke="#7a4d30" stroke-width="2" fill="none"/>' + [[14, 10, '#e0662b', -20], [36, 14, '#f2b134', 10], [60, 8, '#c4302b', 0], [84, 14, '#e0662b', -10], [106, 10, '#f2b134', 20]].map(function (l) { return '<path d="M0 0 Q6 6 0 16 Q-6 6 0 0Z" fill="' + l[2] + '" transform="translate(' + l[0] + ' ' + l[1] + ') rotate(' + l[3] + ')"/>'; }).join(''),
+    pal: { paper: '#fcf5ec', grid: '#efdfca', ink: '#2b1d12', muted: '#5c4836', margin: '#c4302b', accent: '#9a4210', 'accent-ink': '#ffffff', 'accent-soft': '#f6e3d2', 'accent-dark': '#642a08', line: '#e3cbb0' },
+    pat: '<path d="M28 34q9-8 0-20q-9 12 0 20Z" fill="rgba(196,48,43,.10)"/><path d="M92 94q9-8 0-20q-9 12 0 20Z" fill="rgba(224,102,43,.12)" transform="rotate(30 92 84)"/>' },
+  { id: 'fruehling', name: 'Frühlingswiese', price: 20, ico: '🌷', seasons: ['fruehling', 'ostern'],
+    deco: '<path d="M0 6 Q30 16 60 6 Q90 16 120 6" stroke="#3e9a4a" stroke-width="2.5" fill="none"/>' + [[14, 10, '#ef5b8a'], [38, 13, '#ffd23f'], [62, 8, '#7aa0ff'], [86, 13, '#ef5b8a'], [108, 10, '#a77ee8']].map(function (b) { return '<circle cx="' + b[0] + '" cy="' + (b[1] + 4) + '" r="6" fill="' + b[2] + '"/><circle cx="' + b[0] + '" cy="' + (b[1] + 4) + '" r="2.2" fill="#fff6c2"/>'; }).join(''),
+    pal: { paper: '#f5fbef', grid: '#dcebcd', ink: '#1c2a17', muted: '#475840', margin: '#e0527a', accent: '#2d6e35', 'accent-ink': '#ffffff', 'accent-soft': '#e1f1dc', 'accent-dark': '#1a4620', line: '#c7deb8' },
+    pat: '<g fill="rgba(224,82,122,.12)"><circle cx="24" cy="24" r="5"/><circle cx="32" cy="24" r="5"/><circle cx="28" cy="18" r="5"/><circle cx="28" cy="30" r="5"/></g><g fill="rgba(45,110,53,.10)"><circle cx="88" cy="88" r="5"/><circle cx="96" cy="88" r="5"/><circle cx="92" cy="82" r="5"/><circle cx="92" cy="94" r="5"/></g>' }
+];
+var SK_BY = {}; SKINS.forEach(function (k) { SK_BY[k.id] = k; });
+function skPal(k) { var p = {}, x; if (!k.dark) for (x in SK_LIGHT) p[x] = SK_LIGHT[x]; for (x in k.pal) p[x] = k.pal[x]; return p; }
+(function () {
+  var css = '';
+  SKINS.forEach(function (k) {
+    if (k.id === 'std') return;
+    var p = skPal(k), v = '';
+    for (var x in p) v += '--' + x + ':' + p[x] + ';';
+    css += ':root[data-skin="' + k.id + '"]{' + v + 'color-scheme:' + (k.dark ? 'dark' : 'light') + '}';
+    if (k.deco) css += ':root[data-skin="' + k.id + '"] body::before{content:"";display:block;height:28px;background:' + skPat(k.deco, 28) + ' repeat-x;background-size:120px 28px}';
+    css += ':root[data-skin="' + k.id + '"] body{background-image:' + skPat(k.pat || '') + ',linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:120px 120px,24px 24px,24px 24px}';
+  });
+  var st = document.createElement('style'); st.id = 'skinCss'; st.textContent = css; document.head.appendChild(st);
+})();
+var SKIN_KEY = KEY + '-skin';
+function skOwns(id) { return id === 'std' || !!dEnsure().own['t.' + id]; }
+function skFits(k) { var ss = dSeasons().map(function (s) { return s[0]; }); return !!(k.seasons && k.seasons.some(function (s) { return ss.indexOf(s) >= 0; })); }
+function skChoice() { return lsGet(SKIN_KEY) || 'std'; }
+function skCur() {
+  if (dEnsure().skinOff) return 'std';
+  var c = skChoice();
+  if (c === 'auto') { for (var i = 0; i < SKINS.length; i++) if (SKINS[i].seasons && skFits(SKINS[i]) && skOwns(SKINS[i].id)) return SKINS[i].id; return 'std'; }
+  return SK_BY[c] && skOwns(c) ? c : 'std';
+}
+function skApply(id) {
+  id = id || skCur(); var k = SK_BY[id] || SK_BY.std, root = document.documentElement;
+  if (id === 'std') root.removeAttribute('data-skin'); else root.setAttribute('data-skin', id);
+  var m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', k.pal.accent || '#1d72b0');
+}
+/* Kleines Vorschaubild: Heftseite mit Karte, Knopf und Schrift in den Farben des Themes */
+function skSwatch(k) {
+  var p = k.id === 'std' ? { paper: '#fbfcfe', grid: '#dde6f2', ink: '#1f2a44', muted: '#5b6782', margin: '#e0525a', accent: '#1d72b0', 'accent-ink': '#ffffff', card: '#ffffff', line: '#cfd9e6', star: '#e9a800' } : skPal(k);
+  var g = ''; for (var i = 12; i < 120; i += 12) g += '<path d="M' + i + ' 0V90M0 ' + i + 'H120" stroke="' + p.grid + '" stroke-width="1"/>';
+  return '<svg viewBox="0 0 120 90" role="img" aria-label="' + esc(k.name) + '"><rect width="120" height="90" rx="10" fill="' + p.paper + '"/>' + g + '<path d="M10 0V90" stroke="' + p.margin + '" stroke-width="2"/>' +
+    '<rect x="18" y="12" width="90" height="40" rx="8" fill="' + p.card + '" stroke="' + p.line + '" stroke-width="2"/><text x="28" y="38" font-family="Baloo 2,sans-serif" font-weight="800" font-size="18" fill="' + p.ink + '">Aa</text><text x="62" y="38" font-size="14" fill="' + p.star + '">★</text><text x="78" y="38" font-family="Baloo 2,sans-serif" font-weight="800" font-size="13" fill="' + p.muted + '">12</text>' +
+    '<rect x="18" y="60" width="56" height="20" rx="6" fill="' + p.accent + '"/><text x="46" y="74" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="11" fill="' + p['accent-ink'] + '">Los!</text><text x="104" y="80" text-anchor="end" font-size="18">' + k.ico + '</text></svg>';
+}
+
+function figSVG(f, mood, look, noBg) { return f === 'p' ? paulSVG(mood, look, noBg) : owlSVG(mood, look, noBg); }
+
+/* Bildschirm Kleiderschrank */
+var DV = { f: 'o', sel: '', from: 'home', neu: [], mood: 'happy', msg: '' };
+function openDress(f, from) {
+  DV.f = f || 'o'; DV.sel = ''; DV.from = from || 'home'; DV.mood = 'happy'; DV.msg = '';
+  dUnlock(); DV.neu = dUnseen(); dMarkSeen();
+  go('dress'); renderDress();
+}
+function dVisible(f, it) { return dOwns(f, it.id) || it.reward || (!it.season || dSeasonOn(it.season)) && !it.gift; }
+function dTag(f, it, look) {
+  var worn = dIds(look).indexOf(it.id) >= 0;
+  if (worn) return ['on', '✓ Angezogen'];
+  if (dOwns(f, it.id)) return ['own', it.gift ? '🎁 Geschenk' : it.reward ? '🏆 Verdient' : 'Im Schrank'];
+  if (it.reward) return ['locked', '🔒 ' + D_REWARD[it.reward][0]];
+  return [stars() >= it.price ? 'buy' : 'buy far', it.price + ' ★'];
+}
+function dSayText() {
+  var f = DV.f, it = D_BY[DV.sel], n = D_FIG[f].split(' ')[1], st = stars();
+  if (DV.msg) return DV.msg;
+  if (!it) {
+    var w = dEnsure().wear[f];
+    if (w.auto) { var ss = dSeasons(); return 'Ich trage gerade meinen Jahreszeiten-Look' + (ss.length ? ' für ' + ss[0][1] : '') + '. Tippe auf ein Teil, dann probiere ich es an!'; }
+    return 'Tippe auf ein Teil, dann probiere ich es an!';
+  }
+  var worn = dIds(dLook(f)).indexOf(it.id) >= 0;
+  if (worn) return 'Das trage ich gerade: ' + it.name + '. Gefällt es dir?';
+  if (dOwns(f, it.id)) return it.name + ' ist in meinem Schrank. Soll ich das anziehen?';
+  if (it.reward) return it.name + ' kann man nicht kaufen. So bekommst du es: ' + D_REWARD[it.reward][0] + '.';
+  var sea = it.season ? ' Das gibt es nur jetzt in der ' + dSeasonName(it.season)[1] + '. Gekauft bleibt es für immer.' : '';
+  if (st >= it.price) return it.name + ' kostet ' + it.price + ' Sterne. Du hast ' + st + '.' + sea;
+  return it.name + ' kostet ' + it.price + ' Sterne. Dir fehlen noch ' + (it.price - st) + '. Rechne noch ein bisschen, dann klappt es!' + sea;
+}
+function renderDress() {
+  var f = DV.f, look = dLook(f), it = D_BY[DV.sel], prev = it ? dWith(look, it.id) : look, st = stars(), d = dEnsure();
+  $('dStars').textContent = st;
+  $('dFigs').innerHTML = ['o', 'p'].map(function (g) { return '<button class="' + (g === f ? 'on' : '') + '" data-df="' + g + '" aria-pressed="' + (g === f) + '">' + figSVG(g, 'happy', dLook(g), true) + '<span>' + D_FIG[g] + '</span></button>'; }).join('') +
+    (d.skinOff ? '' : '<button class="' + (f === 't' ? 'on' : '') + '" data-df="t" aria-pressed="' + (f === 't') + '"><span class="dswi">🎨</span><span>Heft-Farben</span></button>');
+  if (f === 't') { renderSkins(); return; }
+  $('dBig').innerHTML = figSVG(f, DV.mood, prev);
+  $('dBig').className = 'dbig' + (DV.mood === 'cheer' ? ' hop' : ' bob');
+  $('dSay').textContent = dSayText();
+  var a = '';
+  if (it) {
+    var worn = dIds(look).indexOf(it.id) >= 0;
+    if (worn) a += '<button class="btn ghost" data-da="off">Ausziehen</button>';
+    else if (dOwns(f, it.id)) a += '<button class="btn" data-da="wear">Anziehen</button>';
+    else if (!it.reward) a += st >= it.price ? '<button class="btn" data-da="buy">Kaufen für ' + it.price + ' ★</button>' : '<button class="btn" disabled>Noch ' + (it.price - st) + ' ★ sammeln</button>';
+    a += '<button class="btn ghost" data-da="close">Fertig</button>';
+  } else {
+    if (!d.wear[f].auto) a += '<button class="btn ghost" data-da="auto">' + ((dSeasons()[0] || [])[2] || '🍂') + ' Jahreszeiten-Look</button>';
+    if (dIds(look).length) a += '<button class="btn ghost" data-da="none">Alles ausziehen</button>';
+  }
+  a += '<button class="btn ghost speak" data-da="read" aria-label="Vorlesen">🔊</button>';
+  $('dActs').innerHTML = a;
+  var ss = dSeasons(), h = '';
+  if (ss.length) h += '<p class="dnote">Jetzt neu im Schrank: <b>' + ss.map(function (s) { return s[2] + ' ' + s[1]; }).join(', ') + '</b>. Diese Sachen gibt es nur jetzt, gekauft bleiben sie für immer.</p>';
+  D_SLOTS.forEach(function (sl) {
+    var items = dFor(f).filter(function (x) { return x.slots[0] === sl[0] && dVisible(f, x); });
+    if (!items.length) return;
+    h += '<h3 class="dslot">' + sl[1] + '</h3><div class="dgrid">';
+    items.forEach(function (x) {
+      var t = dTag(f, x, look), sea = x.season ? dSeasonName(x.season) : null;
+      h += '<button class="dcard ' + t[0] + (x.id === DV.sel ? ' sel' : '') + '" data-d="' + x.id + '" aria-label="' + esc(x.name + ', ' + t[1]) + '">' +
+        (sea ? '<span class="dsea" title="' + sea[1] + '">' + sea[2] + '</span>' : '') + (DV.neu.indexOf(f + '.' + x.id) >= 0 ? '<span class="dneu">Neu!</span>' : '') +
+        figSVG(f, 'happy', dWith({}, x.id)) + '<b>' + esc(x.name) + '</b><span class="dtag">' + esc(t[1]) + '</span></button>';
+    });
+    h += '</div>';
+  });
+  $('dList').innerHTML = h;
+}
+function skSay() {
+  var k = SK_BY[DV.sel], st = stars(), c = skChoice();
+  if (DV.msg) return DV.msg;
+  if (!k) return c === 'auto' ? 'Dein Heft wechselt die Farben mit der Jahreszeit. Tippe auf ein Heft, dann siehst du es sofort!' : 'Such dir neue Farben für dein ganzes Heft aus. Tippe auf ein Heft, dann siehst du es sofort!';
+  if (k.id === skCur() && c !== 'auto') return 'So sieht dein Heft gerade aus: ' + k.name + '.';
+  if (skOwns(k.id)) return k.name + ' gehört dir. Willst du es nehmen?';
+  if (st >= k.price) return 'So sieht dein Heft mit ' + k.name + ' aus. Es kostet ' + k.price + ' Sterne. Du hast ' + st + '.';
+  return 'So sieht dein Heft mit ' + k.name + ' aus. Es kostet ' + k.price + ' Sterne. Dir fehlen noch ' + (k.price - st) + '.';
+}
+function renderSkins() {
+  var k = SK_BY[DV.sel], st = stars(), c = skChoice(), cur = skCur();
+  skApply(k ? k.id : cur);
+  $('dBig').className = 'dbig dsw'; $('dBig').innerHTML = skSwatch(k || SK_BY[cur]);
+  $('dSay').textContent = skSay();
+  var a = '';
+  if (k) {
+    if (skOwns(k.id)) { if (k.id !== cur || c === 'auto') a += '<button class="btn" data-ta="use">Nehmen</button>'; }
+    else a += st >= k.price ? '<button class="btn" data-ta="buy">Kaufen für ' + k.price + ' ★</button>' : '<button class="btn" disabled>Noch ' + (k.price - st) + ' ★ sammeln</button>';
+    a += '<button class="btn ghost" data-ta="close">' + (skOwns(k.id) && k.id === cur ? 'Fertig' : 'Zurück zu meinem Heft') + '</button>';
+  } else if (c !== 'auto') a += '<button class="btn ghost" data-ta="auto">🗓️ Wechseln mit der Jahreszeit</button>';
+  a += '<button class="btn ghost speak" data-ta="read" aria-label="Vorlesen">🔊</button>';
+  $('dActs').innerHTML = a;
+  var h = '<p class="dnote">Heft-Farben gelten für das ganze Rechenheft auf diesem Tablet. Gekaufte Farben gibt es auf allen Geräten.</p><h3 class="dslot">Heft-Farben</h3><div class="dgrid dskins">';
+  SKINS.forEach(function (x) {
+    var own = skOwns(x.id), on = x.id === cur, t = on ? ['on', c === 'auto' ? '✓ Jahreszeit' : '✓ Ausgewählt'] : own ? ['own', 'Gehört dir'] : [st >= x.price ? 'buy' : 'buy far', x.price + ' ★'];
+    h += '<button class="dcard ' + t[0] + (x.id === DV.sel ? ' sel' : '') + '" data-sk="' + x.id + '" aria-label="' + esc(x.name + ', ' + t[1]) + '">' + (skFits(x) ? '<span class="dneu dfit">Passt jetzt!</span>' : '') + (DV.neu.indexOf('t.' + x.id) >= 0 ? '<span class="dneu">Neu!</span>' : '') + skSwatch(x) + '<b>' + esc(x.name) + '</b><span class="dtag">' + esc(t[1]) + '</span></button>';
+  });
+  $('dList').innerHTML = h + '</div>';
+}
+function dSetWear(f, look) { var w = {}; D_SLOTS.forEach(function (sl) { if (look[sl[0]]) w[sl[0]] = look[sl[0]]; }); dEnsure().wear[f] = w; S.at.dress = Date.now(); save(); }
+$('dFigs').addEventListener('click', function (e) { var b = e.target.closest('[data-df]'); if (!b) return; DV.f = b.getAttribute('data-df'); DV.sel = ''; DV.msg = ''; DV.mood = 'happy'; stopSpeak(); renderDress(); });
+$('dList').addEventListener('click', function (e) {
+  var sk = e.target.closest('[data-sk]');
+  if (sk) { var sid = sk.getAttribute('data-sk'); DV.sel = DV.sel === sid ? '' : sid; DV.msg = ''; renderDress(); if (VOICE.auto) speak($('dSay').textContent); if (window.innerWidth < 900 || window.innerHeight > window.innerWidth) $('dStage').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  var b = e.target.closest('[data-d]'); if (!b) return;
+  var id = b.getAttribute('data-d'); DV.sel = DV.sel === id ? '' : id; DV.msg = ''; DV.mood = DV.sel ? 'wink' : 'happy';
+  renderDress(); if (VOICE.auto) speak($('dSay').textContent);
+  if (window.innerWidth < 900 || window.innerHeight > window.innerWidth) $('dStage').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+$('dActs').addEventListener('click', function (e) {
+  var tb = e.target.closest('[data-ta]');
+  if (tb) {
+    var ta = tb.getAttribute('data-ta'), k = SK_BY[DV.sel];
+    if (ta === 'read') { speak($('dSay').textContent, true); return; }
+    if (ta === 'close') { DV.sel = ''; DV.msg = ''; }
+    if (ta === 'auto') { lsSet(SKIN_KEY, 'auto'); DV.msg = 'Jetzt wechselt dein Heft mit der Jahreszeit, wenn du die passenden Farben hast.'; }
+    if (ta === 'use' && k) { lsSet(SKIN_KEY, k.id); DV.msg = 'Fertig! Dein Heft ist jetzt ' + k.name + '.'; DV.sel = ''; }
+    if (ta === 'buy' && k && !skOwns(k.id) && stars() >= k.price) { spendStars(k.price); dEnsure().own['t.' + k.id] = 1; S.at.dress = S.at.dress || 1; save(); dMarkSeen(); lsSet(SKIN_KEY, k.id); DV.msg = 'Juhu! Dein Heft ist jetzt ' + k.name + '.'; DV.sel = ''; chime(); }
+    renderDress(); if (DV.msg && VOICE.auto) speak(DV.msg); return;
+  }
+  var b = e.target.closest('[data-da]'); if (!b) return;
+  var a = b.getAttribute('data-da'), f = DV.f, it = D_BY[DV.sel], n = D_FIG[f].split(' ')[1];
+  if (a === 'read') { speak($('dSay').textContent, true); return; }
+  if (a === 'close') { DV.sel = ''; DV.msg = ''; DV.mood = 'happy'; }
+  if (a === 'auto') { dEnsure().wear[f] = { auto: 1 }; S.at.dress = Date.now(); save(); DV.msg = ''; DV.mood = 'cheer'; }
+  if (a === 'none') { dSetWear(f, {}); DV.msg = 'So sehe ich ohne Verkleidung aus.'; DV.mood = 'happy'; }
+  if (a === 'wear' && it) { dSetWear(f, dWith(dLook(f), it.id)); DV.msg = 'Schick! Jetzt trage ich ' + it.name + '.'; DV.mood = 'cheer'; DV.sel = ''; }
+  if (a === 'off' && it) { var lk = dLook(f), o = {}; for (var k in lk) if (lk[k] !== it.id) o[k] = lk[k]; dSetWear(f, o); DV.msg = it.name + ' ist wieder im Schrank.'; DV.mood = 'happy'; DV.sel = ''; }
+  if (a === 'buy' && it && !it.reward && stars() >= it.price && !dOwns(f, it.id)) {
+    spendStars(it.price); dEnsure().own[f + '.' + it.id] = 1; dMarkSeen();
+    dSetWear(f, dWith(dLook(f), it.id));
+    DV.msg = 'Juhu! ' + it.name + ' gehört jetzt mir. Danke, ' + S.name + '!'; DV.mood = 'cheer'; DV.sel = ''; chime();
+  }
+  renderDress();
+  if (DV.msg && VOICE.auto) speak(DV.msg);
+});
+$('dBack').addEventListener('click', function () { stopSpeak(); DV.sel = ''; skApply(); if (DV.from === 'wache') openWache(); else go('home'); });
+$('playDress').addEventListener('click', function () { openDress('o'); });
+$('homeMascot').addEventListener('click', function () { if (!dEnsure().off) openDress('o'); });
+$('dressIn').addEventListener('change', function () { dEnsure().off = !$('dressIn').checked; S.at.dressOff = Date.now(); save(); });
+$('skinIn').addEventListener('change', function () { dEnsure().skinOff = !$('skinIn').checked; S.at.skinOff = Date.now(); save(); skApply(); });
+
 /* Ältere sync.php (json_decode mit assoc) macht aus leeren Objekten {} leere Listen [] und aus {"0":…} Listen.
    In einer Liste gehen später gesetzte Schlüssel (z. B. gekaufte Teile in Olafs Land) beim Speichern verloren.
    Darum alles, was keine echte Liste ist, wieder zum Objekt machen. */
@@ -4030,7 +4548,7 @@ function fixShapes(x, key) {
   return x;
 }
 S = fixShapes(S);
-ensure(); save(true);
+ensure(); save(true); skApply();
 go('home');
 syncNow();
 })();
