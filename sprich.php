@@ -1,29 +1,47 @@
 <?php
 // Vorlese-Stimme vom Server, für Tablets ohne eigene Sprachausgabe (z. B. Amazon Fire im Kinderprofil).
-// Nutzt Piper (offline, kostenlos, läuft auf x86 und ARM) mit einer deutschen Stimme.
-// Piper und die Stimme lädt diese Datei beim ersten Bedarf selbst herunter, einmalig ca. 90 MB,
-// in den Datenordner (Docker-Volume). Danach braucht das Vorlesen kein Internet mehr.
+// Nutzt Piper (offline, kostenlos, läuft auf x86 und ARM) mit deutschen Stimmen.
+// Piper und jede Stimme lädt diese Datei beim ersten Bedarf selbst herunter (Programm ca. 25 MB,
+// Stimme 20 bis 115 MB) in den Datenordner (Docker-Volume). Danach braucht das Vorlesen kein Internet mehr.
 //
-// GET sprich.php?status=1            -> {"ready": bool, "state": "bereit"|"laedt"|"fehlt"|"fehler", ...}
-// GET sprich.php?status=1&install=1  -> wie oben, startet bei Bedarf die Einrichtung im Hintergrund
-// GET sprich.php?t=Text&r=0.9        -> audio/wav (fertige Sätze werden zwischengespeichert)
+// GET sprich.php?status=1[&v=kerstin]            -> {"ready": bool, "state": "bereit"|"laedt"|"fehlt"|"fehler", "voice": ..., "voices": [...]}
+// GET sprich.php?status=1&install=1[&v=kerstin]  -> wie oben, startet bei Bedarf die Einrichtung im Hintergrund
+// GET sprich.php?t=Text&r=0.9[&v=kerstin]        -> audio/wav (fertige Sätze werden zwischengespeichert)
 //
 // Umgebungsvariablen (alle optional):
-//   SPRICH_STIMME  Piper-Stimme, Standard de_DE-thorsten-medium (andere: de_DE-kerstin-low, de_DE-thorsten-low ...)
-//   SPRICH_BIN     eigener Pfad zum piper-Programm (dann wird nichts heruntergeladen)
+//   SPRICH_STIMME  Standardstimme (Schlüssel aus der Liste unten, z. B. thorsten_froh), Standard thorsten
+//   SPRICH_BIN     eigener Pfad zum piper-Programm (dann wird es nicht heruntergeladen)
 //   SPRICH_AUS     "1" schaltet die Server-Stimme ab
 
 header('X-Content-Type-Options: nosniff');
 
+// Deutsche Piper-Stimmen: Schlüssel => [Dateiname, Sprecher (bei Stimmen mit mehreren Sprechern), Beschreibung, ca. MB]
+$STIMMEN = [
+    'thorsten'       => ['de_DE-thorsten-medium', null, 'Thorsten: Männerstimme, ruhig und deutlich', 63],
+    'thorsten_froh'  => ['de_DE-thorsten_emotional-medium', 'amused', 'Thorsten fröhlich: Männerstimme, gut gelaunt', 77],
+    'thorsten_hoch'  => ['de_DE-thorsten-high', null, 'Thorsten in bester Qualität (langsamer auf schwachen Geräten)', 114],
+    'kerstin'        => ['de_DE-kerstin-low', null, 'Kerstin: Frauenstimme, freundlich', 63],
+    'ramona'         => ['de_DE-ramona-low', null, 'Ramona: Frauenstimme, weich', 63],
+    'eva'            => ['de_DE-eva_k-x_low', null, 'Eva: Frauenstimme, einfache Qualität, sehr klein', 20],
+    'karlsson'       => ['de_DE-karlsson-low', null, 'Karlsson: Männerstimme, tief', 63],
+    'pavoque'        => ['de_DE-pavoque-low', null, 'Pavoque: Männerstimme, lebhaft', 63],
+];
+
 $daten = getenv('RECHENHEFT_DATA') ?: (__DIR__ . '/data');
 $ordner = $daten . '/stimme';
-$stimme = preg_replace('/[^A-Za-z0-9_\-]/', '', getenv('SPRICH_STIMME') ?: 'de_DE-thorsten-medium');
 $piperVersion = '2023.11.14-2';
 $bin = getenv('SPRICH_BIN') ?: ($ordner . '/piper/piper');
-$modell = $ordner . '/' . $stimme . '.onnx';
 $cache = $ordner . '/cache';
 $lock = $ordner . '/einrichtung.lock';
-$fehlerDatei = $ordner . '/fehler.txt';
+
+// Standardstimme: Schlüssel oder (wie früher) Dateiname aus SPRICH_STIMME
+$standard = 'thorsten';
+$env = (string)getenv('SPRICH_STIMME');
+if ($env !== '') {
+    if (isset($STIMMEN[$env])) $standard = $env;
+    else foreach ($STIMMEN as $k => $s) if ($s[0] === $env && $s[1] === null) $standard = $k;
+}
+$wahl = isset($_GET['v']) && isset($STIMMEN[(string)$_GET['v']]) ? (string)$_GET['v'] : $standard;
 
 function json_antwort($status, $daten) {
     http_response_code($status);
@@ -32,22 +50,25 @@ function json_antwort($status, $daten) {
     echo json_encode($daten, JSON_UNESCAPED_UNICODE);
     exit;
 }
+function modell($k) { global $ordner, $STIMMEN; return $ordner . '/' . $STIMMEN[$k][0] . '.onnx'; }
+function fehlerDatei($k) { global $ordner; return $ordner . '/fehler-' . $k . '.txt'; }
+function piperDa() { global $bin; return is_file($bin) && is_executable($bin); }
+function stimmeDa($k) { $m = modell($k); return is_file($m) && is_file($m . '.json'); }
+function bereit($k) { return piperDa() && stimmeDa($k); }
 
-function bereit() {
-    global $bin, $modell;
-    return is_file($bin) && is_executable($bin) && is_file($modell) && is_file($modell . '.json');
-}
-
-function zustand() {
-    global $lock, $fehlerDatei, $stimme;
-    if (getenv('SPRICH_AUS') === '1') return ['ready' => false, 'state' => 'aus', 'msg' => 'Die Server-Stimme ist abgeschaltet (SPRICH_AUS).'];
-    if (bereit()) return ['ready' => true, 'state' => 'bereit', 'voice' => $stimme];
+function zustand($k) {
+    global $lock, $STIMMEN, $standard;
+    $liste = [];
+    foreach ($STIMMEN as $key => $s) $liste[] = ['key' => $key, 'label' => $s[2], 'mb' => $s[3], 'ready' => stimmeDa($key)];
+    $z = ['voice' => $k, 'default' => $standard, 'voices' => $liste];
+    if (getenv('SPRICH_AUS') === '1') return $z + ['ready' => false, 'state' => 'aus', 'msg' => 'Die Server-Stimme ist abgeschaltet (SPRICH_AUS).'];
+    if (bereit($k)) return $z + ['ready' => true, 'state' => 'bereit'];
     if (is_file($lock) && time() - filemtime($lock) < 900) {
         $info = trim((string)@file_get_contents($lock));
-        return ['ready' => false, 'state' => 'laedt', 'msg' => 'Die Stimme wird eingerichtet' . ($info !== '' ? ' (' . $info . ')' : '') . '.'];
+        return $z + ['ready' => false, 'state' => 'laedt', 'msg' => 'Die Stimme wird eingerichtet' . ($info !== '' ? ' (' . $info . ')' : '') . '.'];
     }
-    if (is_file($fehlerDatei)) return ['ready' => false, 'state' => 'fehler', 'msg' => trim((string)file_get_contents($fehlerDatei))];
-    return ['ready' => false, 'state' => 'fehlt', 'msg' => 'Die Stimme ist noch nicht eingerichtet.'];
+    if (is_file(fehlerDatei($k))) return $z + ['ready' => false, 'state' => 'fehler', 'msg' => trim((string)file_get_contents(fehlerDatei($k)))];
+    return $z + ['ready' => false, 'state' => 'fehlt', 'msg' => 'Die Stimme ist noch nicht eingerichtet.'];
 }
 
 // Lädt eine Datei mit Weiterleitungen (GitHub und Hugging Face leiten weiter).
@@ -63,17 +84,12 @@ function laden($url, $ziel) {
     return @rename($ziel . '.tmp', $ziel);
 }
 
-function einrichten() {
-    global $ordner, $stimme, $piperVersion, $bin, $modell, $lock, $fehlerDatei;
-    if (getenv('SPRICH_BIN')) {
-        $piperOk = true;
-    } else {
-        $piperOk = is_file($bin);
-    }
+function einrichten($k) {
+    global $ordner, $piperVersion, $bin, $lock, $STIMMEN;
     @file_put_contents($lock, 'Start');
-    @unlink($fehlerDatei);
+    @unlink(fehlerDatei($k));
     $fehler = '';
-    if (!$piperOk) {
+    if (!piperDa() && !getenv('SPRICH_BIN')) {
         $arch = php_uname('m');
         $pakete = ['x86_64' => 'x86_64', 'amd64' => 'x86_64', 'aarch64' => 'aarch64', 'arm64' => 'aarch64', 'armv7l' => 'armv7l', 'armv7' => 'armv7l'];
         if (!isset($pakete[$arch])) {
@@ -92,36 +108,34 @@ function einrichten() {
             }
         }
     }
-    if ($fehler === '' && (!is_file($modell) || !is_file($modell . '.json'))) {
+    if ($fehler === '' && !stimmeDa($k)) {
         // Name wie de_DE-thorsten-medium: Sprache de_DE, Sprecher thorsten, Qualität medium
-        $teile = explode('-', $stimme);
-        if (count($teile) !== 3) {
-            $fehler = 'Unbekannter Stimmenname: ' . $stimme;
-        } else {
-            @file_put_contents($lock, 'Stimme');
-            $basis = 'https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/' . substr($teile[0], 0, 2) . '/' . $teile[0] . '/' . $teile[1] . '/' . $teile[2] . '/' . $stimme;
-            if (!laden($basis . '.onnx.json', $modell . '.json') || !laden($basis . '.onnx', $modell)) {
-                @unlink($modell . '.json');
-                $fehler = 'Die Stimme konnte nicht von huggingface.co geladen werden. Hat die Synology Internet?';
-            }
+        $name = $STIMMEN[$k][0];
+        $teile = explode('-', $name);
+        $modell = modell($k);
+        @file_put_contents($lock, 'Stimme, ca. ' . $STIMMEN[$k][3] . ' MB');
+        $basis = 'https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/' . substr($teile[0], 0, 2) . '/' . $teile[0] . '/' . $teile[1] . '/' . $teile[2] . '/' . $name;
+        if (!laden($basis . '.onnx', $modell) || !laden($basis . '.onnx.json', $modell . '.json')) {
+            @unlink($modell); @unlink($modell . '.json');
+            $fehler = 'Die Stimme konnte nicht von huggingface.co geladen werden. Hat die Synology Internet?';
         }
     }
-    if ($fehler === '' && !bereit()) $fehler = 'Piper ist da, lässt sich aber nicht starten (Rechte im Datenordner?).';
-    if ($fehler !== '') @file_put_contents($fehlerDatei, $fehler);
+    if ($fehler === '' && !bereit($k)) $fehler = 'Piper ist da, lässt sich aber nicht starten (Rechte im Datenordner?).';
+    if ($fehler !== '') @file_put_contents(fehlerDatei($k), $fehler);
     @unlink($lock);
 }
 
-if (getenv('SPRICH_AUS') === '1') json_antwort(503, zustand());
+if (getenv('SPRICH_AUS') === '1') json_antwort(503, zustand($wahl));
 if (!is_dir($ordner) && !@mkdir($ordner, 0775, true)) json_antwort(503, ['ready' => false, 'state' => 'fehler', 'msg' => 'Der Datenordner ist nicht beschreibbar.']);
 
 // ---------- Status (und Einrichtung anstoßen) ----------
 if (isset($_GET['status'])) {
-    $z = zustand();
+    $z = zustand($wahl);
     $starten = isset($_GET['install']) && ($z['state'] === 'fehlt' || ($z['state'] === 'fehler' && isset($_GET['nochmal'])));
     if (!$starten) json_antwort(200, $z);
     // Antwort sofort schicken, die Einrichtung läuft danach weiter (dauert je nach Leitung ein bis zwei Minuten).
     @file_put_contents($lock, 'Start');
-    $z = zustand();
+    $z = zustand($wahl);
     ignore_user_abort(true);
     @set_time_limit(900);
     $text = json_encode($z, JSON_UNESCAPED_UNICODE);
@@ -133,7 +147,7 @@ if (isset($_GET['status'])) {
     while (ob_get_level() > 0) ob_end_flush();
     flush();
     if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
-    einrichten();
+    einrichten($wahl);
     exit;
 }
 
@@ -141,21 +155,30 @@ if (isset($_GET['status'])) {
 $text = isset($_GET['t']) ? (string)$_GET['t'] : '';
 $text = trim(preg_replace('/\s+/u', ' ', $text));
 if ($text === '' || mb_strlen($text) > 500) json_antwort(400, ['ok' => false, 'error' => 'Text fehlt oder ist zu lang.']);
-if (!bereit()) json_antwort(503, zustand());
+if (!bereit($wahl)) json_antwort(503, zustand($wahl));
 
 $tempo = isset($_GET['r']) ? (float)$_GET['r'] : 0.9;
-$tempo = max(0.5, min(1.5, $tempo));
+$tempo = max(0.5, min(1.6, $tempo));
 $laenge = round(1 / $tempo, 2); // Piper: length_scale > 1 heißt langsamer
 // Zeichen, die Piper sonst buchstabiert oder verschluckt
 $gesprochen = trim(preg_replace('/ {2,}/', ' ', strtr($text, ['−' => ' minus ', '–' => ', ', '·' => ' mal ', '€' => ' Euro ', '…' => '.', '+' => ' plus ', '=' => ' gleich '])));
 
-$schluessel = sha1($stimme . '|' . $laenge . '|' . $gesprochen);
+$modell = modell($wahl);
+$sprecher = '';
+if ($STIMMEN[$wahl][1] !== null) {
+    $info = json_decode((string)@file_get_contents($modell . '.json'), true);
+    $map = is_array($info) && isset($info['speaker_id_map']) ? $info['speaker_id_map'] : [];
+    if (isset($map[$STIMMEN[$wahl][1]])) $sprecher = (string)(int)$map[$STIMMEN[$wahl][1]];
+}
+
+$schluessel = sha1($STIMMEN[$wahl][0] . '|' . $sprecher . '|' . $laenge . '|' . $gesprochen);
 $datei = $cache . '/' . $schluessel . '.wav';
 if (!is_file($datei)) {
     if (!is_dir($cache)) @mkdir($cache, 0775, true);
     @set_time_limit(60);
     $tmp = $datei . '.' . getmypid() . '.tmp.wav';
-    $befehl = escapeshellarg($bin) . ' --model ' . escapeshellarg($modell) . ' --length_scale ' . escapeshellarg((string)$laenge) . ' --output_file ' . escapeshellarg($tmp);
+    $befehl = escapeshellarg($bin) . ' --model ' . escapeshellarg($modell) . ' --length_scale ' . escapeshellarg((string)$laenge)
+        . ($sprecher !== '' ? ' --speaker ' . escapeshellarg($sprecher) : '') . ' --output_file ' . escapeshellarg($tmp);
     $umgebung = ['LD_LIBRARY_PATH' => dirname($bin), 'PATH' => '/usr/local/bin:/usr/bin:/bin'];
     $p = proc_open($befehl, [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, dirname($bin), $umgebung);
     if (!is_resource($p)) json_antwort(500, ['ok' => false, 'error' => 'Piper ließ sich nicht starten.']);
