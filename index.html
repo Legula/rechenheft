@@ -585,6 +585,9 @@ select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px;
 .wphoto { display: flex; justify-content: center; }
 .wfile { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
 .wfile input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 200px; }
+.whandy { text-align: center; max-width: 520px; margin: 0 auto; }
+.whandy-url { font-weight: 700; font-size: 1.2rem; word-break: break-all; }
+.whandy-code { font-size: 3rem; font-weight: 800; letter-spacing: .15em; color: var(--blue, #1d6fb8); margin: 4px 0; }
 .wfilehint { text-align: center; color: var(--bad, #b91c1c); font-weight: 600; }
 .wphoto img { max-width: 100%; max-height: 52vh; border-radius: 12px; border: 2px solid var(--line); }
 .wchips { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 10px; }
@@ -3549,7 +3552,7 @@ function openWache() {
 }
 $('toWache').addEventListener('click', openWache);
 $('wBack').addEventListener('click', function () { if (W.mode && W.res) { wFinishCase(); } go('home'); });
-function wLeave() { stopSpeak(); wLiveStop(); wFileWatchStop(); if (W.mode && W.res) wFinishCase(); W.img = null; W.mode = ''; W.res = null; if (W.rec) { try { W.rec.abort(); } catch (e) {} W.rec = null; } }
+function wLeave() { stopSpeak(); wLiveStop(); wFileWatchStop(); wHandyStop(true); if (W.mode && W.res) wFinishCase(); W.img = null; W.mode = ''; W.res = null; if (W.rec) { try { W.rec.abort(); } catch (e) {} W.rec = null; } }
 
 function wCheck() {
   if (!window.fetch) { W.ready = false; W.why = 'Dieser Browser ist zu alt für die Wache.'; wStartScreen(); return; }
@@ -3593,10 +3596,42 @@ function wPhoto(mode) {
     : mode === 'nach' ? 'Super! Mach jetzt ein Foto von deiner verbesserten Seite.'
     : 'Mach ein Foto von deiner fertigen Seite. Die ganze Seite soll drauf sein.';
   var body = '<div class="wactions">' + (W_CAM_LIVE ? '<button class="btn" data-w="live">📷 Foto machen</button>' + wFileBtn('cam', 'Kamera-App', true, true) : wFileBtn('cam', '📷 Foto machen', true, false))
-    + wFileBtn('pick', '🖼️ Bild aus der Galerie', false, true) + '</div><p class="muted wfilehint" id="wFileHint" hidden></p>';
+    + wFileBtn('pick', '🖼️ Bild aus der Galerie', false, true) + (location.protocol === 'file:' ? '' : '<button class="btn ghost" data-w="handy">📱 Foto mit dem Handy</button>') + '</div><p class="muted wfilehint" id="wFileHint" hidden></p>';
   wScreen({ mood: 'normal', say: say, read: say, body: body,
     actions: [{ id: 'cancel', label: 'Abbrechen', ghost: true, fn: function () { wFileWatchStop(); if (mode === 'nach') wEndScreen(); else wStartScreen(); } }] });
-  W.acts.live = wLiveCam;
+  W.acts.live = wLiveCam; W.acts.handy = wHandy;
+}
+/* Foto vom Handy: für Kinder-Browser ohne Kamera und Dateiauswahl. Das Bild geht über foto.php auf der Synology
+   und wird dort nach dem Abholen sofort gelöscht (spätestens nach 10 Minuten). */
+function wHandyStop(drop) {
+  var h = W.handy; if (!h) return; W.handy = null; clearTimeout(h.t);
+  if (drop) fetch('foto.php?weg=' + h.code + '&t=' + h.token, { method: 'POST' }).catch(function () {});
+}
+function wHandy() {
+  var mode = W.mode; wFileWatchStop(); wHandyStop(true);
+  wScreen({ mood: 'sniff', say: 'Einen Moment, ich hole einen Code …' });
+  fetch('foto.php?neu=1', { method: 'POST', cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (j) {
+    if (!j.ok) throw new Error('x');
+    var h = W.handy = { code: j.code, token: j.token, until: Date.now() + (j.frist || 600) * 1000 };
+    var adr = location.host + location.pathname.replace(/[^\/]*$/, '') + 'foto.php';
+    var t = 'Bitte Mama oder Papa, das Foto mit dem Handy zu machen. Ich warte hier.';
+    wScreen({ mood: 'happy', say: t, read: t,
+      body: '<div class="sheet whandy"><p>Auf dem Handy im Heim-WLAN öffnen:</p><p class="whandy-url">' + esc(adr) + '</p><p>und diesen Code eingeben:</p><p class="whandy-code">' + esc(j.code.split('').join(' ')) + '</p><p class="muted" id="wHandyMsg">Ich warte auf das Foto … 🐾</p></div>',
+      actions: [{ id: 'back', label: 'Zurück', ghost: true, fn: function () { wHandyStop(true); wPhoto(mode); } }] });
+    (function poll() {
+      if (W.handy !== h) return;
+      if (Date.now() > h.until) { W.handy = null; var el = $('wHandyMsg'); if (el) { el.textContent = 'Der Code ist abgelaufen. Tipp auf Zurück und hol einen neuen.'; el.className = 'danger'; } return; }
+      fetch('foto.php?abholen=' + h.code + '&t=' + h.token, { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (r) {
+        if (W.handy !== h) return;
+        if (r.ok && r.img) { W.handy = null; wShowPhoto(r.img); return; }
+        if (!r.ok) { W.handy = null; var el = $('wHandyMsg'); if (el) { el.textContent = 'Der Code ist abgelaufen. Tipp auf Zurück und hol einen neuen.'; el.className = 'danger'; } return; }
+        h.t = setTimeout(poll, 2500);
+      }).catch(function () { if (W.handy === h) h.t = setTimeout(poll, 4000); });
+    })();
+  }).catch(function () {
+    var t = 'Oh je. Das klappt gerade nicht. Auf der Synology fehlt vielleicht noch die Datei foto.php. Sag Mama oder Papa Bescheid.';
+    wScreen({ mood: 'sad', say: t, read: t, actions: [{ id: 'back', label: 'Zurück', ghost: true, fn: function () { wPhoto(mode); } }] });
+  });
 }
 /* Kommt nach dem Tipp kein Foto an, sagt Paul das, statt still zu bleiben */
 function wFileWatchStop() { if (W.fw) { clearTimeout(W.fw.t); document.removeEventListener('visibilitychange', W.fw.vis); window.removeEventListener('focus', W.fw.foc); W.fw = null; } }
@@ -3609,7 +3644,7 @@ function wFileWatch(kind) {
   function back() { clearTimeout(fw.t); fw.t = setTimeout(function () { if (W.fw === fw) hint('Es ist kein Foto angekommen. Probier es nochmal' + (kind === 'cam' ? ' oder nimm „Bild aus der Galerie“.' : '.') + ' Klappt es gar nicht, frag Mama oder Papa.'); }, 2500); }
   document.addEventListener('visibilitychange', fw.vis); window.addEventListener('blur', function b() { fw.left = true; window.removeEventListener('blur', b); });
   window.addEventListener('focus', fw.foc);
-  fw.t = setTimeout(function () { if (W.fw === fw && !fw.left) hint('Hier öffnet sich keine Kamera. Dieses Tablet erlaubt im Kinderprofil vielleicht keine Fotos. Sag Mama oder Papa Bescheid.'); }, 5000);
+  fw.t = setTimeout(function () { if (W.fw === fw && !fw.left) hint('Hier öffnet sich keine Kamera. Dieses Tablet erlaubt im Kinderprofil vielleicht keine Fotos. Tipp auf „Foto mit dem Handy“ und frag Mama oder Papa.'); }, 5000);
 }
 $('wBody').addEventListener('click', function (e) { var l = e.target.closest('[data-wf]'); if (l) wFileWatch(l.getAttribute('data-wf')); });
 $('wBody').addEventListener('change', function (e) { if (e.target.matches && e.target.matches('[data-wfile]')) { wFileWatchStop(); wFile(e); } });
