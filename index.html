@@ -86,11 +86,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 /* Jedes Thema und Spiel hat eine eigene Farbe: so finden Kinder es wieder, ohne zu lesen. */
 .topic.subject { align-items: center; text-align: center; gap: 8px; padding: 16px 12px; }
 .topic.subject .ico, .topic.play .ico { width: 84px; height: 84px; }
-.topic.subject h3 { font-family: var(--f-display); font-weight: 800; font-size: 1.35rem; line-height: 1.15; }
+.topic.subject h3 { font-family: var(--f-display); font-weight: 800; font-size: 1.5rem; line-height: 1.15; }
 .topic.subject .level { font-weight: 700; color: var(--ink); opacity: .75; }
 .topic.subject .steps { width: 100%; max-width: 160px; }
 .topic.play { align-items: center; text-align: center; }
-.topic.play h3 { font-family: var(--f-display); font-weight: 800; font-size: 1.3rem; }
+.topic.play h3 { font-family: var(--f-display); font-weight: 800; font-size: 1.5rem; }
 .topic.play .badge { align-self: center; }
 .topic[data-topic="plus"] { background: #e3effa; border-color: #8bb8e0; box-shadow: 0 5px 0 #8bb8e0; }
 .topic[data-topic="stelle"] { background: #e2f3fb; border-color: #8ccbe8; box-shadow: 0 5px 0 #8ccbe8; }
@@ -103,8 +103,16 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 #playBuild { background: #fde6e4; border-color: #e79d97; box-shadow: 0 5px 0 #e79d97; }
 #playIsland { background: #e5f5e2; border-color: #94cf8a; box-shadow: 0 5px 0 #94cf8a; }
 #playSky { background: #e8e6f8; border-color: #a7a0dc; box-shadow: 0 5px 0 #a7a0dc; }
-:root[data-theme="dark"] .topic.subject, :root[data-theme="dark"] .topic.play { background: var(--card); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .topic.subject, :root:not([data-theme="light"]) .topic.play { background: var(--card); } }
+/* Farbige Karten bleiben in beiden Modi hell, darum immer dunkle Schrift (Kontrast über 7:1). */
+.topic.subject, .topic.play { color: #1f2a44; --ink: #1f2a44; --card: #ffffff; --accent: #1d72b0; --accent-soft: #e3effa; --muted: #2e3a52; --line: #cfd9e6; --grid: #dde6f2; }
+.topic.subject h3, .topic.play h3 { color: #1f2a44; }
+.topic.subject .level, .topic.play .level { color: #2e3a52; opacity: 1; font-weight: 700; }
+.topic.subject .badge, .topic.play .badge { background: #ffffff; color: #1d4f9c; border: 1px solid rgba(31,42,68,.18); }
+.topic.subject .steps i { background: rgba(255,255,255,.85); border-color: rgba(31,42,68,.25); }
+.topic.subject .steps i.on { background: #2f9e5b; border-color: #1e6b3c; }
+#playChase.locked { background: #eceff3; border-color: #9aa5b4; border-style: dashed; box-shadow: 0 5px 0 #9aa5b4; }
+.topic.play.locked .ico { filter: grayscale(.7); opacity: .75; }
+.topic.play.locked .level { color: #1f2a44; }
 .daygoal { display: flex; align-items: center; gap: 14px; background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
 .daygoal b { display: block; font-family: var(--f-display); font-size: 1.25rem; }
 .daygoal span { color: var(--muted); font-size: 1rem; }
@@ -1442,8 +1450,8 @@ function renderHome() {
   });
   $('topicCards').innerHTML = h;
   var can = stars() >= COST;
-  $('playChase').disabled = !can; $('playChase').style.opacity = can ? 1 : .6;
-  $('chaseInfo').textContent = can ? COST + ' ★ · Rudi einholen' : 'Noch ' + (COST - stars()) + ' ★ sammeln';
+  $('playChase').disabled = !can; $('playChase').classList.toggle('locked', !can);
+  $('chaseInfo').textContent = can ? COST + ' ★ · Rudi einholen' : '🔒 Noch ' + (COST - stars()) + ' ★ sammeln';
   $('chaseBadge').textContent = S.best.caught ? 'Rudi ' + S.best.caught + '-mal erwischt' : 'Noch nie erwischt';
   var bp = buildPos();
   $('buildInfo').textContent = '1 Stern pro Baustein · ' + bp.plan.name + ': ' + bp.placed + ' von ' + bp.total;
