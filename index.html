@@ -764,7 +764,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <div class="row"><input type="checkbox" id="silbenIn" style="width:24px;height:24px"><label for="silbenIn">Silben in Sachaufgaben farbig markieren (Lesehilfe)</label></div>
     <div class="row"><label for="codeIn">Familien-Code</label><input type="text" id="codeIn" maxlength="40" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="z. B. sonnenblume-42"><button class="btn ghost" id="codeSave">Speichern</button><button class="btn ghost" id="syncBtn">Jetzt abgleichen</button></div>
     <p id="syncStatus" class="muted"></p>
-    <div class="row"><button class="btn ghost" id="updBtn">Jetzt aktualisieren</button><span class="muted" id="updMsg">Holt sofort die neueste Version auf die Synology.</span></div>
+    <div class="row"><button class="btn ghost" id="updBtn">Jetzt aktualisieren</button><span class="muted" id="updMsg">Holt sofort die neueste Version auf die Synology, für alle Geräte. Die anderen Geräte bekommen sie beim nächsten Öffnen.</span></div>
     <div class="row"><button class="btn ghost" id="testBtn">Testmodus starten</button><span class="muted">Alles ausprobieren mit 999 Sternen, ohne Philians Stand zu verändern.</span></div>
     <div class="row"><button class="btn ghost" id="resetAsk">Alles zurücksetzen</button>
       <span id="resetConfirm" hidden class="row"><span class="danger">Wirklich alles löschen?</span><button class="btn" id="resetYes">Ja, löschen</button><button class="btn ghost" id="resetNo">Nein</button></span></div>
@@ -3197,13 +3197,13 @@ $('updBtn').addEventListener('click', function () {
   if (location.protocol === 'file:' || /github\.io$/.test(location.hostname)) { fertig('Diese Version kommt direkt von GitHub und ist immer aktuell. Einfach die Seite neu laden.'); return; }
   btn.disabled = true; msg.textContent = 'Lade neueste Version …';
   var ctl = window.AbortController ? new AbortController() : null;
-  var t = setTimeout(function () { if (ctl) ctl.abort(); fertig('Die Synology antwortet gerade nicht. Die App läuft mit der bisherigen Version weiter. Später nochmal versuchen; hängt es dauerhaft, den Container „rechenheft“ im Container Manager neu starten.'); }, 25000);
+  var t = setTimeout(function () { if (ctl) ctl.abort(); fertig('Die Synology antwortet gerade nicht. Die App läuft mit der bisherigen Version weiter. Tipp: Aktualisieren an einem anderen Gerät (z. B. Laptop) reicht, dieses Gerät bekommt die neue Version beim nächsten Öffnen.'); }, 25000);
   fetch('./?update=' + Date.now() + '&json=1', { cache: 'no-store', signal: ctl ? ctl.signal : undefined }).then(function (r) {
     if (!/json/.test(r.headers.get('content-type') || '')) return { ok: true, changed: true }; // ältere index.php auf der Synology: sie hat schon aktualisiert
     return r.json();
   }).then(function (j) {
     clearTimeout(t); if (done) return;
-    if (j.ok && j.changed) { fertig('Neue Version geladen. Die App startet neu …'); setTimeout(function () { location.href = './#aktualisiert'; location.reload(); }, 600); }
+    if (j.ok && j.changed) { fertig('Neue Version geladen. Die App startet neu …'); setTimeout(function () { try { history.replaceState(null, '', location.pathname + location.search + '#aktualisiert'); } catch (e) {} location.reload(); }, 600); } // gleiche Adresse neu laden: Kinder-Browser lassen oft nur freigegebene Adressen zu
     else if (j.ok) fertig(j.error || 'Alles aktuell, es gibt keine neuere Version.');
     else fertig('Hat nicht geklappt: ' + j.error);
   }).catch(function () { clearTimeout(t); fertig('Die Synology ist gerade nicht erreichbar (kein WLAN oder Container aus?). Die App läuft mit der bisherigen Version weiter.'); });
