@@ -3471,6 +3471,7 @@ function wEnsure() {
   if (!Array.isArray(S.wache.cases)) S.wache.cases = [];
   if (!Array.isArray(S.wache.sessions)) S.wache.sessions = [];
   if (!S.wache.set || typeof S.wache.set !== 'object') S.wache.set = {};
+  if (!S.wache.skip || typeof S.wache.skip !== 'object' || Array.isArray(S.wache.skip)) S.wache.skip = {};
   return S.wache;
 }
 function wMerge(o, R) {
@@ -3489,6 +3490,10 @@ function wMerge(o, R) {
   (Array.isArray(o.wache.sessions) ? o.wache.sessions : []).concat(Array.isArray(rw.sessions) ? rw.sessions : []).forEach(function (x) { if (x && x.id && !seenS[x.id]) { seenS[x.id] = 1; ss.push(x); } });
   ss.sort(function (x, y) { return x.d < y.d ? -1 : x.d > y.d ? 1 : 0; });
   o.wache.sessions = ss.slice(-120);
+  /* Ausgeklammerte Streifen: je Streife gewinnt die neuere Entscheidung */
+  var sk = o.wache.skip && typeof o.wache.skip === 'object' && !Array.isArray(o.wache.skip) ? o.wache.skip : {}, rk = rw.skip && typeof rw.skip === 'object' ? rw.skip : {};
+  for (var sid in rk) if (rk[sid] && (!sk[sid] || (rk[sid].t || 0) > (sk[sid].t || 0))) sk[sid] = rk[sid];
+  o.wache.skip = sk;
   var Ra = R.at || {};
   if ((Ra.wacheSet || 0) > (o.at.wacheSet || 0) && rw.set) { o.wache.set = rw.set; o.at.wacheSet = Ra.wacheSet; }
 }
@@ -3529,7 +3534,8 @@ function wScreen(o) {
   if (acts) h += '<div class="wactions">' + acts + '</div>';
   $('wBody').innerHTML = h;
   W.read = o.read || ''; W.onStart = false;
-  if (W.ready) { strTouch(); strBar(); }
+  if (W.ready && !o.noStr) strTouch();
+  if (W.ready) strBar();
   W.acts = {}; (o.actions || []).forEach(function (a) { W.acts[a.id] = a.fn; });
   $('wStars').textContent = stars(); $('wRank').textContent = wRank().name;
   if (o.read && VOICE.auto && canSpeak) setTimeout(function () { if (W.read === o.read && !$('v-wache').hidden) speak(o.read); }, 200);
@@ -3885,20 +3891,29 @@ function wNachResult(d) {
 }
 
 /* Hausaufgaben-Streife: Zeit für die Hausaufgaben. Startet beim Öffnen der Wache, endet mit „Feierabend“
-   oder nach 30 Minuten ohne Aktivität. Ruhige Zeitleiste statt Countdown, Bewegungspausen, keine Strafe bei Überziehen:
+   oder nach 20 Minuten ohne Tippen (dann zählt die Zeit bis zum letzten Tippen + höchstens 5 Minuten),
+   spätestens am Tagesende. Eine Streife zählt höchstens 3 Stunden. Ruhige Zeitleiste statt Countdown, Bewegungspausen, keine Strafe bei Überziehen:
    die Eltern sehen es als Hinweis. Laufende Streife pro Gerät, fertige Streifen in S.wache.sessions (synchronisiert). */
-var STR_KEY = KEY + '-streife', STR_IDLE = 30 * 60 * 1000;
+var STR_KEY = KEY + '-streife', STR_IDLE = 20 * 60 * 1000, STR_GRACE = 5 * 60 * 1000, STR_MAX = 3 * 3600 * 1000;
 function wSet() { var st = wEnsure().set; return { ziel: st.ziel == null ? 30 : +st.ziel, pause: st.pause == null ? 12 : +st.pause }; }
 function strGet() { try { return JSON.parse(lsGet(STR_KEY) || 'null'); } catch (e) { return null; } }
 function strPut(s) { lsSet(STR_KEY, s ? JSON.stringify(s) : ''); }
+/* Verwaist: zu lange nichts getippt, an einem anderen Tag begonnen oder länger als 3 Stunden */
+function strStale(s, now) { return now - (s.last || s.start) > STR_IDLE || new Date(s.start).toDateString() !== new Date(now).toDateString() || now - s.start > STR_MAX; }
+/* Geschätztes Ende einer verwaisten Streife: letztes Tippen + etwas Zeit zum Arbeiten auf Papier */
+function strEnd(s, now) { var last = s.last || s.start, end = Math.min(now, last + STR_GRACE, s.start + STR_MAX); var mid = new Date(s.start); mid.setHours(23, 59, 59, 0); return Math.max(s.start, Math.min(end, +mid)); }
+/* Laufende Streife; eine verwaiste wird dabei sauber geschlossen (ohne Feierabend) */
+function strCur() { var s = strGet(), now = Date.now(); if (s && strStale(s, now)) { strClose(s, strEnd(s, now), false, true); s = null; } return s; }
 function strStart() {
-  var s = strGet(), now = Date.now();
-  if (s && now - s.last > STR_IDLE) { strClose(s, s.last, false); s = null; }
+  var s = strCur(), now = Date.now();
   if (!s) { s = { id: new Date(now).toISOString() + '-' + DEV.slice(-4), start: now, last: now, lastPause: now, pausen: 0, ziel: wSet().ziel, shownEnd: false }; strPut(s); }
   return s;
 }
-function strTouch() { var s = strGet(); if (s) { s.last = Date.now(); strPut(s); } }
-function strMin(s) { return Math.max(0, Math.round(((s.end || Date.now()) - s.start) / 60000)); }
+function strTouch() { var s = strStart(); s.last = Date.now(); strPut(s); }
+function strMin(s) { return Math.max(0, Math.round(Math.min(STR_MAX, Date.now() - s.start) / 60000)); }
+/* Zählende Sekunden einer gespeicherten Streife (Eltern können einzelne Streifen ausklammern) */
+function strSkip(id) { var k = wEnsure().skip[id]; return !!(k && k.v); }
+function strSek(x) { return strSkip(x.id) ? 0 : Math.min(STR_MAX / 1000, Math.max(0, x.sek || 0)); }
 /* Zeit je Fach: von einem Einsatz bis zum nächsten zählt für dessen Fach */
 function strFaecher(start, end) {
   var cs = wEnsure().cases.filter(function (c) { var t = Date.parse(c.d); return t >= start && t <= end; }).sort(function (a, b) { return a.d < b.d ? -1 : 1; });
@@ -3907,9 +3922,11 @@ function strFaecher(start, end) {
   cs.forEach(function (c, i) { var a = Date.parse(c.d), b = i + 1 < cs.length ? Date.parse(cs[i + 1].d) : end, k = c.fach || 'Sonstiges'; f[k] = (f[k] || 0) + Math.max(0, Math.round((b - a) / 1000)); });
   return f;
 }
-function strClose(s, end, byChild) {
+function strClose(s, end, byChild, est) {
   if (!s) return null;
+  end = Math.min(end, s.start + STR_MAX);
   var rec = { id: s.id, d: new Date(s.start).toISOString(), sek: Math.max(0, Math.round((end - s.start) / 1000)), ziel: s.ziel || 0, pausen: s.pausen || 0, fertig: !!byChild, faecher: strFaecher(s.start, end) };
+  if (est) rec.geschaetzt = true;
   var w = wEnsure(); if (!Array.isArray(w.sessions)) w.sessions = [];
   if (!w.sessions.some(function (x) { return x.id === rec.id; })) w.sessions.push(rec);
   if (w.sessions.length > 120) w.sessions = w.sessions.slice(-120);
@@ -3917,7 +3934,7 @@ function strClose(s, end, byChild) {
 }
 function strBar() {
   var el = $('wStreife'); if (!el) return;
-  var s = strGet(); if (!s || !W.ready) { el.innerHTML = ''; return; }
+  var s = W.ready ? strCur() : null; if (!s) { el.innerHTML = ''; return; }
   var m = strMin(s), z = s.ziel || 0, pct = z ? Math.min(100, m / z * 100) : 0, over = z && m >= z;
   var txt = z ? (over ? 'Streife: Zeit ist um. Mach in Ruhe fertig.' : 'Streife: ' + m + ' von ' + z + ' Minuten') : 'Streife läuft seit ' + m + (m === 1 ? ' Minute' : ' Minuten');
   el.innerHTML = '<div class="wstreife' + (over ? ' over' : '') + '"><div class="wroad">' + (z ? '<i style="width:' + pct + '%"></i><span class="wdog" style="left:' + pct + '%">🐕</span>' : '<span class="wdog walk">🐕</span>') + '<span class="wflag">🏁</span></div><span class="wstr-t">' + txt + '</span></div>';
@@ -3929,7 +3946,7 @@ setInterval(function () {
   if (!W.mode && W.onStart) wDue();
 }, 15000);
 function wDue() {
-  var s = strGet(); if (!s) return false;
+  var s = strCur(); if (!s) return false;
   var set = wSet(), now = Date.now();
   if (s.ziel && !s.shownEnd && now - s.start >= s.ziel * 60000) { s.shownEnd = true; strPut(s); wTimeUp(); return true; }
   if (set.pause && now - s.lastPause >= set.pause * 60000) { wPauseScreen(); return true; }
@@ -3949,7 +3966,7 @@ function wPauseScreen(next) {
   }, 1000);
 }
 function wMaybePause(next) {
-  var s = strGet(), set = wSet();
+  var s = strCur(), set = wSet();
   if (s && set.pause && Date.now() - s.lastPause >= set.pause * 60000) wPauseScreen(next); else next();
 }
 function wTimeUp() {
@@ -3958,15 +3975,15 @@ function wTimeUp() {
   wScreen({ mood: 'happy', say: t, read: t, actions: [{ id: 'fa', label: '🏁 Ja, Feierabend!', fn: wFeierabend }, { id: 'noch', label: 'Ich mache noch fertig', ghost: true, fn: wStartScreen }] });
 }
 function wFeierabend() {
-  var s = strGet(); if (!s) { wStartScreen(); return; }
-  var rec = strClose(s, Date.now(), true), m = Math.round(rec.sek / 60), got = 0, t;
+  var s = strGet(), now = Date.now(); if (!s) { wStartScreen(); return; }
+  var old = strStale(s, now), rec = strClose(s, old ? strEnd(s, now) : now, true, old), m = Math.round(rec.sek / 60), got = 0, t;
   if (rec.ziel && m <= rec.ziel) {
     var day = new Date().toISOString().slice(0, 10), k = KEY + '-streife-stern';
     if (lsGet(k) !== day) { lsSet(k, day); got = 3; addStars(3); save(); }
     t = 'Feierabend! Streife beendet. Du warst in ' + m + ' Minuten fertig, genau in deiner Zeit.' + (got ? ' Dafür gibt es 3 Sterne.' : '') + ' Jetzt hast du frei!';
   } else t = 'Feierabend! Streife beendet. Heute hat es ' + m + ' Minuten gedauert. Du hast durchgehalten, das zählt! Jetzt hast du frei.';
   W.onStart = false;
-  wScreen({ mood: 'happy', say: t, read: t, body: got ? '<p class="wstar">+3 ★</p>' : '', actions: [{ id: 'home', label: 'Zur Startseite', fn: function () { go('home'); } }] });
+  wScreen({ mood: 'happy', say: t, read: t, noStr: true, body: got ? '<p class="wstar">+3 ★</p>' : '', actions: [{ id: 'home', label: 'Zur Startseite', fn: function () { go('home'); } }] });
   strBar();
 }
 
@@ -4045,14 +4062,17 @@ function wSaveCase() {
 function wFinishCase() { var c = wCase(); if (c) { c.dauer = Math.min(3600, Math.round((Date.now() - W.start) / 1000)); save(); } W.res = null; W.img = null; }
 
 /* Elternbereich: Auswertung, Einstellungen, Vorlesen */
+function wDayKey(iso) { var d = new Date(iso); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
 function wFmtMin(sek) { var m = Math.round(sek / 60); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + (m % 60) + ' min'; }
 function wTimeHTML() {
-  var ss = wEnsure().sessions.slice(), cur = strGet();
-  if (cur) ss.push({ id: cur.id, d: new Date(cur.start).toISOString(), sek: Math.round((Date.now() - cur.start) / 1000), ziel: cur.ziel, pausen: cur.pausen, faecher: strFaecher(cur.start, Date.now()), laeuft: true });
+  var ss = wEnsure().sessions.slice(), cur = strCur();
+  ss.sort(function (x, y) { return x.d < y.d ? -1 : x.d > y.d ? 1 : 0; });
+  if (cur) ss.push({ id: cur.id, d: new Date(cur.start).toISOString(), sek: Math.round(Math.min(STR_MAX, Date.now() - cur.start) / 1000), ziel: cur.ziel, pausen: cur.pausen, faecher: strFaecher(cur.start, Date.now()), laeuft: true });
   var h = '<h3>Hausaufgabenzeit</h3>';
-  if (!ss.length) return h + '<p class="muted">Noch keine Streife. Die Zeit läuft, sobald Phili die Wache öffnet, und endet mit „Feierabend“ (oder nach 30 Minuten ohne Tippen).</p>';
+  if (!ss.length) return h + '<p class="muted">Noch keine Streife. Die Zeit läuft, sobald Phili die Wache öffnet, und endet mit „Feierabend“ (oder nach 20 Minuten ohne Tippen).</p>';
   var days = {}, order = [];
-  ss.forEach(function (x) { var k = String(x.d).slice(0, 10); if (!days[k]) { days[k] = { sek: 0, ziel: 0, n: 0, f: {}, pausen: 0 }; order.push(k); } var D = days[k]; D.sek += x.sek || 0; D.ziel = Math.max(D.ziel, x.ziel || 0); D.n++; D.pausen += x.pausen || 0; for (var f in (x.faecher || {})) D.f[f] = (D.f[f] || 0) + x.faecher[f]; });
+  ss.forEach(function (x) { var k = wDayKey(x.d); if (!days[k] && !strSkip(x.id)) { days[k] = { sek: 0, ziel: 0, n: 0, f: {}, pausen: 0 }; order.push(k); } if (strSkip(x.id)) return; var D = days[k]; D.sek += strSek(x); D.ziel = Math.max(D.ziel, x.ziel || 0); D.n++; D.pausen += x.pausen || 0; for (var f in (x.faecher || {})) D.f[f] = (D.f[f] || 0) + x.faecher[f]; });
+  if (!order.length) order.push(wDayKey(new Date().toISOString())), days[order[0]] = { sek: 0, ziel: 0, n: 0, f: {}, pausen: 0 };
   order.sort(); var last = order.slice(-7), over = 0, sum = 0, maxS = 1;
   last.forEach(function (k) { var D = days[k]; sum += D.sek; maxS = Math.max(maxS, D.sek, D.ziel * 60); if (D.ziel && D.sek > D.ziel * 60 + 300) over++; });
   h += '<div class="kv"><div><span>Ø pro Tag (letzte ' + last.length + ')</span><strong>' + wFmtMin(sum / last.length) + '</strong></div><div><span>Zielzeit</span><strong>' + (wSet().ziel ? wSet().ziel + ' min' : '–') + '</strong></div><div><span>Länger als Ziel (+5 min)</span><strong>' + over + ' von ' + last.length + ' Tagen</strong></div></div>';
@@ -4064,10 +4084,13 @@ function wTimeHTML() {
     h += '<div class="wtrow"><span>' + new Date(k + 'T12:00').toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' }) + '</span>' + bar + '<span><strong>' + wFmtMin(D.sek) + '</strong>' + (D.ziel ? ' / Ziel ' + D.ziel + ' min' : '') + (D.n > 1 ? ' · ' + D.n + ' Streifen' : '') + (D.pausen ? ' · ' + D.pausen + (D.pausen === 1 ? ' Pause' : ' Pausen') : '') + (fs.length ? '<br><span class="muted">' + fs.filter(function (f) { return D.f[f] >= 60; }).map(function (f) { return esc(f) + ' ' + wFmtMin(D.f[f]); }).join(', ') + '</span>' : '') + '</span></div>';
   });
   h += '</div>';
-  var sl = ss.slice(-6).reverse();
-  h += '<div class="table-wrap"><table><thead><tr><th>Streife</th><th>Dauer</th><th>Ziel</th><th>Fächer</th></tr></thead><tbody>' + sl.map(function (x) {
-    var f = x.faecher || {}; return '<tr><td>' + fmtDate(x.d) + (x.laeuft ? ' <span class="badge">läuft</span>' : x.fertig ? '' : ' <span class="muted">(ohne Feierabend)</span>') + '</td><td>' + wFmtMin(x.sek) + '</td><td>' + (x.ziel ? x.ziel + ' min' : '–') + '</td><td>' + (Object.keys(f).filter(function (k) { return f[k] >= 60; }).map(function (k) { return esc(k) + ' ' + wFmtMin(f[k]); }).join(', ') || '–') + '</td></tr>';
-  }).join('') + '</tbody></table></div><p class="muted">Fächer: die Zeit von einem Foto bis zum nächsten zählt für das Fach dieses Fotos, ungefähr.</p>';
+  var sl = ss.slice(-8).reverse();
+  h += '<div class="table-wrap"><table><thead><tr><th>Streife</th><th>Dauer</th><th>Ziel</th><th>Fächer</th><th></th></tr></thead><tbody>' + sl.map(function (x) {
+    var f = x.faecher || {}, off = strSkip(x.id);
+    var st = x.laeuft ? ' <span class="badge">läuft</span>' : (x.fertig ? '' : ' <span class="muted">(ohne Feierabend)</span>') + (x.geschaetzt ? ' <span class="muted">geschätzt</span>' : '');
+    var btn = x.laeuft ? '<button class="btn ghost" style="padding:6px 12px;font-size:.9rem" data-wstrend="1">Beenden</button>' : '<button class="btn ghost" style="padding:6px 12px;font-size:.9rem" data-wskip="' + esc(x.id) + '">' + (off ? 'Wieder zählen' : 'Nicht zählen') + '</button>';
+    return '<tr' + (off ? ' style="opacity:.55;text-decoration:line-through"' : '') + '><td>' + fmtDate(x.d) + st + '</td><td>' + wFmtMin(Math.min(STR_MAX / 1000, x.sek || 0)) + '</td><td>' + (x.ziel ? x.ziel + ' min' : '–') + '</td><td>' + (Object.keys(f).filter(function (k) { return f[k] >= 60; }).map(function (k) { return esc(k) + ' ' + wFmtMin(f[k]); }).join(', ') || '–') + '</td><td>' + btn + '</td></tr>';
+  }).join('') + '</tbody></table></div><p class="muted">Fächer: die Zeit von einem Foto bis zum nächsten zählt für das Fach dieses Fotos, ungefähr. Ohne „Feierabend“ endet eine Streife nach 20 Minuten ohne Tippen; gezählt wird dann bis zum letzten Tippen plus höchstens 5 Minuten. Eine Streife zählt höchstens 3 Stunden. Stimmt eine Zeit nicht, kann man sie mit „Nicht zählen“ ausklammern.</p>';
   return h;
 }
 function renderWacheParent() {
@@ -4143,7 +4166,7 @@ if (hasSynth) try { speechSynthesis.addEventListener('voiceschanged', function (
 function saveVoice() { lsSet('philian-rechenheft-v1-voice', JSON.stringify(VOICE)); }
 $('wacheParent').addEventListener('change', function (e) {
   var t = e.target, k = t.getAttribute('data-wa'), ks = t.getAttribute('data-ws');
-  if (ks) { wEnsure().set[ks] = +t.value; S.at.wacheSet = Date.now(); save(); var cur = strGet(); if (cur && ks === 'ziel') { cur.ziel = +t.value; cur.shownEnd = false; strPut(cur); } renderWacheParent(); return; }
+  if (ks) { wEnsure().set[ks] = +t.value; S.at.wacheSet = Date.now(); save(); var cur = strCur(); if (cur && ks === 'ziel') { cur.ziel = +t.value; cur.shownEnd = false; strPut(cur); } renderWacheParent(); return; }
   if (k) { wEnsure().set[k] = t.checked; S.at.wacheSet = Date.now(); save(); return; }
   if (t.id === 'vVoice') { VOICE.v = t.value; saveVoice(); }
   if (t.id === 'vSrc') { VOICE.src = t.value; saveVoice(); ttsSrvCheck(); renderVoiceStatus(); }
@@ -4187,6 +4210,12 @@ function wSample() {
   [['1)  23 + 14 = 37', 1], ['2)  45 + 32 = 77', 1], ['3)  56 − 21 = 35', 1], ['4)  38 + 25 = 53', 0], ['5)  70 − 26 = 44', 1], ['6)  64 + 19 = 83', 1]].forEach(function (r, i) { g.fillText(r[0], 100, 220 + i * 105); });
   return c.toDataURL('image/jpeg', .85);
 }
+$('wacheParent').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-wskip],[data-wstrend]'); if (!b) return;
+  if (b.hasAttribute('data-wstrend')) { var s = strGet(); if (s) strClose(s, strEnd(s, Date.now()), false, true); }
+  else { var id = b.getAttribute('data-wskip'), sk = wEnsure().skip; sk[id] = { v: strSkip(id) ? 0 : 1, t: Date.now() }; save(); }
+  renderWacheParent();
+});
 $('wacheParent').addEventListener('input', function (e) { if (e.target.id === 'vRate') $('vRateV').textContent = Math.round(e.target.value * 100) + ' %'; if (e.target.id === 'vPitch') { VOICE.p = +e.target.value; $('vPitchV').textContent = ttsPitchTxt(e.target.value); } });
 $('wacheParent').addEventListener('click', function (e) {
   if (e.target.id === 'vTest') speak('Hallo ' + S.name + '! Ich bin Polizeihund Paul. So klinge ich.', true);
