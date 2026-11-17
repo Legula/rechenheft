@@ -450,6 +450,71 @@ th { color: var(--muted); font-weight: 700; font-size: .85rem; text-transform: u
 select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); max-width: 100%; min-width: 0; }
 .danger { color: var(--bad); }
 @media (prefers-reduced-motion: reduce) { .animal, .c.fresh, .flash { animation: none; } .starrow span, .burst, .drop, .trophy svg, .result-big.perfect, .mascot.bob svg, .popcard { animation: none; } .topic, .btn { transition: none; } }
+
+/* Hausaufgaben-Wache: Polizeihund Paul. Immer nur eine Sache auf dem Bildschirm, große Schrift, große Knöpfe. */
+.wache-card { flex-direction: row; align-items: center; gap: 16px; border: 3px solid #1d3f7a; box-shadow: 0 5px 0 #1d3f7a; background: var(--accent-soft); width: 100%; }
+.wache-card:active { box-shadow: 0 2px 0 #1d3f7a; }
+.wache-card .wpaul-ico { flex: none; width: 88px; }
+.wache-card .wpaul-ico svg { width: 100%; height: auto; display: block; }
+.wache-card h3 { font-size: clamp(1.4rem, 4.5vw, 1.8rem); font-weight: 800; }
+.wache-card div { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.wtop { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.wrank { font-weight: 700; color: #1d3f7a; background: #e1e9f7; border-radius: 999px; padding: 4px 12px; font-size: .95rem; }
+:root[data-theme="dark"] .wrank { color: #cfe0ff; background: #24365c; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .wrank { color: #cfe0ff; background: #24365c; } }
+#wBody { display: flex; flex-direction: column; gap: 18px; align-items: stretch; }
+.wpaul { flex: none; width: 120px; }
+.wpaul svg { width: 100%; height: auto; display: block; }
+.wpaul.bob svg { animation: bob 2.4s ease-in-out infinite; transform-origin: 50% 100%; }
+.wpaul.sniff svg { animation: sniff .7s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes sniff { 50% { transform: translateY(4px) rotate(3deg); } }
+.wsay { font-size: clamp(1.3rem, 4.2vw, 1.75rem); line-height: 1.45; }
+.wlabel { font-family: var(--f-display); font-weight: 800; color: var(--accent); font-size: 1.15rem; }
+.wbox { background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.wbox.spur { border: 3px dashed #1d3f7a; }
+.wwo { font-family: var(--f-display); font-weight: 800; font-size: clamp(1.5rem, 5vw, 2.1rem); line-height: 1.2; }
+.wbig { display: flex; align-items: center; gap: 16px; text-align: left; padding: 22px; border-radius: var(--radius); border: 3px solid var(--line); background: var(--card); box-shadow: 0 5px 0 var(--line); width: 100%; }
+.wbig:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--line); }
+.wbig b { display: block; font-family: var(--f-display); font-size: clamp(1.5rem, 5vw, 2rem); font-weight: 800; line-height: 1.1; }
+.wbig span { color: var(--muted); font-size: 1.05rem; }
+.wbig .wi { flex: none; font-size: 2.6rem; width: 56px; text-align: center; }
+.wbig.help { border-color: #2f9e5b; box-shadow: 0 5px 0 #2f9e5b; }
+.wbig.check { border-color: #1d3f7a; box-shadow: 0 5px 0 #1d3f7a; }
+.wactions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.wactions .btn { min-width: 180px; }
+.wdots { display: flex; gap: 8px; justify-content: center; }
+.wdots i { width: 16px; height: 16px; border-radius: 50%; background: var(--grid); border: 2px solid var(--line); }
+.wdots i.on { background: var(--accent); border-color: var(--accent); }
+.wdots i.done { background: var(--good); border-color: var(--good); }
+.wphoto { display: flex; justify-content: center; }
+.wphoto img { max-width: 100%; max-height: 52vh; border-radius: 12px; border: 2px solid var(--line); }
+.wchips { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 10px; }
+.wchips button { font-family: var(--f-display); font-weight: 800; font-size: 1.6rem; padding: 14px 0; border-radius: 14px; border: 2px solid var(--line); background: var(--card); box-shadow: 0 4px 0 var(--line); }
+.wpaws { display: flex; gap: 14px; justify-content: center; font-size: 2rem; }
+.wpaws span { animation: paw 1.2s ease-in-out infinite; opacity: .2; }
+.wpaws span:nth-child(2) { animation-delay: .3s; } .wpaws span:nth-child(3) { animation-delay: .6s; }
+@keyframes paw { 40% { opacity: 1; } }
+.wstar { font-family: var(--f-display); font-weight: 800; font-size: 1.6rem; color: var(--star); text-align: center; }
+.wask { display: flex; gap: 10px; flex-wrap: wrap; }
+.wask input { flex: 1; min-width: 180px; font-size: 1.2rem; padding: 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); color: var(--ink); }
+.wlist { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 8px; }
+.wstreife { display: flex; flex-direction: column; gap: 4px; }
+.wroad { position: relative; height: 22px; border-radius: 12px; background: var(--grid); border: 2px solid var(--line); overflow: visible; }
+.wroad i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 10px; background: #9cc3ff; transition: width 1s; }
+.wstreife.over .wroad i { background: #8fd3a4; }
+.wdog { position: absolute; top: -9px; font-size: 1.5rem; transform: translateX(-60%) scaleX(-1); transition: left 1s; }
+.wdog.walk { animation: walk 20s linear infinite; }
+@keyframes walk { from { left: 2%; } to { left: 92%; } }
+.wflag { position: absolute; right: -6px; top: -10px; font-size: 1.3rem; }
+.wstr-t { color: var(--muted); font-size: .95rem; text-align: center; }
+.wtime { display: flex; flex-direction: column; gap: 8px; }
+.wtrow { display: grid; grid-template-columns: 90px 1fr minmax(140px, 1.3fr); gap: 10px; align-items: center; font-size: .95rem; }
+.wtbar { position: relative; height: 14px; background: var(--grid); border-radius: 8px; border: 1px solid var(--line); }
+.wtbar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 8px; background: var(--accent); }
+.wtbar i.over { background: var(--star); }
+.wtbar b { position: absolute; top: -4px; bottom: -4px; width: 3px; background: var(--ink); border-radius: 2px; }
+@media (max-width: 560px) { .wtrow { grid-template-columns: 70px 1fr; } .wtrow > span:last-child { grid-column: 1 / -1; } }
+@media (prefers-reduced-motion: reduce) { .wdog.walk { animation: none; left: 50%; } .wpaul svg, .wpaws span { animation: none !important; opacity: 1; } }
 </style>
 
 <div id="errbox" hidden style="margin:16px;padding:16px;border:3px solid #c73d3d;background:#fff;color:#1f2a44;border-radius:12px;font:16px/1.4 sans-serif"></div>
@@ -467,6 +532,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   </div>
   <div class="mascot-row"><div class="mascot" id="homeMascot"></div><p class="bubble" id="homeBubble">Was möchtest du heute üben? Für jede richtige Aufgabe bekommst du Sterne, für schwere sogar mehr.</p></div>
   <button class="reward" id="rewardCard" hidden></button>
+  <button class="topic wache-card" id="toWache"><span class="wpaul-ico" id="wacheIco"></span><div><h3>Hausaufgaben-Wache</h3><p class="level">Foto vom Heft machen: Polizeihund Paul hilft dir oder kontrolliert.</p><span class="badge" id="wacheBadge">Polizeischüler</span></div></button>
   <div class="cards" id="topicCards"></div>
   <button class="topic badges-link" id="toBadges"><div class="row" style="gap:10px;flex-wrap:nowrap"><span id="badgeMini"></span><div><h3>Abzeichen</h3><p class="level" id="badgeCount"></p></div></div></button>
   <h2>Spielzimmer</h2>
@@ -635,6 +701,15 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
 </section>
 
 <!-- ABZEICHEN -->
+<!-- HAUSAUFGABEN-WACHE -->
+<section id="v-wache" hidden>
+  <div class="wtop"><button class="back" id="wBack">← Zurück</button><span class="wrank" id="wRank"></span><div class="stars"><b>★</b><span id="wStars">0</span></div></div>
+  <div id="wStreife"></div>
+  <div id="wBody"></div>
+  <input type="file" id="wCam" accept="image/*" capture="environment" hidden>
+  <input type="file" id="wPick" accept="image/*" hidden>
+</section>
+
 <section id="v-badges" hidden>
   <button class="back" data-go="home">← Zurück</button>
   <h2>Deine Abzeichen</h2>
@@ -659,6 +734,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   <h2>Lernstand</h2>
   <p class="muted">Alles wird auf diesem Gerät gespeichert. Mit Familien-Code zusätzlich nur auf eurer Synology, sonst wird nichts verschickt.</p>
   <div id="parentBody" style="display:flex;flex-direction:column;gap:16px"></div>
+  <div class="sheet" id="wacheParent"></div>
   <div class="sheet">
     <h3>Belohnung</h3>
     <p class="muted">Leg eine echte Belohnung fest. Philian sieht auf der Startseite, wie viele Sterne noch fehlen. Es zählen alle Sterne, die ab jetzt verdient werden. Ausgeben im Spielzimmer zieht nichts ab.</p>
@@ -723,6 +799,7 @@ function ensure() {
   S.best = merge({ caught: 0, chase: 0, crumbs: 0 }, S.best || {});
   if (!S.mastered) S.mastered = {};
   if (!S.history) S.history = [];
+  wEnsure();
 }
 function stars() { var t = 0; for (var k in S.dev) t += (S.dev[k].e || 0) - (S.dev[k].s || 0); return Math.max(0, t); }
 function addStars(n) { S.dev[DEV].e += n; }
@@ -742,6 +819,7 @@ function mergeState(L, R) {
   if ((Ra.reward || 0) > (o.at.reward || 0)) { o.reward = R.reward || null; o.at.reward = Ra.reward; }
   if ((Ra.island || 0) > (o.at.island || 0) && R.island) { o.island = R.island; o.at.island = Ra.island; }
   if ((Ra.sky || 0) > (o.at.sky || 0) && R.sky) { o.sky = R.sky; o.at.sky = Ra.sky; }
+  wMerge(o, R);
   var seen = {}, all = [];
   o.history.concat(R.history || []).forEach(function (h) { var id = h.d + h.theme; if (!seen[id]) { seen[id] = 1; all.push(h); } });
   all.sort(function (x, y) { return x.d < y.d ? -1 : x.d > y.d ? 1 : 0; });
@@ -1003,7 +1081,10 @@ function silbenHTML(text) {
   }).join('');
 }
 var canSpeak = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
-function speak(text) { try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; u.rate = .9; speechSynthesis.speak(u); } catch (e) {} }
+/* Stimme und Tempo stellt man im Elternbereich ein (pro Gerät, weil jedes Gerät andere Stimmen hat). */
+var VOICE = { v: '', r: .9, auto: true }; try { VOICE = merge(VOICE, JSON.parse(localStorage.getItem('philian-rechenheft-v1-voice') || '{}')); } catch (e) {}
+function voiceFor() { if (!VOICE.v || !canSpeak) return null; var vs = speechSynthesis.getVoices() || []; for (var i = 0; i < vs.length; i++) if (vs[i].name === VOICE.v) return vs[i]; return null; }
+function speak(text) { try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; u.rate = VOICE.r || .9; var vo = voiceFor(); if (vo) { u.voice = vo; u.lang = vo.lang; } speechSynthesis.speak(u); } catch (e) {} }
 
 /* ---------- Zehner und Einer ---------- */
 /* Viele Kinder vertauschen Zehner und Einer, weil man im Deutschen die Einer zuerst spricht (vierundzwanzig = 24).
@@ -1147,12 +1228,14 @@ var THEMES = {
 };
 
 /* ---------- Navigation ---------- */
-var VIEWS = ['home', 'learn', 'quiz', 'result', 'chase', 'build', 'island', 'sky', 'badges', 'gate', 'parents'];
-function go(v) { VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
+var VIEWS = ['home', 'learn', 'quiz', 'result', 'chase', 'build', 'island', 'sky', 'wache', 'badges', 'gate', 'parents'];
+function go(v) { if (v !== 'wache' && !$('v-wache').hidden) wLeave(); VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
 document.addEventListener('click', function (e) { var t = e.target.closest('[data-go]'); if (t) { stopGame(); go(t.getAttribute('data-go')); } });
 
 function renderHome() {
   $('hello').textContent = 'Hallo ' + S.name + '!';
+  if (!$('wacheIco').innerHTML) $('wacheIco').innerHTML = paulSVG('happy');
+  $('wacheBadge').textContent = 'Dienstgrad: ' + wRank().name;
   if (!$('homeMascot').innerHTML) $('homeMascot').innerHTML = owlSVG('happy');
   $('homeMascot').className = 'mascot bob';
   $('homeBubble').textContent = hello();
@@ -2979,6 +3062,7 @@ function renderParents() {
     h += '</div>';
   });
   $('parentBody').innerHTML = h;
+  renderWacheParent();
 }
 $('parentBody').addEventListener('change', function (e) { var k = e.target.getAttribute('data-lv'); if (k) { S.levels[k] = +e.target.value; S.mastered[k] = false; touch(k); save(); renderParents(); } });
 $('nameSave').addEventListener('click', function () { var n = $('nameIn').value.trim(); if (n) { S.name = n; S.at.name = Date.now(); save(); $('nameSave').textContent = 'Gespeichert'; setTimeout(function () { $('nameSave').textContent = 'Speichern'; }, 1200); } });
@@ -3015,10 +3099,616 @@ $('rewSave').addEventListener('click', function () {
 $('rewDone').addEventListener('click', function () { S.reward = null; S.at.reward = Date.now(); save(); renderParents(); });
 $('silbenIn').addEventListener('change', function () { S.silben = $('silbenIn').checked; S.at.silben = Date.now(); save(); });
 
+/* ---------- Hausaufgaben-Wache mit Polizeihund Paul ----------
+   Phili fotografiert eine Aufgabe aus dem Papierheft. wache.php auf der Synology fragt Claude (API-Schlüssel nur dort).
+   Fotos bleiben nur im Arbeitsspeicher; gespeichert werden kurze Notizen für den Elternbereich (S.wache.cases).
+   Immer nur eine Sache auf dem Bildschirm, alles wird vorgelesen. */
+var W_RANKS = [[0, 'Polizeischüler'], [3, 'Polizeianwärter'], [8, 'Wachtmeister'], [15, 'Polizeimeister'], [25, 'Kommissar'], [40, 'Hauptkommissar'], [60, 'Polizeichef']];
+var W_ACHTEN = { gross: 'Großschreibung am Satzanfang und bei Nomen', satz: 'Satzzeichen am Satzende', schrift: 'saubere, lesbare Schrift', weg: 'Rechenweg oder Nebenrechnung aufschreiben', sorgfalt: 'jede Aufgabe ganz lesen und keine vergessen' };
+var W_ACHTEN_KURZ = { gross: 'Großschreibung', satz: 'Satzzeichen', schrift: 'saubere Schrift', weg: 'Rechenweg aufschreiben', sorgfalt: 'keine Aufgabe vergessen' };
+var W_DAYCAP = 12; // höchstens so viele Wache-Sterne pro Tag und Gerät
+var W = { ready: null, mode: '', img: null, res: null, spuren: [], alle: [], i: 0, caseId: '', start: 0, qa: [], back: null, nachDone: false };
+var SR = window.SpeechRecognition || window.webkitSpeechRecognition || null, wMicOk = !!SR;
+
+function wEnsure() {
+  if (!S.wache || typeof S.wache !== 'object' || Array.isArray(S.wache)) S.wache = {};
+  if (!Array.isArray(S.wache.cases)) S.wache.cases = [];
+  if (!Array.isArray(S.wache.sessions)) S.wache.sessions = [];
+  if (!S.wache.set || typeof S.wache.set !== 'object') S.wache.set = {};
+  return S.wache;
+}
+function wMerge(o, R) {
+  var rw = R.wache; if (!rw || typeof rw !== 'object') return;
+  if (!o.wache || typeof o.wache !== 'object' || Array.isArray(o.wache)) o.wache = { cases: [], set: {} };
+  if (!Array.isArray(o.wache.cases)) o.wache.cases = [];
+  var byId = {}, all = [];
+  (o.wache.cases || []).concat(rw.cases || []).forEach(function (c) {
+    if (!c || !c.id) return;
+    if (!byId[c.id]) { byId[c.id] = c; all.push(c); }
+    else if ((c.dauer || 0) > (byId[c.id].dauer || 0) || (c.besser || 0) > (byId[c.id].besser || 0)) { merge(byId[c.id], c); }
+  });
+  all.sort(function (x, y) { return x.d < y.d ? -1 : x.d > y.d ? 1 : 0; });
+  o.wache.cases = all.slice(-150);
+  var seenS = {}, ss = [];
+  (Array.isArray(o.wache.sessions) ? o.wache.sessions : []).concat(Array.isArray(rw.sessions) ? rw.sessions : []).forEach(function (x) { if (x && x.id && !seenS[x.id]) { seenS[x.id] = 1; ss.push(x); } });
+  ss.sort(function (x, y) { return x.d < y.d ? -1 : x.d > y.d ? 1 : 0; });
+  o.wache.sessions = ss.slice(-120);
+  var Ra = R.at || {};
+  if ((Ra.wacheSet || 0) > (o.at.wacheSet || 0) && rw.set) { o.wache.set = rw.set; o.at.wacheSet = Ra.wacheSet; }
+}
+function wRank() {
+  var n = wEnsure().cases.length, r = W_RANKS[0], next = null;
+  for (var i = 0; i < W_RANKS.length; i++) { if (n >= W_RANKS[i][0]) r = W_RANKS[i]; else { next = W_RANKS[i]; break; } }
+  return { name: r[1], n: n, next: next ? next[1] : '', left: next ? next[0] - n : 0 };
+}
+function wAchten() { var st = wEnsure().set, a = []; for (var k in W_ACHTEN) if (st[k]) a.push(W_ACHTEN[k]); return a; }
+
+/* Polizeihund Paul */
+function paulSVG(mood) {
+  var s = '<svg viewBox="0 0 120 130" role="img" aria-label="Polizeihund Paul">';
+  s += '<ellipse cx="60" cy="120" rx="34" ry="12" fill="#b9773f"/>';
+  s += '<path d="M28 46 Q8 52 12 86 Q16 98 29 90 Q31 68 38 54Z" fill="#7a4a24"/><path d="M92 46 Q112 52 108 86 Q104 98 91 90 Q89 68 82 54Z" fill="#7a4a24"/>';
+  s += '<ellipse cx="60" cy="68" rx="34" ry="36" fill="#c98b4a"/><ellipse cx="75" cy="62" rx="11" ry="10" fill="#a8692f"/>';
+  s += '<ellipse cx="60" cy="88" rx="21" ry="15" fill="#f3dfc3"/>';
+  if (mood === 'sniff') s += '<path d="M40 63 q6 -5 12 0 M68 63 q6 -5 12 0" stroke="#1f2a44" stroke-width="3.5" fill="none" stroke-linecap="round"/>';
+  else s += '<circle cx="46" cy="62" r="6" fill="#1f2a44"/><circle cx="74" cy="62" r="6" fill="#1f2a44"/><circle cx="48" cy="60" r="2" fill="#fff"/><circle cx="76" cy="60" r="2" fill="#fff"/>';
+  if (mood === 'sad') s += '<path d="M38 52 l12 4 M82 52 l-12 4" stroke="#5a3418" stroke-width="3" stroke-linecap="round"/>';
+  s += '<ellipse cx="60" cy="79" rx="' + (mood === 'sniff' ? 9 : 7) + '" ry="' + (mood === 'sniff' ? 6.5 : 5) + '" fill="#2a1d14"/>';
+  if (mood === 'happy') s += '<path d="M48 88 Q60 100 72 88" stroke="#5a3418" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M55 92 Q60 108 65 92Z" fill="#ef7d8a"/>';
+  else if (mood === 'sad') s += '<path d="M50 96 Q60 88 70 96" stroke="#5a3418" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+  else s += '<path d="M52 90 Q60 96 68 90" stroke="#5a3418" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+  s += '<path d="M28 38 Q60 2 92 38Z" fill="#1d3f7a"/><rect x="27" y="36" width="66" height="10" rx="3" fill="#13305f"/><path d="M30 45 Q60 56 90 45 L88 51 Q60 61 32 51Z" fill="#0c1f40"/>';
+  s += '<path d="M60 14 l3 6.5 7 .6 -5.3 4.6 1.6 6.9 -6.3 -3.7 -6.3 3.7 1.6 -6.9 -5.3 -4.6 7 -.6z" fill="#ffd23f" stroke="#c99a0a" stroke-width="1"/>';
+  s += '<path d="M34 100 Q60 112 86 100 L86 107 Q60 119 34 107Z" fill="#1d72b0"/><circle cx="60" cy="114" r="5" fill="#ffd23f" stroke="#c99a0a"/>';
+  return s + '</svg>';
+}
+
+/* Bildschirm: Paul + Sprechblase + ein Inhalt + Knöpfe */
+function wScreen(o) {
+  var h = '<div class="mascot-row"><div class="wpaul ' + (o.mood === 'sniff' ? 'sniff' : 'bob') + '">' + paulSVG(o.mood || 'normal') + '</div>' + (o.say ? '<p class="bubble wsay">' + esc(o.say) + '</p>' : '') + '</div>';
+  if (o.dots) h += o.dots;
+  if (o.body) h += o.body;
+  var acts = (o.actions || []).map(function (a) { return '<button class="btn' + (a.ghost ? ' ghost' : '') + '" data-w="' + a.id + '">' + esc(a.label) + '</button>'; }).join('');
+  if (canSpeak && o.read) acts += '<button class="btn ghost speak" data-w="read">🔊 Nochmal hören</button>';
+  if (acts) h += '<div class="wactions">' + acts + '</div>';
+  $('wBody').innerHTML = h;
+  W.read = o.read || ''; W.onStart = false;
+  if (W.ready) { strTouch(); strBar(); }
+  W.acts = {}; (o.actions || []).forEach(function (a) { W.acts[a.id] = a.fn; });
+  $('wStars').textContent = stars(); $('wRank').textContent = wRank().name;
+  if (o.read && VOICE.auto && canSpeak) setTimeout(function () { if (W.read === o.read && !$('v-wache').hidden) speak(o.read); }, 200);
+  else if (canSpeak) { try { speechSynthesis.cancel(); } catch (e) {} }
+  window.scrollTo(0, 0);
+}
+$('wBody').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-w]'); if (!b) return;
+  var id = b.getAttribute('data-w');
+  if (id === 'read') { speak(W.read); return; }
+  if (W.acts && W.acts[id]) W.acts[id](b);
+});
+function dotsHTML(n, i) { var h = '<div class="wdots">'; for (var k = 0; k < n; k++) h += '<i class="' + (k < i ? 'done' : k === i ? 'on' : '') + '"></i>'; return h + '</div>'; }
+
+function openWache() {
+  stopGame(); go('wache');
+  W.img = null; W.res = null; W.mode = '';
+  wStartScreen();
+  if (W.ready !== true) wCheck();
+}
+$('toWache').addEventListener('click', openWache);
+$('wBack').addEventListener('click', function () { if (W.mode && W.res) { wFinishCase(); } go('home'); });
+function wLeave() { try { speechSynthesis.cancel(); } catch (e) {} if (W.mode && W.res) wFinishCase(); W.img = null; W.mode = ''; W.res = null; if (W.rec) { try { W.rec.abort(); } catch (e) {} W.rec = null; } }
+
+function wCheck() {
+  if (!window.fetch) { W.ready = false; W.why = 'Dieser Browser ist zu alt für die Wache.'; wStartScreen(); return; }
+  fetch('wache.php?status=1', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (j) { W.ready = !!(j && j.ready); W.why = W.ready ? '' : 'nokey'; })
+    .catch(function () { W.ready = false; W.why = 'nophp'; })
+    .then(function () { if (!$('v-wache').hidden && !W.mode) wStartScreen(); });
+}
+function wStartScreen() {
+  W.mode = ''; W.res = null; W.img = null; W.qa = [];
+  if (W.ready === null) { wScreen({ mood: 'sniff', say: 'Einen Moment, ich schließe die Wache auf …' }); return; }
+  if (!W.ready) {
+    wScreen({ mood: 'sad', say: 'Die Wache ist noch nicht eingerichtet. Sag Mama oder Papa Bescheid. Bis dahin kannst du ganz normal rechnen und spielen.',
+      read: 'Die Wache ist noch nicht eingerichtet. Sag Mama oder Papa Bescheid.',
+      body: '<p class="muted" style="text-align:center">' + (W.why === 'nokey' ? 'Für Eltern: Auf der Synology fehlt der API-Schlüssel (ANTHROPIC_API_KEY). Anleitung im Elternbereich.' : W.why === 'nophp' ? 'Für Eltern: Die Wache läuft nur auf der Synology (nicht auf GitHub Pages) oder die Synology ist gerade nicht erreichbar.' : esc(W.why || '')) + '</p>',
+      actions: [{ id: 'home', label: 'Zur Startseite', fn: function () { go('home'); } }, { id: 'retry', label: 'Nochmal prüfen', ghost: true, fn: function () { W.ready = null; wStartScreen(); wCheck(); } }] });
+    return;
+  }
+  var rk = wRank(), str = strStart(), mins = strMin(str);
+  var say = mins < 1 ? 'Hallo ' + S.name + '! Polizeihund Paul meldet sich zum Dienst. Deine Hausaufgaben-Streife beginnt. Was ist dein Einsatz?' : 'Was ist dein nächster Einsatz?';
+  wScreen({ mood: 'happy', say: say, read: say,
+    body: '<button class="wbig help" data-w="hilfe"><span class="wi">🔍</span><span><b>Was soll ich machen?</b><span>Ich verstehe eine Aufgabe nicht.</span></span></button>' +
+      '<button class="wbig check" data-w="kontrolle"><span class="wi">✅</span><span><b>Kontrolle!</b><span>Ich bin fertig. Paul, schau nach!</span></span></button>' +
+      '<p class="muted" style="text-align:center">Dienstgrad: <strong>' + esc(rk.name) + '</strong>' + (rk.next ? ' · noch ' + rk.left + (rk.left === 1 ? ' Einsatz' : ' Einsätze') + ' bis ' + esc(rk.next) : ' · höchster Dienstgrad!') + '</p>',
+    actions: [{ id: 'fa', label: '🏁 Feierabend: alle Hausaufgaben fertig', ghost: true, fn: wFeierabend }] });
+  W.acts.hilfe = function () { wPhoto('hilfe'); }; W.acts.kontrolle = wSelfCheck;
+  W.onStart = true; wDue();
+}
+
+/* Foto */
+function wPhoto(mode) {
+  W.mode = mode; W.img = null;
+  if (mode !== 'nach') { W.caseId = new Date().toISOString() + '-' + DEV.slice(-4); W.start = Date.now(); W.res = null; W.nachDone = false; W.qa = []; }
+  var say = mode === 'hilfe' ? 'Mach ein Foto von der Aufgabe, die du nicht verstehst. Halte das Tablet ganz ruhig.'
+    : mode === 'nach' ? 'Super! Mach jetzt ein Foto von deiner verbesserten Seite.'
+    : 'Mach ein Foto von deiner fertigen Seite. Die ganze Seite soll drauf sein.';
+  wScreen({ mood: 'normal', say: say, read: say,
+    actions: [{ id: 'cam', label: '📷 Foto machen', fn: function () { $('wCam').value = ''; $('wCam').click(); } },
+      { id: 'pick', label: 'Bild aussuchen', ghost: true, fn: function () { $('wPick').value = ''; $('wPick').click(); } },
+      { id: 'cancel', label: 'Abbrechen', ghost: true, fn: function () { if (mode === 'nach') wEndScreen(); else wStartScreen(); } }] });
+}
+function wFile(e) {
+  var f = e.target.files && e.target.files[0]; if (!f) return;
+  wScreen({ mood: 'sniff', say: 'Ich schaue mir das Foto an …' });
+  wResize(f, function (url) {
+    if (!url) { wError('Das Foto konnte ich nicht öffnen. Versuch es nochmal.'); return; }
+    W.img = url;
+    wScreen({ mood: 'normal', say: 'Kann man alles gut lesen?', read: 'Kann man alles gut lesen?', body: '<div class="wphoto"><img alt="Dein Foto" src="' + url + '"></div>',
+      actions: [{ id: 'ok', label: 'Ja, passt!', fn: function () { if (W.mode === 'hilfe') wWhich(); else wSend(); } },
+        { id: 'again', label: 'Neues Foto', ghost: true, fn: function () { wPhoto(W.mode); } }] });
+  });
+}
+$('wCam').addEventListener('change', wFile);
+$('wPick').addEventListener('change', wFile);
+function wResize(file, cb) {
+  var url; try { url = URL.createObjectURL(file); } catch (e) { cb(null); return; }
+  var im = new Image();
+  im.onload = function () {
+    try {
+      var m = 1600, w = im.naturalWidth, h = im.naturalHeight, k = Math.min(1, m / Math.max(w, h)), c = document.createElement('canvas');
+      c.width = Math.round(w * k); c.height = Math.round(h * k);
+      var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); cb(c.toDataURL('image/jpeg', .85));
+    } catch (e) { cb(null); }
+  };
+  im.onerror = function () { URL.revokeObjectURL(url); cb(null); };
+  im.src = url;
+}
+function wWhich() {
+  var h = '<div class="wchips">'; for (var i = 1; i <= 9; i++) h += '<button data-w="nr' + i + '">' + i + '</button>'; h += '</div>';
+  wScreen({ mood: 'normal', say: 'Welche Aufgabe meinst du? Tipp auf die Nummer.', read: 'Welche Aufgabe meinst du? Tipp auf die Nummer.', body: h,
+    actions: [{ id: 'nrx', label: 'Weiß ich nicht', ghost: true, fn: function () { W.nr = ''; wSend(); } }] });
+  for (var j = 1; j <= 9; j++) (function (n) { W.acts['nr' + n] = function () { W.nr = String(n); wSend(); }; })(j);
+}
+
+/* Anfrage an wache.php */
+function wPost(payload) {
+  payload.name = S.name; payload.achten = wAchten(); payload.hinweis = wEnsure().set.text || '';
+  return fetch('wache.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    .then(function (r) { return r.json().catch(function () { return { ok: false, error: 'Fehler ' + r.status }; }); });
+}
+function wSend() {
+  var mode = W.mode;
+  wScreen({ mood: 'sniff', say: pick(['Paul schnüffelt … Ich suche nach Spuren.', 'Einen Moment, meine Spürnase arbeitet …', 'Ich schaue mir alles ganz genau an …']), body: '<div class="wpaws"><span>🐾</span><span>🐾</span><span>🐾</span></div>' });
+  var p = { mode: mode, image: W.img };
+  if (mode === 'hilfe') p.nr = W.nr || '';
+  if (mode === 'nach') p.spuren = W.alle;
+  wPost(p).then(function (j) {
+    if (W.mode !== mode || $('v-wache').hidden) return;
+    if (!j || !j.ok) { wError(j && j.error ? j.error : 'Das hat nicht geklappt.', true); return; }
+    var d = j.data || {};
+    if (d.lesbar === false) {
+      var t = d.problem || 'Ich kann das Foto nicht gut lesen. Mach es nochmal, etwas heller und näher dran.';
+      wScreen({ mood: 'sad', say: t, read: t, actions: [{ id: 'again', label: '📷 Neues Foto', fn: function () { wPhoto(mode); } }, { id: 'home', label: 'Zur Wache', ghost: true, fn: wStartScreen }] });
+      return;
+    }
+    if (mode === 'hilfe') { W.res = d; wSaveCase(); wHelp(0); }
+    else if (mode === 'kontrolle') { W.res = d; wSetSpuren(d.spuren); wSaveCase(); wPraise(); }
+    else { wNachResult(d); }
+  }).catch(function () { if (W.mode === mode) wError('Ich erreiche die Wache gerade nicht. Ist das WLAN an?', true); });
+}
+function wError(msg, retry) {
+  var acts = [];
+  if (retry && W.img) acts.push({ id: 'retry', label: 'Nochmal versuchen', fn: wSend });
+  acts.push({ id: 'home', label: 'Zur Wache', ghost: true, fn: wStartScreen });
+  var t = 'Oh je. ' + msg;
+  wScreen({ mood: 'sad', say: t, read: t, actions: acts });
+}
+
+/* Pädagogik der Wache (kurz):
+   - eine Sache pro Bildschirm, kurze Einheiten, nach ~12 Minuten eine Bewegungspause
+   - Aufgabe erst in eigenen Worten sagen, dann eine Verständnisfrage (WAS ist zu tun, nicht das Ergebnis)
+   - abgestufte Hilfe: erst Denkfrage, dann Hinweis auf Wunsch; bei „Frag Paul“ Stufe 1 Gegenfrage, 2 Hinweis mit Material, 3 Teilschritt
+   - Beispiel mit anderen Zahlen und Zehner (blau) / Einer (rot), danach eine ähnliche Übungsaufgabe selbst lösen
+   - Kontrolle: erst selbst prüfen, Lob für Vorgehen, Fehler sind Spuren, höchstens 3 Spuren auf einmal
+   - Deutsch: Silben farbig (wie bei den Sachaufgaben), Regeln statt Raten (im Prompt) */
+var W_PAUSEN = ['Streck dich lang wie ein Hund nach dem Schlafen.', 'Schüttel dich wie ein nasser Hund. Arme, Beine, alles!', 'Hüpf fünfmal wie ein Känguru.', 'Atme dreimal ganz tief ein und langsam wieder aus.', 'Lauf auf der Stelle, so schnell wie ein Polizeihund. Zähl bis zehn.', 'Mach dich ganz klein und dann ganz groß. Dreimal.'];
+var W_MUT = ['Du bist drangeblieben. Das ist echte Polizeiarbeit!', 'Schritt für Schritt hast du es geschafft.', 'Du hast genau hingeschaut. Super Spürnase!', 'Toll, wie konzentriert du warst!'];
+function wTxt(t) { t = String(t || ''); return W.res && W.res.fach === 'Deutsch' && S.silben !== false ? '<span class="silben">' + silbenHTML(t) + '</span>' : esc(t); }
+function wDone() { wFinishCase(); wMaybePause(wStartScreen); }
+
+/* Einsatz "Was soll ich machen?" als Folge kleiner Bildschirme */
+function wHelpFlow() {
+  var d = W.res, f = ['aufgabe', 'worte'];
+  if (d.verstaendnis_frage && (d.verstaendnis_antworten || []).length >= 2) f.push('check');
+  (d.schritte || []).slice(0, 4).forEach(function (s, k) { f.push('s' + k); });
+  if (d.beispiel_aufgabe) f.push('beispiel');
+  if (d.uebung_aufgabe && d.uebung_loesung) f.push('uebung');
+  f.push('ende');
+  return f;
+}
+function wHelp(i, opt) {
+  var d = W.res, f = wHelpFlow(), key = f[Math.max(0, Math.min(i, f.length - 1))], n = f.length, dots = dotsHTML(n, i);
+  W.back = function () { wHelp(i, opt); };
+  if (!opt || !opt.keep) W.lvl = 0;
+  var ask = { id: 'ask', label: 'Frag Paul', ghost: true, fn: wAsk }, next = function () { wHelp(i + 1); }, prev = { id: 'prev', label: 'Zurück', ghost: true, fn: function () { wHelp(i - 1); } };
+  if (key === 'aufgabe') {
+    var t = d.aufgabe || 'Schauen wir uns die Aufgabe zusammen an.';
+    wScreen({ mood: 'happy', say: 'Ich habe die Aufgabe gefunden! Hör gut zu.', dots: dots, read: 'Das sollst du machen: ' + t,
+      body: '<div class="wbox"><span class="wlabel">Das sollst du machen</span><p class="wsay">' + wTxt(t) + '</p></div>',
+      actions: [{ id: 'next', label: 'Weiter', fn: next }, ask] });
+  } else if (key === 'worte') {
+    var t2 = 'Jetzt du: Sag mir laut in deinen eigenen Worten, was du machen sollst.';
+    wScreen({ mood: 'normal', say: t2, read: t2, dots: dots, body: '<p class="muted" style="text-align:center">Wer es selbst sagen kann, hat es verstanden.</p>',
+      actions: [{ id: 'next', label: 'Hab ich gesagt', fn: next }, prev] });
+  } else if (key === 'check') {
+    var ans = d.verstaendnis_antworten.slice(0, 3), ok = Math.max(0, Math.min(ans.length - 1, parseInt(d.verstaendnis_richtig, 10) || 0));
+    if (opt && opt.pick != null) {
+      var good = opt.pick === ok, t3 = (good ? 'Genau! ' : 'Noch nicht ganz. Gut, dass wir das prüfen! ') + (d.verstaendnis_erklaerung || '');
+      wScreen({ mood: good ? 'happy' : 'normal', say: t3, read: t3, dots: dots, body: '<div class="wbox"><span class="wlabel">Richtig ist</span><p class="wsay">' + wTxt(ans[ok]) + '</p></div>', actions: [{ id: 'next', label: 'Weiter', fn: next }] });
+      return;
+    }
+    wScreen({ mood: 'normal', say: d.verstaendnis_frage, read: d.verstaendnis_frage + ' ' + ans.join('. Oder: '), dots: dots,
+      body: '<div class="wactions" style="flex-direction:column;align-items:stretch">' + ans.map(function (a, k) { return '<button class="wbig" data-w="a' + k + '"><span><b style="font-size:1.4rem">' + wTxt(a) + '</b></span></button>'; }).join('') + '</div>',
+      actions: [prev] });
+    ans.forEach(function (a, k) { W.acts['a' + k] = function () { wHelp(i, { pick: k }); }; });
+  } else if (key.charAt(0) === 's') {
+    var k = +key.slice(1), st = d.schritte[k] || {}, m = d.schritte.length, show = opt && opt.hint;
+    var body = '<div class="wbox"><span class="wlabel">Schritt ' + (k + 1) + ' von ' + m + '</span><p class="wsay">' + wTxt(st.frage || '') + '</p>' +
+      (show ? '<span class="wlabel">Hinweis</span><p class="wsay">' + wTxt(st.hinweis || '') + '</p>' : '') + '</div>';
+    var acts = show ? [{ id: 'next', label: 'Weiter', fn: next }, prev, ask]
+      : [{ id: 'next', label: 'Ich weiß es', fn: next }, { id: 'hint', label: 'Hinweis bitte', ghost: true, fn: function () { wHelp(i, { hint: true, keep: true }); } }, prev, ask];
+    wScreen({ mood: show ? 'normal' : 'sniff', say: show ? 'Hier ist ein Hinweis.' : 'Denk mal nach:', dots: dots, read: show ? st.hinweis : 'Schritt ' + (k + 1) + '. ' + st.frage, body: body, actions: acts });
+  } else if (key === 'beispiel') {
+    var weg = d.beispiel_weg || [], z = (d.beispiel_zahlen || []).filter(function (x) { return x >= 1 && x <= 100; }).slice(0, 2);
+    var bl = z.length ? '<div class="row" style="gap:22px;align-items:flex-end">' + z.map(function (x) { return '<div style="display:flex;flex-direction:column;gap:6px;align-items:center"><div class="tens">' + tensHTML(x) + '</div><span class="wlabel">' + x + '</span></div>'; }).join('') + '</div><p class="muted">Zehner sind blau, Einer rot.</p>' : '';
+    wScreen({ mood: 'normal', say: 'So geht es bei einer ähnlichen Aufgabe mit anderen Zahlen.', dots: dots, read: 'Ein Beispiel: ' + (d.beispiel_aufgabe || '') + '. ' + weg.join(' '),
+      body: '<div class="wbox"><span class="wlabel">Beispiel</span><p class="wsay"><strong>' + wTxt(d.beispiel_aufgabe || '') + '</strong></p>' + bl + '<ol class="wlist wsay">' + weg.map(function (x) { return '<li>' + wTxt(x) + '</li>'; }).join('') + '</ol></div>',
+      actions: [{ id: 'next', label: 'Jetzt üben', fn: next }, prev, ask] });
+  } else if (key === 'uebung') {
+    var tries = (opt && opt.tries) || 0, num = /^-?\d+$/.test(String(d.uebung_loesung).trim());
+    if (opt && opt.res) {
+      var c = wCase(), t4;
+      if (opt.res === 'ok') { if (c && !c.uebung) { c.uebung = tries; save(); } t4 = (tries === 1 ? 'Richtig! ' : 'Richtig! Du hast nicht aufgegeben. ') + 'Erklär mir laut, wie du es gemacht hast.'; }
+      else { if (c && !c.uebung) { c.uebung = -1; save(); } t4 = 'Das ist noch knifflig. Richtig ist ' + d.uebung_loesung + '. Schau nochmal ins Beispiel, dann klappt es bald.'; }
+      wScreen({ mood: opt.res === 'ok' ? 'happy' : 'normal', say: t4, read: t4, dots: dots, actions: [{ id: 'next', label: 'Weiter', fn: next }, opt.res === 'ok' ? ask : { id: 'bsp', label: 'Beispiel nochmal', ghost: true, fn: function () { wHelp(i - 1); } }] });
+      return;
+    }
+    var t5 = tries ? 'Fast! ' + (d.uebung_tipp || 'Probier es nochmal.') : 'Jetzt du! Löse diese Übungsaufgabe selbst.';
+    wScreen({ mood: 'normal', say: t5, read: t5 + ' ' + d.uebung_aufgabe, dots: dots,
+      body: '<div class="wbox"><span class="wlabel">Übungsaufgabe</span><p class="wwo">' + wTxt(d.uebung_aufgabe) + '</p><div class="wask"><input type="text" id="wUeb" maxlength="40" autocomplete="off"' + (num ? ' inputmode="numeric"' : ' autocapitalize="off"') + ' placeholder="Deine Lösung"><button class="btn" data-w="pruef">Prüfen</button></div></div>',
+      actions: [{ id: 'skip', label: 'Überspringen', ghost: true, fn: next }, ask] });
+    W.acts.pruef = function () {
+      var v = $('wUeb').value.trim(); if (!v) return;
+      var norm = function (x) { return String(x).toLowerCase().replace(/[\s.,!?€]/g, '').replace(/cent|ct|euro|uhr/g, ''); };
+      var good = norm(v) === norm(d.uebung_loesung);
+      if (good) wHelp(i, { res: 'ok', tries: tries + 1 }); else if (tries >= 1) wHelp(i, { res: 'no', tries: tries + 1 }); else wHelp(i, { tries: tries + 1, keep: true });
+    };
+    $('wUeb').addEventListener('keydown', function (e) { if (e.key === 'Enter') W.acts.pruef(); });
+  } else {
+    var got = d._paid ? 0 : wEarn('hilfe', (wCase() || {}).uebung > 0 ? 2 : 1); d._paid = true;
+    var t6 = pick(W_MUT) + ' ' + (d.jetzt_du || 'Jetzt machst du die Aufgabe im Heft.') + (got ? ' Du bekommst ' + got + (got === 1 ? ' Stern.' : ' Sterne.') : '');
+    wScreen({ mood: 'happy', say: t6, read: t6, body: got ? '<p class="wstar">+' + got + ' ★</p>' : '',
+      actions: [{ id: 'done', label: 'Fertig', fn: wDone }, { id: 'again', label: 'Nochmal von vorn', ghost: true, fn: function () { wHelp(0); } }, ask] });
+  }
+}
+
+/* Einsatz "Kontrolle!": erst selbst prüfen, Foto, Lob, höchstens 3 Spuren auf einmal, Verbesserung zeigen */
+function wSelfCheck() {
+  var t = 'Bevor ich schnüffle, bist du der Detektiv: Fahr mit dem Finger über jede Aufgabe. Hast du alle gemacht und nochmal angeschaut?';
+  wScreen({ mood: 'normal', say: t, read: t, actions: [{ id: 'ja', label: 'Ja, alles angeschaut', fn: function () { wPhoto('kontrolle'); } },
+    { id: 'nein', label: 'Ich schau nochmal', ghost: true, fn: function () { var t2 = 'Gut so! Nimm dir Zeit. Tipp auf Fertig, wenn du so weit bist.'; wScreen({ mood: 'happy', say: t2, read: t2, actions: [{ id: 'f', label: 'Fertig', fn: function () { wPhoto('kontrolle'); } }] }); } }] });
+}
+function wSetSpuren(list) { W.alle = (list || []).slice(0, 5); W.spuren = W.alle.slice(0, 3); }
+function wPraise() {
+  var d = W.res, n = W.spuren.length, total = W.alle.length;
+  var lob = d.lob || 'Du hast fleißig gearbeitet!';
+  W.back = wPraise;
+  if (!n) {
+    var got = d._paid ? 0 : wEarn('kontrolle', 4); d._paid = true;
+    var t = lob + ' Ich habe keine einzige Spur gefunden.' + (got ? ' Dafür gibt es ' + got + ' Sterne.' : '');
+    wScreen({ mood: 'happy', say: t, read: t, body: got ? '<p class="wstar">+' + got + ' ★</p>' : '', actions: [{ id: 'done', label: 'Fertig', fn: wDone }] });
+    return;
+  }
+  var t2 = lob + ' Ich habe ' + (total === 1 ? 'eine Spur' : total + ' Spuren') + ' gefunden. Spuren sind ganz normal. Jeder gute Polizist folgt ihnen.' + (total > n ? ' Wir schauen erst ' + n + ' an, den Rest danach.' : '');
+  wScreen({ mood: 'happy', say: t2, read: t2, actions: [{ id: 'go', label: n === 1 ? 'Zur Spur' : 'Zur ersten Spur', fn: function () { wSpur(0); } }] });
+}
+function wSpur(i, hint) {
+  var sp = W.spuren, s = sp[i];
+  W.back = function () { wSpur(i, hint); };
+  if (!hint) W.lvl = 0;
+  var frage = s.frage || s.hinweis, body = '<div class="wbox spur"><span class="wlabel">Spur ' + (i + 1) + ' von ' + sp.length + '</span><p class="wwo">' + esc(s.wo) + '</p><p class="wsay">' + wTxt(frage) + '</p>' +
+    (hint && s.frage ? '<span class="wlabel">Hinweis</span><p class="wsay">' + wTxt(s.hinweis) + '</p>' : '') + '</div>';
+  var acts = [{ id: 'fixed', label: 'Hab ich verbessert', fn: function () { if (i + 1 < sp.length) wSpur(i + 1); else wEndScreen(); } }];
+  if (!hint && s.frage) acts.push({ id: 'hint', label: 'Noch ein Hinweis', ghost: true, fn: function () { wSpur(i, true); } });
+  acts.push({ id: 'ask', label: 'Frag Paul', ghost: true, fn: wAsk });
+  wScreen({ mood: 'sniff', say: i ? 'Hier ist die nächste Spur.' : 'Folge der Spur!', dots: dotsHTML(sp.length, i),
+    read: hint ? s.hinweis : 'Spur ' + (i + 1) + '. ' + s.wo + '. ' + frage, body: body, actions: acts });
+}
+function wEndScreen() {
+  var got = W.res && !W.res._paid ? wEarn('kontrolle', 2) : 0; if (W.res) W.res._paid = true;
+  var rest = W.alle.length - W.spuren.length;
+  var t = pick(W_MUT) + (got ? ' Du bekommst ' + got + ' Sterne.' : '') + ' Zeig mir jetzt deine Verbesserung.' + (rest > 0 ? ' Danach schauen wir die anderen Spuren an.' : '');
+  W.back = wEndScreen;
+  wScreen({ mood: 'happy', say: t, read: t, body: got ? '<p class="wstar">+' + got + ' ★</p>' : '',
+    actions: [{ id: 'nach', label: '📷 Verbesserung zeigen', fn: function () { wPhoto('nach'); } },
+      { id: 'later', label: 'Später', ghost: true, fn: wDone }] });
+}
+function wNachResult(d) {
+  var c = wCase(); W.res = merge(W.res || {}, { lob: d.lob, eltern_tipp: d.eltern_tipp || (W.res && W.res.eltern_tipp) });
+  var vorher = W.alle.length, rest = (d.spuren || []).slice(0, 5);
+  if (c) { c.besser = Math.max(c.besser || 0, vorher - rest.length); c.rest = rest.length; if (d.eltern_notiz) c.notiz2 = String(d.eltern_notiz).slice(0, 240); save(); }
+  wSetSpuren(rest);
+  if (!rest.length) {
+    var got = W.nachDone ? 0 : wEarn('kontrolle', 2); W.nachDone = true;
+    var t = (d.lob || 'Super verbessert!') + ' Jetzt stimmt alles. Fall gelöst!' + (got ? ' Du bekommst ' + got + ' Sterne.' : '');
+    W.back = null;
+    wScreen({ mood: 'happy', say: t, read: t, body: got ? '<p class="wstar">+' + got + ' ★</p>' : '', actions: [{ id: 'done', label: 'Fertig', fn: wDone }] });
+    return;
+  }
+  var t2 = (d.lob || 'Gut verbessert!') + ' ' + (rest.length === 1 ? 'Eine Spur ist noch offen.' : rest.length + ' Spuren sind noch offen.') + ' Das schaffst du auch noch.';
+  W.res._paid = true;
+  wScreen({ mood: 'happy', say: t2, read: t2, actions: [{ id: 'go', label: 'Zur Spur', fn: function () { wSpur(0); } }, { id: 'later', label: 'Später', ghost: true, fn: wDone }] });
+}
+
+/* Hausaufgaben-Streife: Zeit für die Hausaufgaben. Startet beim Öffnen der Wache, endet mit „Feierabend“
+   oder nach 30 Minuten ohne Aktivität. Ruhige Zeitleiste statt Countdown, Bewegungspausen, keine Strafe bei Überziehen:
+   die Eltern sehen es als Hinweis. Laufende Streife pro Gerät, fertige Streifen in S.wache.sessions (synchronisiert). */
+var STR_KEY = KEY + '-streife', STR_IDLE = 30 * 60 * 1000;
+function wSet() { var st = wEnsure().set; return { ziel: st.ziel == null ? 30 : +st.ziel, pause: st.pause == null ? 12 : +st.pause }; }
+function strGet() { try { return JSON.parse(lsGet(STR_KEY) || 'null'); } catch (e) { return null; } }
+function strPut(s) { lsSet(STR_KEY, s ? JSON.stringify(s) : ''); }
+function strStart() {
+  var s = strGet(), now = Date.now();
+  if (s && now - s.last > STR_IDLE) { strClose(s, s.last, false); s = null; }
+  if (!s) { s = { id: new Date(now).toISOString() + '-' + DEV.slice(-4), start: now, last: now, lastPause: now, pausen: 0, ziel: wSet().ziel, shownEnd: false }; strPut(s); }
+  return s;
+}
+function strTouch() { var s = strGet(); if (s) { s.last = Date.now(); strPut(s); } }
+function strMin(s) { return Math.max(0, Math.round(((s.end || Date.now()) - s.start) / 60000)); }
+/* Zeit je Fach: von einem Einsatz bis zum nächsten zählt für dessen Fach */
+function strFaecher(start, end) {
+  var cs = wEnsure().cases.filter(function (c) { var t = Date.parse(c.d); return t >= start && t <= end; }).sort(function (a, b) { return a.d < b.d ? -1 : 1; });
+  var f = {}; if (!cs.length) return f;
+  var first = Date.parse(cs[0].d); if (first - start > 60000) f['ohne Foto'] = Math.round((first - start) / 1000);
+  cs.forEach(function (c, i) { var a = Date.parse(c.d), b = i + 1 < cs.length ? Date.parse(cs[i + 1].d) : end, k = c.fach || 'Sonstiges'; f[k] = (f[k] || 0) + Math.max(0, Math.round((b - a) / 1000)); });
+  return f;
+}
+function strClose(s, end, byChild) {
+  if (!s) return null;
+  var rec = { id: s.id, d: new Date(s.start).toISOString(), sek: Math.max(0, Math.round((end - s.start) / 1000)), ziel: s.ziel || 0, pausen: s.pausen || 0, fertig: !!byChild, faecher: strFaecher(s.start, end) };
+  var w = wEnsure(); if (!Array.isArray(w.sessions)) w.sessions = [];
+  if (!w.sessions.some(function (x) { return x.id === rec.id; })) w.sessions.push(rec);
+  if (w.sessions.length > 120) w.sessions = w.sessions.slice(-120);
+  strPut(null); save(); return rec;
+}
+function strBar() {
+  var el = $('wStreife'); if (!el) return;
+  var s = strGet(); if (!s || !W.ready) { el.innerHTML = ''; return; }
+  var m = strMin(s), z = s.ziel || 0, pct = z ? Math.min(100, m / z * 100) : 0, over = z && m >= z;
+  var txt = z ? (over ? 'Streife: Zeit ist um. Mach in Ruhe fertig.' : 'Streife: ' + m + ' von ' + z + ' Minuten') : 'Streife läuft seit ' + m + (m === 1 ? ' Minute' : ' Minuten');
+  el.innerHTML = '<div class="wstreife' + (over ? ' over' : '') + '"><div class="wroad">' + (z ? '<i style="width:' + pct + '%"></i><span class="wdog" style="left:' + pct + '%">🐕</span>' : '<span class="wdog walk">🐕</span>') + '<span class="wflag">🏁</span></div><span class="wstr-t">' + txt + '</span></div>';
+}
+/* Alle 15 Sekunden: Leiste, Pause und Ende prüfen (nur auf der Startseite der Wache, nie mitten im Einsatz) */
+setInterval(function () {
+  if ($('v-wache').hidden || !W.ready) return;
+  strBar();
+  if (!W.mode && W.onStart) wDue();
+}, 15000);
+function wDue() {
+  var s = strGet(); if (!s) return false;
+  var set = wSet(), now = Date.now();
+  if (s.ziel && !s.shownEnd && now - s.start >= s.ziel * 60000) { s.shownEnd = true; strPut(s); wTimeUp(); return true; }
+  if (set.pause && now - s.lastPause >= set.pause * 60000) { wPauseScreen(); return true; }
+  return false;
+}
+function wPauseScreen(next) {
+  var s = strGet(); if (s) { s.lastPause = Date.now(); s.pausen = (s.pausen || 0) + 1; strPut(s); }
+  var t = 'Du hast konzentriert gearbeitet. Zeit für eine Hundepause! ' + pick(W_PAUSEN);
+  W.onStart = false;
+  wScreen({ mood: 'happy', say: t, read: t, body: '<p class="wstar" id="wPauseT">2:00</p><p class="muted" style="text-align:center">Zwei Minuten bewegen, dann geht es mit frischem Kopf weiter.</p>', actions: [{ id: 'weiter', label: 'Pause gemacht', fn: next || wStartScreen }] });
+  var b = document.querySelector('[data-w="weiter"]'), n = 120; if (b) b.disabled = true;
+  var iv = setInterval(function () {
+    n--; var el = $('wPauseT'); if (!el) { clearInterval(iv); return; }
+    el.textContent = n > 0 ? Math.floor(n / 60) + ':' + ('0' + n % 60).slice(-2) : '✓';
+    if (n <= 90 && b) b.disabled = false; // nach 30 Sekunden darf man weiter, die Uhr läuft trotzdem zu Ende
+    if (n <= 0) clearInterval(iv);
+  }, 1000);
+}
+function wMaybePause(next) {
+  var s = strGet(), set = wSet();
+  if (s && set.pause && Date.now() - s.lastPause >= set.pause * 60000) wPauseScreen(next); else next();
+}
+function wTimeUp() {
+  W.onStart = false;
+  var t = 'Deine Streife-Zeit ist um. Bist du mit allen Hausaufgaben fertig? Wenn nicht, ist das okay. Mach in Ruhe zu Ende.';
+  wScreen({ mood: 'happy', say: t, read: t, actions: [{ id: 'fa', label: '🏁 Ja, Feierabend!', fn: wFeierabend }, { id: 'noch', label: 'Ich mache noch fertig', ghost: true, fn: wStartScreen }] });
+}
+function wFeierabend() {
+  var s = strGet(); if (!s) { wStartScreen(); return; }
+  var rec = strClose(s, Date.now(), true), m = Math.round(rec.sek / 60), got = 0, t;
+  if (rec.ziel && m <= rec.ziel) {
+    var day = new Date().toISOString().slice(0, 10), k = KEY + '-streife-stern';
+    if (lsGet(k) !== day) { lsSet(k, day); got = 3; addStars(3); save(); }
+    t = 'Feierabend! Streife beendet. Du warst in ' + m + ' Minuten fertig, genau in deiner Zeit.' + (got ? ' Dafür gibt es 3 Sterne.' : '') + ' Jetzt hast du frei!';
+  } else t = 'Feierabend! Streife beendet. Heute hat es ' + m + ' Minuten gedauert. Du hast durchgehalten, das zählt! Jetzt hast du frei.';
+  W.onStart = false;
+  wScreen({ mood: 'happy', say: t, read: t, body: got ? '<p class="wstar">+3 ★</p>' : '', actions: [{ id: 'home', label: 'Zur Startseite', fn: function () { go('home'); } }] });
+  strBar();
+}
+
+/* Frag Paul: Tipp-Fragen, Tippen, Mikrofon (wenn der Browser es kann) */
+function wContext() {
+  var d = W.res || {}, t = '';
+  if (W.mode === 'hilfe') t = 'Aufgabe: ' + (d.aufgabe || '') + ' Schritte: ' + (d.schritte || []).map(function (s) { return s.frage + ' ' + s.hinweis; }).join(' ') + ' Beispiel: ' + (d.beispiel_aufgabe || '');
+  else t = 'Lob: ' + (d.lob || '') + ' Spuren: ' + W.spuren.map(function (s) { return s.wo + ': ' + (s.frage || '') + ' ' + s.hinweis; }).join(' | ');
+  W.qa.slice(-3).forEach(function (q) { t += '\nFrage: ' + q.q + '\nDeine Antwort: ' + q.a; });
+  return t;
+}
+function wAsk(answer) {
+  var body = '<div class="wactions"><button class="btn ghost" data-w="q1">Erklär das nochmal anders</button><button class="btn ghost" data-w="q2">Gib mir noch einen Tipp</button><button class="btn ghost" data-w="q3">Was bedeutet das Wort?</button></div>' +
+    '<div class="wask"><input type="text" id="wAskIn" maxlength="200" placeholder="Oder schreib deine Frage …" autocomplete="off">' +
+    '<button class="btn" data-w="send">Fragen</button>' + (wMicOk ? '<button class="btn ghost" data-w="mic">🎤 Sprechen</button>' : '') + '</div>';
+  var say = typeof answer === 'string' ? answer : 'Was möchtest du wissen?';
+  wScreen({ mood: 'normal', say: say, read: typeof answer === 'string' ? answer : '', body: body,
+    actions: [{ id: 'back', label: 'Zurück zum Einsatz', fn: function () { if (W.back) W.back(); else wStartScreen(); } }] });
+  W.acts.q1 = function () { wQuestion('Erklär das nochmal anders.'); };
+  W.acts.q2 = function () { wQuestion('Gib mir noch einen Tipp.'); };
+  W.acts.q3 = function () { wQuestion('Ich verstehe ein Wort in der Aufgabe nicht. Welche Wörter könnten schwer sein? Erklär sie mir.'); };
+  W.acts.send = function () { var v = $('wAskIn').value.trim(); if (v) wQuestion(v); };
+  W.acts.mic = wListen;
+  $('wAskIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') W.acts.send(); });
+}
+function wQuestion(q) {
+  wScreen({ mood: 'sniff', say: 'Ich überlege …', body: '<div class="wpaws"><span>🐾</span><span>🐾</span><span>🐾</span></div>' });
+  var mode = W.mode;
+  W.lvl = (W.lvl || 0) + (/anders/.test(q) ? 0 : 1);
+  wPost({ mode: 'frage', frage: q, kontext: wContext(), image: W.img || '', stufe: Math.max(1, Math.min(3, W.lvl)) }).then(function (j) {
+    if (W.mode !== mode || $('v-wache').hidden) return;
+    if (!j || !j.ok || !j.data || !j.data.antwort) { wAsk('Oh je, das hat nicht geklappt. ' + ((j && j.error) || '') + ' Frag nochmal.'); return; }
+    W.qa.push({ q: q, a: j.data.antwort });
+    var c = wCase(); if (c) { c.fragen = (c.fragen || 0) + 1; save(); }
+    wAsk(j.data.antwort);
+  }).catch(function () { wAsk('Ich erreiche die Wache gerade nicht. Frag gleich nochmal.'); });
+}
+function wListen() {
+  if (!SR) return;
+  try {
+    try { speechSynthesis.cancel(); } catch (e) {}
+    var rec = new SR(); W.rec = rec; rec.lang = 'de-DE'; rec.interimResults = false; rec.maxAlternatives = 1;
+    var btn = document.querySelector('[data-w="mic"]'); if (btn) btn.textContent = '🎤 Ich höre zu …';
+    rec.onresult = function (e) { var t = e.results && e.results[0] && e.results[0][0] ? e.results[0][0].transcript : ''; if (t) { var inp = $('wAskIn'); if (inp) inp.value = t; wQuestion(t); } };
+    rec.onerror = function () { wMicOk = false; wAsk('Das Mikrofon geht hier leider nicht. Tipp auf eine Frage oder schreib sie auf.'); };
+    rec.onend = function () { W.rec = null; var b = document.querySelector('[data-w="mic"]'); if (b) b.textContent = '🎤 Sprechen'; };
+    rec.start();
+  } catch (e) { wMicOk = false; wAsk('Das Mikrofon geht hier leider nicht. Tipp auf eine Frage oder schreib sie auf.'); }
+}
+
+/* Sterne und Notizen */
+function wEarn(kind, n) {
+  var day = new Date().toISOString().slice(0, 10), k = KEY + '-wache-day', st;
+  try { st = JSON.parse(lsGet(k) || 'null'); } catch (e) { st = null; }
+  if (!st || st.d !== day) st = { d: day, n: 0 };
+  var got = Math.max(0, Math.min(n, W_DAYCAP - st.n));
+  if (!got) return 0;
+  st.n += got; lsSet(k, JSON.stringify(st));
+  addStars(got); save(); return got;
+}
+function wCase() { var cs = wEnsure().cases; for (var i = cs.length - 1; i >= 0; i--) if (cs[i].id === W.caseId) return cs[i]; return null; }
+function wSaveCase() {
+  var d = W.res || {}, c = wCase();
+  if (!c) { c = { id: W.caseId, d: new Date(W.start).toISOString(), typ: W.mode === 'hilfe' ? 'hilfe' : 'kontrolle' }; wEnsure().cases.push(c); }
+  c.fach = String(d.fach || '').slice(0, 20); c.thema = String(d.thema || '').slice(0, 60);
+  c.notiz = String(d.eltern_notiz || '').slice(0, 240);
+  if (c.typ === 'kontrolle') {
+    c.n = Math.max(0, parseInt(d.anzahl_aufgaben, 10) || 0); c.ok = Math.max(0, Math.min(c.n, parseInt(d.anzahl_richtig, 10) || 0));
+    c.fehler = (d.spuren || []).slice(0, 5).map(function (s) { return String(s.fehlerart || 'Sonstiges').slice(0, 40); });
+    c.tipp = String(d.eltern_tipp || '').slice(0, 240);
+  }
+  c.dauer = Math.min(3600, Math.round((Date.now() - W.start) / 1000));
+  if (S.wache.cases.length > 150) S.wache.cases = S.wache.cases.slice(-150);
+  save(); checkBadges(true);
+}
+function wFinishCase() { var c = wCase(); if (c) { c.dauer = Math.min(3600, Math.round((Date.now() - W.start) / 1000)); save(); } W.res = null; W.img = null; }
+
+/* Elternbereich: Auswertung, Einstellungen, Vorlesen */
+function wFmtMin(sek) { var m = Math.round(sek / 60); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + (m % 60) + ' min'; }
+function wTimeHTML() {
+  var ss = wEnsure().sessions.slice(), cur = strGet();
+  if (cur) ss.push({ id: cur.id, d: new Date(cur.start).toISOString(), sek: Math.round((Date.now() - cur.start) / 1000), ziel: cur.ziel, pausen: cur.pausen, faecher: strFaecher(cur.start, Date.now()), laeuft: true });
+  var h = '<h3>Hausaufgabenzeit</h3>';
+  if (!ss.length) return h + '<p class="muted">Noch keine Streife. Die Zeit läuft, sobald Phili die Wache öffnet, und endet mit „Feierabend“ (oder nach 30 Minuten ohne Tippen).</p>';
+  var days = {}, order = [];
+  ss.forEach(function (x) { var k = String(x.d).slice(0, 10); if (!days[k]) { days[k] = { sek: 0, ziel: 0, n: 0, f: {}, pausen: 0 }; order.push(k); } var D = days[k]; D.sek += x.sek || 0; D.ziel = Math.max(D.ziel, x.ziel || 0); D.n++; D.pausen += x.pausen || 0; for (var f in (x.faecher || {})) D.f[f] = (D.f[f] || 0) + x.faecher[f]; });
+  order.sort(); var last = order.slice(-7), over = 0, sum = 0, maxS = 1;
+  last.forEach(function (k) { var D = days[k]; sum += D.sek; maxS = Math.max(maxS, D.sek, D.ziel * 60); if (D.ziel && D.sek > D.ziel * 60 + 300) over++; });
+  h += '<div class="kv"><div><span>Ø pro Tag (letzte ' + last.length + ')</span><strong>' + wFmtMin(sum / last.length) + '</strong></div><div><span>Zielzeit</span><strong>' + (wSet().ziel ? wSet().ziel + ' min' : '–') + '</strong></div><div><span>Länger als Ziel (+5 min)</span><strong>' + over + ' von ' + last.length + ' Tagen</strong></div></div>';
+  if (over >= 3) h += '<p class="danger">Hinweis: An ' + over + ' der letzten ' + last.length + ' Tage hat es deutlich länger gedauert als geplant. Vielleicht helfen kürzere Blöcke, mehr Pausen oder ein Gespräch mit der Lehrkraft über die Menge.</p>';
+  h += '<div class="wtime">';
+  last.slice().reverse().forEach(function (k) {
+    var D = days[k], fs = Object.keys(D.f).sort(function (a, b) { return D.f[b] - D.f[a]; });
+    var bar = '<div class="wtbar"><i style="width:' + Math.round(D.sek / maxS * 100) + '%" class="' + (D.ziel && D.sek > D.ziel * 60 + 300 ? 'over' : '') + '"></i>' + (D.ziel ? '<b style="left:' + Math.round(D.ziel * 60 / maxS * 100) + '%"></b>' : '') + '</div>';
+    h += '<div class="wtrow"><span>' + new Date(k + 'T12:00').toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' }) + '</span>' + bar + '<span><strong>' + wFmtMin(D.sek) + '</strong>' + (D.ziel ? ' / Ziel ' + D.ziel + ' min' : '') + (D.n > 1 ? ' · ' + D.n + ' Streifen' : '') + (D.pausen ? ' · ' + D.pausen + (D.pausen === 1 ? ' Pause' : ' Pausen') : '') + (fs.length ? '<br><span class="muted">' + fs.filter(function (f) { return D.f[f] >= 60; }).map(function (f) { return esc(f) + ' ' + wFmtMin(D.f[f]); }).join(', ') + '</span>' : '') + '</span></div>';
+  });
+  h += '</div>';
+  var sl = ss.slice(-6).reverse();
+  h += '<div class="table-wrap"><table><thead><tr><th>Streife</th><th>Dauer</th><th>Ziel</th><th>Fächer</th></tr></thead><tbody>' + sl.map(function (x) {
+    var f = x.faecher || {}; return '<tr><td>' + fmtDate(x.d) + (x.laeuft ? ' <span class="badge">läuft</span>' : x.fertig ? '' : ' <span class="muted">(ohne Feierabend)</span>') + '</td><td>' + wFmtMin(x.sek) + '</td><td>' + (x.ziel ? x.ziel + ' min' : '–') + '</td><td>' + (Object.keys(f).filter(function (k) { return f[k] >= 60; }).map(function (k) { return esc(k) + ' ' + wFmtMin(f[k]); }).join(', ') || '–') + '</td></tr>';
+  }).join('') + '</tbody></table></div><p class="muted">Fächer: die Zeit von einem Foto bis zum nächsten zählt für das Fach dieses Fotos, ungefähr.</p>';
+  return h;
+}
+function renderWacheParent() {
+  var w = wEnsure(), cs = w.cases, st = w.set, h = '<h3>Hausaufgaben-Wache</h3>';
+  h += '<p class="muted" id="wStatus">' + (W.ready === true ? 'Eingerichtet: Paul ist im Dienst.' : W.ready === false ? (W.why === 'nokey' ? 'Noch nicht eingerichtet: Auf der Synology fehlt der API-Schlüssel (ANTHROPIC_API_KEY in docker-compose bzw. .env, siehe README).' : 'Nicht erreichbar: Die Wache läuft nur über die Synology (wache.php), nicht über GitHub Pages.') : 'Status wird geprüft …') + ' Fotos werden nie gespeichert, nur kurze Notizen.</p>';
+  if (W.ready === null) setTimeout(function () { wCheck(); setTimeout(function () { if (!$('v-parents').hidden) renderWacheParent(); }, 1500); }, 0);
+  var days = {}, dur = 0, n = 0, ok = 0, kinds = {}, tips = [], kon = 0;
+  cs.forEach(function (c) { days[String(c.d).slice(0, 10)] = (days[String(c.d).slice(0, 10)] || 0) + (c.dauer || 0); dur += c.dauer || 0; });
+  var kc = cs.filter(function (c) { return c.typ === 'kontrolle'; });
+  kc.slice(-10).forEach(function (c) { if (c.n) { n += c.n; ok += c.ok || 0; kon++; } });
+  cs.slice(-25).forEach(function (c) { (c.fehler || []).forEach(function (f) { kinds[f] = (kinds[f] || 0) + 1; }); });
+  kc.slice().reverse().forEach(function (c) { if (c.tipp && tips.indexOf(c.tipp) < 0 && tips.length < 3) tips.push(c.tipp); });
+  var nd = Object.keys(days).length, rk = wRank();
+  h += '<div class="kv"><div><span>Einsätze</span><strong>' + cs.length + ' (' + (cs.length - kc.length) + ' Hilfe, ' + kc.length + ' Kontrolle)</strong></div><div><span>Tage mit Wache</span><strong>' + nd + '</strong></div><div><span>Trefferquote (letzte 10 Kontrollen)</span><strong>' + (n ? Math.round(ok / n * 100) + ' %' : '–') + '</strong></div><div><span>Dienstgrad</span><strong>' + esc(rk.name) + '</strong></div></div>';
+  h += wTimeHTML();
+  var top = Object.keys(kinds).sort(function (a, b) { return kinds[b] - kinds[a]; }).slice(0, 5);
+  if (top.length) h += '<p><strong>Häufige Fehlerarten:</strong> ' + top.map(function (k) { return esc(k) + ' (' + kinds[k] + '×)'; }).join(', ') + '</p>';
+  if (tips.length) h += '<p><strong>Übungstipps für zu Hause:</strong></p><ul class="wlist">' + tips.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>';
+  if (cs.length) {
+    h += '<div class="table-wrap"><table><thead><tr><th>Wann</th><th>Einsatz</th><th>Thema</th><th>Ergebnis</th><th>Notiz</th></tr></thead><tbody>';
+    cs.slice(-8).reverse().forEach(function (c) {
+      var erg = c.typ === 'kontrolle' ? (c.n ? c.ok + ' / ' + c.n + ' richtig' : '–') + (c.besser ? ', ' + c.besser + ' verbessert' : '') : (c.fragen ? c.fragen + ' Rückfragen' : 'erklärt');
+      h += '<tr><td>' + fmtDate(c.d) + '</td><td>' + (c.typ === 'kontrolle' ? 'Kontrolle' : 'Hilfe') + '</td><td>' + esc((c.fach ? c.fach + ': ' : '') + (c.thema || '')) + '</td><td>' + esc(erg) + '</td><td>' + esc(c.notiz || '') + (c.notiz2 ? '<br><span class="muted">Danach: ' + esc(c.notiz2) + '</span>' : '') + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+  } else h += '<p class="muted">Noch kein Einsatz.</p>';
+  var ws = wSet(), zo = [0, 15, 20, 30, 45, 60], po = [0, 10, 12, 15, 20];
+  h += '<h3>Zeit einstellen</h3><div class="row"><label for="wsZiel">Zielzeit pro Tag</label><select id="wsZiel" data-ws="ziel">' + zo.map(function (z) { return '<option value="' + z + '"' + (ws.ziel === z ? ' selected' : '') + '>' + (z ? z + ' Minuten' : 'keine') + '</option>'; }).join('') + '</select></div>';
+  h += '<div class="row"><label for="wsPause">Bewegungspause alle</label><select id="wsPause" data-ws="pause">' + po.map(function (z) { return '<option value="' + z + '"' + (ws.pause === z ? ' selected' : '') + '>' + (z ? z + ' Minuten' : 'nie') + '</option>'; }).join('') + '</select></div>';
+  h += '<p class="muted">Phili sieht eine ruhige Streifen-Leiste (kein Countdown). Bei Ablauf fragt Paul freundlich nach Feierabend. Wer in der Zeit fertig ist, bekommt einmal am Tag 3 Sterne. Länger dauern wird nicht bestraft, es steht hier nur als Hinweis.</p>';
+  h += '<h3>Worauf soll Paul achten?</h3>';
+  for (var k in W_ACHTEN_KURZ) h += '<div class="row"><input type="checkbox" id="wa-' + k + '" data-wa="' + k + '" style="width:24px;height:24px"' + (st[k] ? ' checked' : '') + '><label for="wa-' + k + '">' + W_ACHTEN_KURZ[k] + '</label></div>';
+  h += '<div class="row"><label for="waText">Eigener Hinweis</label><input type="text" id="waText" maxlength="200" style="flex:1;min-width:200px" placeholder="z. B. Er verwechselt b und d" value="' + esc(st.text || '') + '"><button class="btn ghost" id="waSave">Speichern</button></div>';
+  h += '<h3>Vorlesen</h3><p class="muted">Gilt für die ganze App auf diesem Gerät.</p>';
+  h += '<div class="row"><label for="vVoice">Stimme</label><select id="vVoice"><option value="">Standard (Tablet-Stimme)</option></select></div>';
+  h += '<div class="row"><label for="vRate">Tempo</label><input type="range" id="vRate" min="0.6" max="1.3" step="0.05" value="' + (VOICE.r || .9) + '" style="flex:1;min-width:160px"><span id="vRateV">' + Math.round((VOICE.r || .9) * 100) + ' %</span><button class="btn ghost" id="vTest">Probe hören</button></div>';
+  h += '<div class="row"><input type="checkbox" id="vAuto" style="width:24px;height:24px"' + (VOICE.auto ? ' checked' : '') + '><label for="vAuto">Paul liest automatisch vor</label></div>';
+  if (!canSpeak) h += '<p class="danger">Dieser Browser kann nicht vorlesen.</p>';
+  $('wacheParent').innerHTML = h;
+  fillVoices();
+}
+function fillVoices() {
+  var sel = $('vVoice'); if (!sel || !canSpeak) return;
+  var vs = (speechSynthesis.getVoices() || []).filter(function (v) { return /^de/i.test(v.lang); });
+  sel.innerHTML = '<option value="">Standard (Tablet-Stimme)</option>' + vs.map(function (v) { return '<option value="' + esc(v.name) + '"' + (v.name === VOICE.v ? ' selected' : '') + '>' + esc(v.name) + '</option>'; }).join('');
+}
+if (canSpeak) try { speechSynthesis.addEventListener('voiceschanged', fillVoices); } catch (e) {}
+function saveVoice() { lsSet('philian-rechenheft-v1-voice', JSON.stringify(VOICE)); }
+$('wacheParent').addEventListener('change', function (e) {
+  var t = e.target, k = t.getAttribute('data-wa'), ks = t.getAttribute('data-ws');
+  if (ks) { wEnsure().set[ks] = +t.value; S.at.wacheSet = Date.now(); save(); var cur = strGet(); if (cur && ks === 'ziel') { cur.ziel = +t.value; cur.shownEnd = false; strPut(cur); } renderWacheParent(); return; }
+  if (k) { wEnsure().set[k] = t.checked; S.at.wacheSet = Date.now(); save(); return; }
+  if (t.id === 'vVoice') { VOICE.v = t.value; saveVoice(); }
+  if (t.id === 'vAuto') { VOICE.auto = t.checked; saveVoice(); }
+  if (t.id === 'vRate') { VOICE.r = +t.value; saveVoice(); }
+});
+$('wacheParent').addEventListener('input', function (e) { if (e.target.id === 'vRate') $('vRateV').textContent = Math.round(e.target.value * 100) + ' %'; });
+$('wacheParent').addEventListener('click', function (e) {
+  if (e.target.id === 'vTest') speak('Hallo ' + S.name + '! Ich bin Polizeihund Paul. So klinge ich.');
+  if (e.target.id === 'waSave') { wEnsure().set.text = $('waText').value.trim().slice(0, 200); S.at.wacheSet = Date.now(); save(); e.target.textContent = 'Gespeichert'; setTimeout(function () { e.target.textContent = 'Speichern'; }, 1200); }
+});
+
+BADGES.push(
+  { id: 'wache1', name: 'Erster Einsatz', desc: 'Paul bei den Hausaufgaben gefragt', col: '#1d3f7a', sym: '🐾', test: function () { return wEnsure().cases.length >= 1; } },
+  { id: 'spurenfrei', name: 'Spurlos', desc: 'Kontrolle ganz ohne Spuren', col: '#2f9e5b', sym: '✓', test: function () { return wEnsure().cases.some(function (c) { return c.typ === 'kontrolle' && c.n > 0 && c.ok === c.n; }); } },
+  { id: 'kommissar', name: 'Kommissar', desc: '25 Einsätze bei der Hausaufgaben-Wache', col: '#13305f', sym: '25', test: function () { return wEnsure().cases.length >= 25; } },
+  { id: 'polizeichef', name: 'Polizeichef', desc: 'Höchster Dienstgrad bei der Wache', col: '#c99a0a', sym: '★', test: function () { return wEnsure().cases.length >= 60; } }
+);
+
 /* Ältere sync.php (json_decode mit assoc) macht aus leeren Objekten {} leere Listen [] und aus {"0":…} Listen.
    In einer Liste gehen später gesetzte Schlüssel (z. B. gekaufte Teile in Olafs Land) beim Speichern verloren.
    Darum alles, was keine echte Liste ist, wieder zum Objekt machen. */
-var LISTS = { history: 1, wrong: 1, photos: 1, done: 1 };
+var LISTS = { history: 1, wrong: 1, photos: 1, done: 1, cases: 1, fehler: 1, sessions: 1 };
 function fixShapes(x, key) {
   if (!x || typeof x !== 'object') return x;
   var i, k;
