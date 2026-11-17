@@ -22,7 +22,22 @@ function antwort($status, $daten) {
     exit;
 }
 
+// Schlüssel: Umgebungsvariable, sonst Datei claude.env (oder .env) neben dieser Datei.
+// Apache gibt diese Dateien nicht an den Browser heraus (siehe docker-compose.yml).
+function schluesselAusDatei() {
+    foreach ([__DIR__ . '/claude.env', __DIR__ . '/.env'] as $datei) {
+        if (!is_file($datei) || !is_readable($datei)) continue;
+        foreach (preg_split('/\R/', (string)file_get_contents($datei, false, null, 0, 10000)) as $zeile) {
+            $zeile = trim($zeile);
+            if ($zeile === '' || $zeile[0] === '#') continue;
+            if (preg_match('/^(?:export\s+)?ANTHROPIC_API_KEY\s*[=:]\s*(.+)$/', $zeile, $m)) return trim($m[1], " \t\"'");
+            if (preg_match('/^sk-ant-[A-Za-z0-9_\-]+$/', $zeile)) return $zeile; // nur der Schlüssel in der Datei
+        }
+    }
+    return '';
+}
 $schluessel = trim((string)(getenv('ANTHROPIC_API_KEY') ?: ''));
+if ($schluessel === '') $schluessel = schluesselAusDatei();
 $modell = getenv('WACHE_MODELL') ?: 'claude-opus-5-5';
 $aufwand = getenv('WACHE_AUFWAND') ?: 'medium';
 $limit = (int)(getenv('WACHE_LIMIT') ?: 60); // Anfragen pro Tag, schützt vor hohen Kosten

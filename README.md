@@ -53,13 +53,11 @@ Die Wache schickt das Foto über `wache.php` auf der Synology an Claude (Anthrop
 
 1. Auf https://console.anthropic.com anmelden, unter **Billing** etwas Guthaben aufladen (z. B. 5 €) und unter **API Keys** einen Schlüssel erstellen (beginnt mit `sk-ant-`). Eine Prüfung kostet etwa 2 bis 6 Cent, eine Rückfrage an Paul etwa 1 bis 2 Cent.
 2. Neue Version einspielen (einmalig nötig, weil `wache.php` und `docker-compose.yml` neu sind): ZIP herunterladen und den Inhalt nach `docker/rechenheft` kopieren (wie oben, Schritt 2 und 3).
-3. Schlüssel hinterlegen, eine der beiden Arten:
-   - **Datei `.env`** (empfohlen, bleibt bei späteren ZIP-Updates erhalten): auf dem PC eine Textdatei mit genau einer Zeile `ANTHROPIC_API_KEY=sk-ant-…` anlegen, als `.env` speichern und per File Station nach `docker/rechenheft` hochladen.
-   - **Direkt im Projekt**: Container Manager → Projekt `rechenheft` → YAML bearbeiten, dort `ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}` durch `ANTHROPIC_API_KEY: "sk-ant-…"` ersetzen. (Wird beim nächsten ZIP-Update überschrieben.)
-4. Container Manager → Projekt `rechenheft` → **Aktion → Erstellen** (bzw. Stoppen und neu erstellen), damit der Schlüssel geladen wird.
+3. Schlüssel hinterlegen: auf dem PC eine Textdatei **`claude.env`** anlegen, Inhalt eine Zeile `ANTHROPIC_API_KEY=sk-ant-…` (oder nur der Schlüssel `sk-ant-…`), und per File Station nach `docker/rechenheft` hochladen. Sie bleibt bei späteren ZIP-Updates erhalten. `wache.php` liest sie direkt, dafür ist kein Neustart nötig. Alternativ geht auch eine Datei `.env` mit derselben Zeile oder der Wert direkt im Projekt-YAML (`ANTHROPIC_API_KEY: "sk-ant-…"`).
+4. Container Manager → Projekt `rechenheft` → **Aktion → Erstellen** (bzw. Stoppen und neu erstellen), damit die neue Sperre für `claude.env` im Browser aktiv wird.
 5. Im Elternbereich steht unter „Hausaufgaben-Wache“ dann „Eingerichtet: Paul ist im Dienst“.
 
-Apache gibt `.env`, `docker-compose.yml` und andere Hilfsdateien nicht über den Browser heraus. Optional in der `docker-compose.yml`: `WACHE_LIMIT` (Anfragen pro Tag, Standard 60), `WACHE_MODELL` (Standard `claude-opus-5-5`), `WACHE_AUFWAND` (`low`, `medium`, `high`; Standard `medium`).
+Apache gibt `claude.env`, `.env`, `docker-compose.yml` und andere Hilfsdateien nicht über den Browser heraus. Prüfen: `http://<IP>:8088/claude.env` muss „Forbidden“ zeigen. Optional in der `docker-compose.yml`: `WACHE_LIMIT` (Anfragen pro Tag, Standard 60), `WACHE_MODELL` (Standard `claude-opus-5-5`), `WACHE_AUFWAND` (`low`, `medium`, `high`; Standard `medium`).
 
 Datenschutz: Fotos werden nur im Arbeitsspeicher verarbeitet und nicht gespeichert, weder auf dem Tablet noch auf der Synology. Gespeichert werden nur kurze Notizen (Thema, Anzahl richtig, Fehlerarten, ein Satz für die Eltern) im Lernstand. Auf GitHub Pages gibt es kein PHP, dort zeigt die Wache „noch nicht eingerichtet“.
 

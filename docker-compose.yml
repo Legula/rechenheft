@@ -13,7 +13,8 @@ services:
       # "aus" setzen, um automatische Updates abzuschalten
       RECHENHEFT_UPDATE_URL: https://raw.githubusercontent.com/Legula/rechenheft/main/index.html
       # Hausaufgaben-Wache: API-Schlüssel von console.anthropic.com.
-      # Am besten in eine Datei ".env" neben diese Datei schreiben (eine Zeile: ANTHROPIC_API_KEY=sk-ant-...).
+      # Einfachster Weg: Datei "claude.env" neben diese Datei legen (Inhalt: ANTHROPIC_API_KEY=sk-ant-... oder nur der Schlüssel).
+      # wache.php liest sie direkt, ohne Neustart. Alternativ .env oder den Wert hier eintragen.
       # Ohne Schlüssel zeigt die Wache freundlich "noch nicht eingerichtet", der Rest der App läuft normal.
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       # Höchstens so viele Anfragen an Paul pro Tag (Kostenbremse)
@@ -22,7 +23,7 @@ services:
       - ./:/var/www/html:ro
       - rechenheft-daten:/data
     # index.php liefert die App aus und holt neue Versionen automatisch von GitHub (stündlich).
-    # Apache gibt .env, docker-compose.yml und andere Hilfsdateien nicht im Browser heraus (der Schlüssel bleibt geheim).
+    # Apache gibt claude.env, .env, docker-compose.yml und andere Hilfsdateien nicht im Browser heraus (der Schlüssel bleibt geheim).
     command:
       - sh
       - -c
