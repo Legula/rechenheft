@@ -125,6 +125,26 @@ function einrichten($k) {
     @unlink($lock);
 }
 
+// Einrichtung als eigener Prozess: php sprich.php einrichten <stimme>
+if (PHP_SAPI === 'cli') {
+    if (($argv[1] ?? '') === 'einrichten' && isset($STIMMEN[$argv[2] ?? ''])) {
+        if (!is_dir($ordner)) @mkdir($ordner, 0775, true);
+        einrichten($argv[2]);
+    }
+    exit;
+}
+function hintergrund($k) {
+    if (!function_exists('exec')) return false;
+    $php = '';
+    foreach ([PHP_BINDIR . '/php', '/usr/local/bin/php', '/usr/bin/php'] as $kandidat) if (is_file($kandidat) && is_executable($kandidat)) { $php = $kandidat; break; }
+    if ($php === '') return false;
+    $umgebung = '';
+    foreach (['RECHENHEFT_DATA', 'SPRICH_BIN', 'SPRICH_STIMME'] as $n) if (getenv($n) !== false && getenv($n) !== '') $umgebung .= $n . '=' . escapeshellarg(getenv($n)) . ' ';
+    $befehl = $umgebung . 'nohup ' . escapeshellarg($php) . ' ' . escapeshellarg(__FILE__) . ' einrichten ' . escapeshellarg($k) . ' > /dev/null 2>&1 &';
+    @exec($befehl, $aus, $code);
+    return $code === 0;
+}
+
 if (getenv('SPRICH_AUS') === '1') json_antwort(503, zustand($wahl));
 if (!is_dir($ordner) && !@mkdir($ordner, 0775, true)) json_antwort(503, ['ready' => false, 'state' => 'fehler', 'msg' => 'Der Datenordner ist nicht beschreibbar.']);
 
@@ -133,9 +153,11 @@ if (isset($_GET['status'])) {
     $z = zustand($wahl);
     $starten = isset($_GET['install']) && ($z['state'] === 'fehlt' || ($z['state'] === 'fehler' && isset($_GET['nochmal'])));
     if (!$starten) json_antwort(200, $z);
-    // Antwort sofort schicken, die Einrichtung läuft danach weiter (dauert je nach Leitung ein bis zwei Minuten).
     @file_put_contents($lock, 'Start');
     $z = zustand($wahl);
+    // Am liebsten als eigener Hintergrund-Prozess, damit kein Webserver-Prozess und keine Verbindung blockiert ist.
+    if (hintergrund($wahl)) json_antwort(200, $z);
+    // Sonst: Antwort sofort schicken, die Einrichtung läuft danach im selben Aufruf weiter.
     ignore_user_abort(true);
     @set_time_limit(900);
     $text = json_encode($z, JSON_UNESCAPED_UNICODE);
