@@ -6,10 +6,14 @@ Mathe-Übungsheft für die 2. Klasse als einzelne Web-Seite. Läuft in jedem Bro
 - **Plus und Minus bis 100** in 4 Stufen
 - **Zehner und Einer** in 4 Stufen gegen Zahlendreher: Stangen und Würfel zählen, Zahlen selbst legen (10 Einer werden zur Zehnerstange), Zahl hören und schreiben, Zahlendreher unterscheiden (34 oder 43, welche ist größer). Zehner sind immer blau, Einer rot, auch im gesprochenen Zahlwort (*drei*und*vierzig*)
 - **Zahlenmauern** in 4 Stufen: kleine Mauern mit 3 Steinen, Mauern mit 6 Steinen, Lücken unten (minus rechnen), große Mauer mit 4 Reihen; oben höchstens 100. Jeder leere Stein wird einzeln angetippt und ausgerechnet
+- **Einmaleins** in 4 Stufen: gleich große Gruppen im Punktefeld, die leichten Reihen 1, 2, 5, 10, die Reihen 3 und 4 über Helferaufgaben, alle Reihen bis 10
 - **Uhr lesen** in 4 Stufen
 - **Geld** in 4 Stufen: Cent zählen, Euro zählen, Preise zusammenrechnen, Wechselgeld
 - **Sachaufgaben** in 4 Stufen: kurze Rechengeschichten bis hin zu Mal-Geschichten, mit Vorlese-Taste und farbigen Silben als Lesehilfe (im Elternbereich abschaltbar)
 - Kurze Erklärung vor jeder Runde, 10 Aufgaben, Lösungsweg bei Fehlern
+- Bei einem Fehler kommt zuerst ein Tipp ohne Lösung (erster Rechenschritt, Hinweis auf Zehner, Plus/Minus oder Zahlendreher) und ein zweiter Versuch; erst danach wird die Lösung gezeigt. Mit Tipp gelöste Aufgaben bringen 1 Stern und zählen nicht für die nächste Stufe
+- Tagesziel: 2 Runden am Tag (danach 2 Extra-Sterne), Anzeige der Tage in Folge; ab 5 Runden am Tag schlägt Olaf eine Pause vor
+- Erklärungen und Tipps lassen sich vorlesen
 - Schwierigkeit passt sich in jeder Runde an: nach 3 richtigen Antworten in Folge kommt eine Profi-Aufgabe aus der nächsten Stufe, nach 2 Fehlern in Folge eine leichtere Übungsaufgabe
 - Ab 8 von 10 richtig wird die nächste Stufe freigeschaltet; nach zwei Runden mit höchstens 4 richtigen geht es eine Stufe zurück
 - Geschaffte Stufen lassen sich jederzeit wiederholen (ändert den Lernstand nicht); nach Stufe 4 gibt es den Meister-Mix mit Aufgaben aus allen Stufen (jede richtige Aufgabe 2 Sterne)

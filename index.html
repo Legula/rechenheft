@@ -82,7 +82,37 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .steps { display: flex; gap: 6px; }
 .steps i { flex: 1; height: 10px; border-radius: 6px; background: var(--grid); border: 1px solid var(--line); }
 .steps i.on { background: var(--good); border-color: var(--good); }
-.topic.play { border-style: dashed; }
+.topic.play { border-style: solid; }
+/* Jedes Thema und Spiel hat eine eigene Farbe: so finden Kinder es wieder, ohne zu lesen. */
+.topic.subject { align-items: center; text-align: center; gap: 8px; padding: 16px 12px; }
+.topic.subject .ico, .topic.play .ico { width: 84px; height: 84px; }
+.topic.subject h3 { font-family: var(--f-display); font-weight: 800; font-size: 1.35rem; line-height: 1.15; }
+.topic.subject .level { font-weight: 700; color: var(--ink); opacity: .75; }
+.topic.subject .steps { width: 100%; max-width: 160px; }
+.topic.play { align-items: center; text-align: center; }
+.topic.play h3 { font-family: var(--f-display); font-weight: 800; font-size: 1.3rem; }
+.topic.play .badge { align-self: center; }
+.topic[data-topic="plus"] { background: #e3effa; border-color: #8bb8e0; box-shadow: 0 5px 0 #8bb8e0; }
+.topic[data-topic="stelle"] { background: #e2f3fb; border-color: #8ccbe8; box-shadow: 0 5px 0 #8ccbe8; }
+.topic[data-topic="mauer"] { background: #fbe9e1; border-color: #e3a58f; box-shadow: 0 5px 0 #e3a58f; }
+.topic[data-topic="mal"] { background: #e3f5e8; border-color: #8fcf9f; box-shadow: 0 5px 0 #8fcf9f; }
+.topic[data-topic="uhr"] { background: #fde9e9; border-color: #eba3a3; box-shadow: 0 5px 0 #eba3a3; }
+.topic[data-topic="geld"] { background: #fdf3d6; border-color: #e6c766; box-shadow: 0 5px 0 #e6c766; }
+.topic[data-topic="sach"] { background: #f4ebe0; border-color: #cfae8a; box-shadow: 0 5px 0 #cfae8a; }
+#playChase { background: #e6ecfa; border-color: #93a8dc; box-shadow: 0 5px 0 #93a8dc; }
+#playBuild { background: #fde6e4; border-color: #e79d97; box-shadow: 0 5px 0 #e79d97; }
+#playIsland { background: #e5f5e2; border-color: #94cf8a; box-shadow: 0 5px 0 #94cf8a; }
+#playSky { background: #e8e6f8; border-color: #a7a0dc; box-shadow: 0 5px 0 #a7a0dc; }
+:root[data-theme="dark"] .topic.subject, :root[data-theme="dark"] .topic.play { background: var(--card); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .topic.subject, :root:not([data-theme="light"]) .topic.play { background: var(--card); } }
+.daygoal { display: flex; align-items: center; gap: 14px; background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
+.daygoal b { display: block; font-family: var(--f-display); font-size: 1.25rem; }
+.daygoal span { color: var(--muted); font-size: 1rem; }
+.dg-dots { display: flex; gap: 8px; flex: none; }
+.dg-dots i { width: 38px; height: 38px; border-radius: 50%; border: 3px dashed var(--line); display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 1.3rem; color: #fff; }
+.dg-dots i.on { background: var(--star); border: 3px solid #d9a400; color: #fff; }
+#startQuiz { width: 100%; font-size: 1.5rem; padding: 18px 26px; }
+.learnhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .badge { align-self: flex-start; font-size: .85rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
 .parents-link { align-self: center; background: none; border: none; color: var(--muted); text-decoration: underline; font-size: .95rem; padding: 8px; }
 
@@ -97,6 +127,10 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .example { font-family: var(--f-display); font-size: clamp(1.4rem, 4.5vw, 2rem); font-weight: 600; line-height: 1.3; font-variant-numeric: tabular-nums; }
 .example em { font-style: normal; color: var(--accent); }
 .example .hl { color: var(--margin); }
+.dots { display: grid; gap: 8px; justify-content: center; margin: 4px auto; }
+.dots i { width: 26px; height: 26px; border-radius: 50%; display: block; }
+.dots.small i { width: 16px; height: 16px; }
+.dots.small { gap: 5px; }
 .tens { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
 .ten { width: 14px; height: 120px; border-radius: 4px; background: repeating-linear-gradient(var(--b2) 0 11px, var(--card) 11px 12px); border: 1px solid var(--accent); }
 .ten.alt { background: repeating-linear-gradient(var(--b4) 0 11px, var(--card) 11px 12px); border-color: var(--good); }
@@ -108,6 +142,12 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .progress i { flex: 1; height: 12px; border-radius: 6px; background: var(--grid); border: 1px solid var(--line); }
 .progress i.ok { background: var(--good); border-color: var(--good); }
 .progress i.no { background: var(--bad); border-color: var(--bad); }
+.progress i.help { background: #f0b84a; border-color: #d99a1e; }
+.feedback.tip { background: #fff4d6; color: #3a2a00; border: 2px solid #f0b84a; }
+.feedback.tip .tens { margin-top: 4px; }
+:root[data-theme="dark"] .feedback.tip { background: #3d3214; color: #fff3cf; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .feedback.tip { background: #3d3214; color: #fff3cf; } }
+.btn.small { padding: 8px 14px; font-size: 1rem; }
 .progress i.now { border: 2px solid var(--accent); }
 .task { text-align: center; font-family: var(--f-display); font-weight: 800; font-size: clamp(2.6rem, 11vw, 4.6rem); font-variant-numeric: tabular-nums; letter-spacing: .02em; line-height: 1.1; }
 .answer { display: inline-block; min-width: 2.2em; border-bottom: 5px solid var(--accent); color: var(--accent); }
@@ -261,11 +301,11 @@ button.brick.hole { cursor: pointer; }
 @keyframes pulse { 50% { transform: scale(1.12); } }
 .mascot-row { display: flex; align-items: center; gap: 14px; }
 .mascot-row.result { justify-content: center; text-align: left; }
-.mascot { flex: none; width: 92px; }
+.mascot { flex: none; width: 104px; }
 .mascot svg { width: 100%; height: auto; display: block; }
 .mascot.bob svg { animation: bob 2.4s ease-in-out infinite; transform-origin: 50% 100%; }
 @keyframes bob { 50% { transform: translateY(-5px) rotate(-2deg); } }
-.bubble { position: relative; background: var(--card); border: 2px solid var(--line); border-radius: 18px; padding: 12px 16px; font-size: 1.1rem; min-width: 0; flex: 1; }
+.bubble { position: relative; background: var(--card); border: 2px solid var(--line); border-radius: 18px; padding: 12px 16px; font-size: 1.2rem; min-width: 0; flex: 1; }
 .bubble::before { content: ""; position: absolute; left: -10px; top: 50%; margin-top: -9px; border: 9px solid transparent; border-right-color: var(--line); border-left: 0; }
 .reward { text-align: left; display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; border-radius: var(--radius); border: 2px solid var(--star); background: var(--card); box-shadow: 0 4px 0 var(--star); }
 .reward .bar { height: 16px; border-radius: 10px; background: var(--grid); border: 1px solid var(--line); overflow: hidden; }
@@ -537,6 +577,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <div class="stars" aria-label="Sterne"><b>★</b><span id="starCount">0</span></div>
   </div>
   <div class="mascot-row"><div class="mascot" id="homeMascot"></div><p class="bubble" id="homeBubble">Was möchtest du heute üben? Für jede richtige Aufgabe bekommst du Sterne, für schwere sogar mehr.</p></div>
+  <div class="daygoal" id="dayGoal"></div>
   <button class="reward" id="rewardCard" hidden></button>
   <button class="topic wache-card" id="toWache"><span class="wpaul-ico" id="wacheIco"></span><div><h3>Hausaufgaben-Wache</h3><p class="level">Foto vom Heft machen: Polizeihund Paul hilft dir oder kontrolliert.</p><span class="badge" id="wacheBadge">Polizeischüler</span></div></button>
   <div class="cards" id="topicCards"></div>
@@ -558,7 +599,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <button class="topic play" id="playIsland">
       <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M0 46L16 22L30 40L42 26L64 50V64H0z" fill="#9aa7b8"/><path d="M12 28L16 22L20 28L16 26zM38 32L42 26L46 31L42 29z" fill="#fff"/><rect x="0" y="48" width="64" height="16" rx="4" fill="#5cc15f"/><path d="M40 64v-6q12-6 24 0v6z" fill="#3fa7e0"/><rect x="14" y="34" width="20" height="16" fill="#b07a45"/><path d="M10 36L24 20L38 36z" fill="#c4302b"/><rect x="21" y="40" width="7" height="10" fill="#6b4329"/><path d="M50 50L56 30L62 50z" fill="#1f7a45"/><rect x="55" y="48" width="2" height="4" fill="#7a4d30"/></svg>
       <h3>Olafs Land</h3>
-      <p class="level">Bau, was du willst: Häuser, Straßen, Tiere und mehr in acht Gebieten</p>
+      <p class="level">Bau, was du willst!</p>
       <span class="badge" id="islandBadge">Kreativ bauen</span>
     </button>
     <button class="topic play" id="playSky">
@@ -576,7 +617,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   <button class="back" data-go="home">← Zurück</button>
   <div><span class="badge" id="learnBadge"></span></div>
   <div class="lvchips" id="lvChips"></div>
-  <h2 id="learnTitle"></h2>
+  <div class="learnhead"><h2 id="learnTitle"></h2><button class="btn ghost small" id="learnSpeak">🔊 Vorlesen</button></div>
   <div class="sheet" id="learnBody"></div>
   <div class="row"><button class="btn" id="startQuiz">Los geht’s: 10 Aufgaben</button></div>
 </section>
@@ -791,13 +832,16 @@ var KEY = 'philian-rechenheft-v1';
 /* Testmodus für Erwachsene: eigener Speicher, 999 Sterne, kein Abgleich. Endet beim Schließen des Tabs. */
 var TEST = false; try { TEST = sessionStorage.getItem('rechenheft-test') === '1'; } catch (e) {}
 if (TEST) KEY = KEY + '-test';
-var COST = 5, PASS = 8, LOW = 4, ROUND = 10;
+var COST = 5, PASS = 8, LOW = 4, ROUND = 10, DAILY = 2, PAUSE_AT = 5;
+function hKey(d) { d = new Date(d); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+function roundsToday() { var k = hKey(Date.now()), n = 0; S.history.forEach(function (h) { if (h.level !== 'test' && hKey(h.d) === k) n++; }); return n; }
+function dayStreak() { var days = {}; S.history.forEach(function (h) { days[hKey(h.d)] = 1; }); var n = 0, d = new Date(); if (!days[hKey(d)]) d.setDate(d.getDate() - 1); while (days[hKey(d)]) { n++; d.setDate(d.getDate() - 1); } return n; }
 function lastScore(theme, level) { for (var i = S.history.length - 1; i >= 0; i--) { var x = S.history[i]; if (x.theme === theme) return x.level === level ? x.score : null; } return null; }
 
 function merge(a, b) { for (var k in b) if (Object.prototype.hasOwnProperty.call(b, k)) a[k] = b[k]; return a; }
-function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, stelle: 1, mauer: 1, uhr: 1, geld: 1, sach: 1 }, mastered: {}, history: [], best: { caught: 0, chase: 0, crumbs: 0 } }; }
+function fresh() { return { name: 'Philian', stars: 0, levels: { plus: 1, stelle: 1, mauer: 1, mal: 1, uhr: 1, geld: 1, sach: 1 }, mastered: {}, history: [], best: { caught: 0, chase: 0, crumbs: 0 } }; }
 var S = fresh();
-try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, stelle: 1, mauer: 1, uhr: 1, geld: 1, sach: 1 }, p.levels || {}); S.best = merge({ caught: 0, chase: 0, crumbs: 0 }, p.best || {}); } } catch (e) {}
+try { var raw = localStorage.getItem(KEY); if (raw) { var p = JSON.parse(raw); S = merge(fresh(), p); S.levels = merge({ plus: 1, stelle: 1, mauer: 1, mal: 1, uhr: 1, geld: 1, sach: 1 }, p.levels || {}); S.best = merge({ caught: 0, chase: 0, crumbs: 0 }, p.best || {}); } } catch (e) {}
 function save(noSync) { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} if (!noSync) scheduleSync(); }
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -812,7 +856,7 @@ function ensure() {
   if (TEST && !S.testInit) { S.dev[DEV].e += 999; S.testInit = true; }
   if (!S.at) S.at = {};
   if (!S.epoch) S.epoch = 0;
-  S.levels = merge({ plus: 1, stelle: 1, mauer: 1, uhr: 1, geld: 1, sach: 1 }, S.levels || {});
+  S.levels = merge({ plus: 1, stelle: 1, mauer: 1, mal: 1, uhr: 1, geld: 1, sach: 1 }, S.levels || {});
   S.best = merge({ caught: 0, chase: 0, crumbs: 0 }, S.best || {});
   if (!S.mastered) S.mastered = {};
   if (!S.history) S.history = [];
@@ -1023,11 +1067,19 @@ var SACH2 = [
   function () { var n = who(), a = rnd(40, 90), b = rnd(12, a - 10); return story(n + ' liest ein Buch mit ' + a + ' Seiten. ' + b + ' Seiten hat ' + n + ' schon gelesen. Wie viele Seiten fehlen noch?', 'Seiten:', a - b, '', a + ' − ' + b + ' = ' + (a - b)); },
   function () { var a = rnd(25, 60), b = rnd(10, 35); return story('Auf dem Spielplatz spielen ' + a + ' Kinder. Dann kommen noch ' + b + ' Kinder dazu. Wie viele Kinder spielen jetzt dort?', 'Kinder:', a + b, '', a + ' + ' + b + ' = ' + (a + b)); }
 ];
+SACH2.push(
+  function () { var a = who(), b = pick(NAMES.filter(function (x) { return x !== a; })), x = rnd(12, 40), d = rnd(5, 15); return story(a + ' hat ' + x + ' Murmeln. ' + b + ' hat ' + d + ' Murmeln mehr als ' + a + '. Wie viele Murmeln hat ' + b + '?', 'Murmeln:', x + d, '', x + ' + ' + d + ' = ' + (x + d)); },
+  function () { var x = rnd(40, 90), d = rnd(8, 25); return story('Der rote Turm ist ' + x + ' Steine hoch. Der blaue Turm ist ' + d + ' Steine niedriger. Wie hoch ist der blaue Turm?', 'Steine:', x - d, '', x + ' − ' + d + ' = ' + (x - d)); }
+);
 var SACH3 = [
   function () { var n = who(), a = pick([20, 30, 40, 50]), b = rnd(4, 12), c = rnd(3, Math.min(10, a - b - 3)); return story(n + ' hat ' + a + ' €. ' + n + ' kauft ein Buch für ' + b + ' € und einen Stift für ' + c + ' €. Wie viel Geld bleibt übrig?', 'Übrig:', a - b - c, '€', a + ' − ' + b + ' − ' + c + ' = ' + (a - b - c)); },
   function () { var a = rnd(20, 40), b = rnd(5, 15), c = rnd(4, 12); return story('Im Zug sitzen ' + a + ' Leute. Am ersten Bahnhof steigen ' + b + ' ein. Am zweiten Bahnhof steigen ' + c + ' aus. Wie viele Leute sitzen jetzt im Zug?', 'Leute:', a + b - c, '', a + ' + ' + b + ' − ' + c + ' = ' + (a + b - c)); },
   function () { var n = who(), a = rnd(10, 30), b = rnd(10, 30), c = rnd(5, 20); return story(n + ' sammelt Sticker. Am Montag bekommt ' + n + ' ' + a + ', am Dienstag ' + b + ' und am Mittwoch ' + c + ' Sticker. Wie viele Sticker sind es zusammen?', 'Sticker:', a + b + c, '', a + ' + ' + b + ' + ' + c + ' = ' + (a + b + c)); }
 ];
+SACH3.push(
+  function () { var a = who(), b = pick(NAMES.filter(function (x) { return x !== a; })), x = rnd(30, 70), d = rnd(6, 18); return story(a + ' hat ' + x + ' Sticker. Das sind ' + d + ' Sticker mehr als ' + b + ' hat. Wie viele Sticker hat ' + b + '?', 'Sticker:', x - d, '', x + ' − ' + d + ' = ' + (x - d)); },
+  function () { var a = who(), b = pick(NAMES.filter(function (x) { return x !== a; })), x = rnd(40, 90), y = rnd(15, x - 8); return story(a + ' hat ' + x + ' Karten. ' + b + ' hat ' + y + ' Karten. Wie viele Karten hat ' + a + ' mehr als ' + b + '?', 'Mehr:', x - y, '', x + ' − ' + y + ' = ' + (x - y)); }
+);
 var SACH4 = [
   function () { var k = pick([2, 5, 10]), n = rnd(2, 10); return story('In einer Packung sind ' + k + ' Eier. Mama kauft ' + n + ' Packungen. Wie viele Eier sind das?', 'Eier:', k * n, '', n + ' · ' + k + ' = ' + (k * n)); },
   function () { var k = pick([2, 5, 10]), n = rnd(2, 10); return story('Ein Fahrrad hat 2 Räder. Vor der Schule stehen ' + n + ' Fahrräder. Wie viele Räder sind das?'.replace('2 Räder', k === 2 ? '2 Räder' : '2 Räder'), 'Räder:', n * 2, '', n + ' · 2 = ' + n * 2); },
@@ -1040,10 +1092,10 @@ var SACH = [
     explain: '<p>In einer Sachaufgabe steckt eine Rechnung. Lies die Geschichte genau. Frag dich: <strong>Kommt etwas dazu</strong> (plus) oder <strong>geht etwas weg</strong> (minus)?</p><p class="example">Ben hat 8 Murmeln.<br>Er bekommt 5 dazu.<br>„dazu“ heißt plus: 8 + 5 = <em>13</em></p>',
     gen: function () { return pick(SACH1)(); } },
   { title: 'Geschichten bis 100',
-    explain: '<p>Achte auf Wörter wie <strong>dazu, zusammen</strong> (plus) oder <strong>weg, aussteigen, fehlen noch</strong> (minus).</p><p class="example">Im Bus sitzen 34 Kinder.<br>9 Kinder steigen aus.<br>34 − 9 = <em>25</em></p>',
+    explain: '<p>Stell dir die Geschichte wie einen <strong>Film</strong> vor: Wird es <strong>mehr</strong> (plus) oder <strong>weniger</strong> (minus)?</p><p class="example">Im Bus sitzen 34 Kinder.<br>9 Kinder steigen aus. Es werden weniger.<br>34 − 9 = <em>25</em></p><p class="example">Mia hat 20 Murmeln.<br>Ben hat 6 <span class="hl">mehr als</span> Mia.<br>Ben hat also mehr: 20 + 6 = <em>26</em></p>',
     gen: function () { return pick(SACH2)(); } },
   { title: 'Zwei Schritte',
-    explain: '<p>Manchmal musst du zweimal rechnen. Rechne Schritt für Schritt.</p><p class="example">Lea hat 20 €.<br>Sie kauft ein Buch für 8 € <span class="hl">und</span> einen Stift für 3 €.<br>20 − 8 = 12<br>12 − 3 = <em>9 €</em></p>',
+    explain: '<p>Manchmal musst du zweimal rechnen. Rechne Schritt für Schritt. <strong>Vorsicht:</strong> „mehr“ heißt nicht immer plus! Überleg genau, <strong>wer</strong> mehr hat.</p><p class="example">Lea hat 30 Sticker. Das sind 5 mehr als Ben.<br>Ben hat also <span class="hl">weniger</span>: 30 − 5 = <em>25</em></p><p class="example">Lea hat 20 €.<br>Sie kauft ein Buch für 8 € <span class="hl">und</span> einen Stift für 3 €.<br>20 − 8 = 12<br>12 − 3 = <em>9 €</em></p>',
     gen: function () { return pick(SACH3)(); } },
   { title: 'Mal-Geschichten',
     explain: '<p>Wenn mehrere Gruppen <strong>gleich groß</strong> sind, kannst du mal rechnen.</p><p class="example">3 Packungen mit je 5 Eiern.<br>5 + 5 + 5 = 15<br>oder kurz: 3 · 5 = <em>15</em></p>',
@@ -1301,6 +1353,41 @@ function wallHTML(t, given) {
   return h + '</div>';
 }
 function wallDemo(base, holes, show) { var v = wallVals(base); return wallHTML({ v: v, holes: holes }, show ? 'show' : 'q'); }
+/* ---------- Einmaleins ---------- */
+/* Punktefeld: r Reihen mit je c Punkten. Jede Reihe in eigener Farbe, damit man die gleich großen Gruppen sieht. */
+function dotsHTML(r, c, small) {
+  var cols = ['#2f6fd6', '#d64541', '#2f9e5b', '#f08a24', '#a77ee8'], h = '<div class="dots' + (small ? ' small' : '') + '" style="grid-template-columns:repeat(' + c + ',auto)">';
+  for (var i = 0; i < r; i++) for (var k = 0; k < c; k++) h += '<i style="background:' + cols[i % 5] + (k === 4 && c > 5 ? ';margin-right:8px' : '') + '"></i>';
+  return h + '</div>';
+}
+function malTask(n, k, hint1) {
+  var sum = []; for (var i = 0; i < n; i++) sum.push(k);
+  return { type: 'num', q: n + ' · ' + k + ' =', answer: n * k, mal: [n, k], hint1: hint1, hint: n + ' · ' + k + ' heißt: ' + n + '-mal die ' + k + '. ' + (n <= 6 ? sum.join(' + ') + ' = ' + n * k : 'Das sind ' + n * k) + '.' };
+}
+function malHelp(n, k) {
+  if (k === 1) return n + '-mal die 1 ist einfach ' + n + '.';
+  if (k === 10) return n + '-mal die 10 sind ' + n + ' Zehner.';
+  if (k === 2) return 'Mal 2 heißt verdoppeln: ' + n + ' + ' + n + '.';
+  if (k === 5) return 'Mal 5 ist die Hälfte von mal 10. Rechne erst ' + n + ' · 10 = ' + n * 10 + '.';
+  if (n === 1 || n === 2 || n === 5 || n === 10) return 'Tausch die Zahlen: ' + k + ' · ' + n + ' ist genauso viel. Das ist leichter!';
+  if (n < 5) return 'Nimm die leichte Aufgabe 2 · ' + k + ' = ' + 2 * k + '. Dann rechne von da aus weiter.';
+  return 'Nimm die leichte Aufgabe 5 · ' + k + ' = ' + 5 * k + '. Wie viele ' + k + 'er fehlen dann noch?';
+}
+var MAL = [
+  { title: 'Gleich große Gruppen',
+    explain: '<p>Wenn alle Reihen <strong>gleich viele</strong> Punkte haben, kannst du mal rechnen.</p>' + dotsHTML(3, 4) + '<p class="example">3 Reihen mit je 4 Punkten<br>4 + 4 + 4 = 12<br>kurz: <em>3 · 4 = 12</em></p><p class="muted">Das Zeichen · heißt „mal“.</p>',
+    gen: function () { var r = rnd(2, 5), c = rnd(2, 5); var t = malTask(r, c, 'Zähle die Reihen: Es sind ' + r + '. In jeder Reihe sind ' + c + ' Punkte. Rechne ' + new Array(r + 1).join(c + ' + ').slice(0, -3) + '.'); t.dots = [r, c]; t.prompt = r + ' · ' + c + ' ='; return t; } },
+  { title: 'Die leichten Reihen: 1, 2, 5, 10',
+    explain: '<p>Diese Aufgaben sind deine <strong>Helfer</strong>. Mit ihnen kannst du später alle anderen ausrechnen.</p><p class="example">· 2 heißt verdoppeln: 4 · 2 = 4 + 4 = <em>8</em></p><p class="example">· 10 sind Zehner: 6 · 10 = <em>60</em></p><p class="example">· 5 ist die Hälfte von · 10:<br>6 · 10 = 60, also 6 · 5 = <em>30</em></p>',
+    gen: function () { var k = pick([1, 2, 2, 5, 5, 10, 10]), n = rnd(1, 10); if (Math.random() < .3) { var x = n; n = k; k = x; } return malTask(n, k, malHelp(n, k)); } },
+  { title: 'Die Reihen 3 und 4',
+    explain: '<p>Nutze eine leichte Aufgabe als Helfer und rechne von dort weiter.</p>' + dotsHTML(6, 3, true) + '<p class="example">6 · 3 = ?<br>5 · 3 = 15 (leicht)<br>dazu noch eine 3: 15 + 3 = <em>18</em></p><p class="example">· 4 ist doppelt so viel wie · 2:<br>7 · 2 = 14, also 7 · 4 = <em>28</em></p>',
+    gen: function () { var k = pick([3, 4]), n = rnd(1, 10); var t = Math.random() < .25 ? malTask(k, n, malHelp(k, n)) : malTask(n, k, k === 4 && n > 2 && n !== 5 && n !== 10 ? 'Mal 4 ist doppelt mal 2: ' + n + ' · 2 = ' + n * 2 + '. Verdopple das.' : malHelp(n, k)); return t; } },
+  { title: 'Alle Reihen bis 10',
+    explain: '<p>Jetzt kommen alle Reihen. Denk an deine Helfer:</p><p class="example">Tauschaufgabe: 3 · 8 = 8 · 3</p><p class="example">Von 5 aus: 6 · 7 = 5 · 7 + 7<br>= 35 + 7 = <em>42</em></p><p class="example">Von 10 aus: 9 · 6 = 10 · 6 − 6<br>= 60 − 6 = <em>54</em></p>',
+    gen: function () { var n = rnd(2, 10), k = rnd(3, 9); return malTask(n, k, n === 9 ? 'Von 10 aus: 10 · ' + k + ' = ' + 10 * k + '. Jetzt eine ' + k + ' weniger.' : malHelp(n, k)); } }
+];
+
 var MAUER = [
   { title: 'Kleine Mauern',
     explain: '<p>In einer Zahlenmauer ergeben <strong>zwei Steine nebeneinander zusammen den Stein darüber</strong>.</p>' + wallDemo([5, 3], ['1,0'], true) + '<p class="example">5 + 3 = <em>8</em></p><p>Fehlt unten ein Stein, rechnest du minus: <strong>oben minus daneben</strong>.</p>' + wallDemo([4, 6], ['0,1'], true) + '<p class="example">10 − 4 = <em>6</em></p>',
@@ -1320,6 +1407,7 @@ var THEMES = {
   plus: { name: 'Plus und Minus', sub: 'Zahlen bis 100', levels: PLUS, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="var(--accent-soft)"/><path d="M14 22h16M22 14v16" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/><path d="M36 22h16" stroke="var(--margin)" stroke-width="5" stroke-linecap="round"/><text x="14" y="52" font-family="Baloo 2,sans-serif" font-weight="800" font-size="16" fill="var(--ink)">100</text></svg>' },
   stelle: { name: 'Zehner und Einer', sub: 'Zahlen richtig lesen', levels: STELLE, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="var(--accent-soft)"/><rect x="11" y="10" width="8" height="44" rx="2" fill="#3fa7e0" stroke="#1d72b0" stroke-width="1.5"/><rect x="23" y="10" width="8" height="44" rx="2" fill="#3fa7e0" stroke="#1d72b0" stroke-width="1.5"/><rect x="37" y="44" width="10" height="10" rx="2" fill="#ef5b5b"/><rect x="49" y="44" width="10" height="10" rx="2" fill="#ef5b5b"/><rect x="37" y="31" width="10" height="10" rx="2" fill="#ef5b5b"/><text x="48" y="25" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="14"><tspan fill="#1d72b0">2</tspan><tspan fill="#c22b26">3</tspan></text></svg>' },
   mauer: { name: 'Zahlenmauern', sub: 'Plus und Minus in Mauern', levels: MAUER, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><g stroke="#9e3b2c" stroke-width="2" fill="#f6d9cb"><rect x="23" y="6" width="18" height="14" rx="2"/><rect x="13" y="22" width="18" height="14" rx="2"/><rect x="33" y="22" width="18" height="14" rx="2"/><rect x="3" y="38" width="18" height="14" rx="2"/><rect x="23" y="38" width="18" height="14" rx="2"/><rect x="43" y="38" width="18" height="14" rx="2"/></g><g font-family="Baloo 2,sans-serif" font-weight="800" font-size="10" text-anchor="middle" fill="#1f2a44"><text x="32" y="17">?</text><text x="22" y="33">7</text><text x="42" y="33">9</text><text x="12" y="49">3</text><text x="32" y="49">4</text><text x="52" y="49">5</text></g></svg>' },
+  mal: { name: 'Einmaleins', sub: 'Mal rechnen', levels: MAL, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="4" width="56" height="56" rx="14" fill="var(--accent-soft)"/><g fill="#2f6fd6"><circle cx="16" cy="18" r="5"/><circle cx="28" cy="18" r="5"/><circle cx="40" cy="18" r="5"/></g><g fill="#d64541"><circle cx="16" cy="32" r="5"/><circle cx="28" cy="32" r="5"/><circle cx="40" cy="32" r="5"/></g><g fill="#2f9e5b"><circle cx="16" cy="46" r="5"/><circle cx="28" cy="46" r="5"/><circle cx="40" cy="46" r="5"/></g><path d="M48 40l8 8M56 40l-8 8" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/></svg>' },
   uhr: { name: 'Uhr lesen', sub: 'Stunden und Minuten', levels: UHR, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="var(--card)" stroke="var(--ink)" stroke-width="4"/><path d="M32 32V16" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/><path d="M32 32l10 6" stroke="var(--hour)" stroke-width="5" stroke-linecap="round"/></svg>' },
   geld: { name: 'Geld', sub: 'Euro und Cent', levels: GELD, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="4" y="14" width="44" height="26" rx="4" fill="#7aa0d9"/><text x="26" y="32" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="12" fill="#1f1f1f">20 €</text><circle cx="44" cy="44" r="14" fill="#c9c9c9" stroke="#6b5420"/><circle cx="44" cy="44" r="9" fill="#e4b84a"/><text x="44" y="48" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="11" fill="#2b2110">2</text></svg>' },
   sach: { name: 'Sachaufgaben', sub: 'Rechengeschichten', levels: SACH, icon: '<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 12h20c3 0 4 2 4 4v38c0-2-1-4-4-4H8Z" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5"/><path d="M56 12H36c-3 0-4 2-4 4v38c0-2 1-4 4-4h20Z" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2.5"/><path d="M13 22h12M13 29h12M39 22h12M39 29h8" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><text x="45" y="45" text-anchor="middle" font-family="Baloo 2,sans-serif" font-weight="800" font-size="13" fill="var(--margin)">?</text></svg>' }
@@ -1337,6 +1425,9 @@ function renderHome() {
   if (!$('homeMascot').innerHTML) $('homeMascot').innerHTML = owlSVG('happy');
   $('homeMascot').className = 'mascot bob';
   $('homeBubble').textContent = hello();
+  var td = roundsToday(), sk = dayStreak(), dots = '';
+  for (var di = 0; di < DAILY; di++) dots += '<i class="' + (di < td ? 'on' : '') + '">' + (di < td ? '★' : '') + '</i>';
+  $('dayGoal').innerHTML = '<div class="dg-dots">' + dots + '</div><div><b>' + (td >= DAILY ? 'Tagesziel geschafft!' : 'Tagesziel: ' + DAILY + ' Runden') + '</b><span>' + (td >= DAILY ? (td >= PAUSE_AT ? 'Super fleißig! Jetzt ist Zeit für eine Pause.' : 'Du kannst weiterüben oder spielen.') : 'Heute ' + td + ' von ' + DAILY + ' · danach gibt es 2 Extra-Sterne') + (sk >= 2 ? ' · ' + sk + ' Tage in Folge geübt' : '') + '</span></div>';
   renderReward();
   var gb = earnedBadges();
   $('badgeCount').textContent = gb.length + ' von ' + BADGES.length + ' gesammelt';
@@ -1347,12 +1438,12 @@ function renderHome() {
   Object.keys(THEMES).forEach(function (k) {
     var T = THEMES[k], lv = S.levels[k], done = S.mastered[k];
     var st = ''; for (var i = 1; i <= T.levels.length; i++) st += '<i class="' + (i < lv || (done && i === lv) ? 'on' : '') + '"></i>';
-    h += '<button class="topic" data-topic="' + k + '">' + T.icon + '<h3>' + T.name + '</h3><p class="level">' + T.sub + ' · Stufe ' + lv + ' von ' + T.levels.length + ': ' + T.levels[lv - 1].title + '</p><div class="steps">' + st + '</div>' + (done ? '<span class="badge">Alles geschafft! Meister-Mix wartet ★</span>' : '') + '</button>';
+    h += '<button class="topic subject" data-topic="' + k + '" aria-label="' + T.name + ', Stufe ' + lv + ' von ' + T.levels.length + '">' + T.icon + '<h3>' + T.name + '</h3><p class="level">' + (done ? 'Alles geschafft! ★' : 'Stufe ' + lv + ' von ' + T.levels.length) + '</p><div class="steps">' + st + '</div></button>';
   });
   $('topicCards').innerHTML = h;
   var can = stars() >= COST;
   $('playChase').disabled = !can; $('playChase').style.opacity = can ? 1 : .6;
-  $('chaseInfo').textContent = can ? 'Kostet ' + COST + ' Sterne · hol Waschbär Rudi ein' : 'Du brauchst ' + COST + ' Sterne. Noch ' + (COST - stars()) + ' sammeln!';
+  $('chaseInfo').textContent = can ? COST + ' ★ · Rudi einholen' : 'Noch ' + (COST - stars()) + ' ★ sammeln';
   $('chaseBadge').textContent = S.best.caught ? 'Rudi ' + S.best.caught + '-mal erwischt' : 'Noch nie erwischt';
   var bp = buildPos();
   $('buildInfo').textContent = '1 Stern pro Baustein · ' + bp.plan.name + ': ' + bp.placed + ' von ' + bp.total;
@@ -1383,6 +1474,10 @@ function openLearn(k, pickLv) {
   }
   go('learn');
 }
+$('learnSpeak').addEventListener('click', function () {
+  var d = document.createElement('div'); d.innerHTML = $('learnBody').innerHTML.replace(/<br\s*\/?>/g, '. ').replace(/<\/p>/g, '. ');
+  speak(($('learnTitle').textContent + '. ' + d.textContent).replace(/−/g, ' minus ').replace(/·/g, ' mal ').replace(/×/g, ' mal ').replace(/€/g, ' Euro').replace(/\bct\b/g, ' Cent').replace(/=/g, ' gleich ').replace(/\s*\.\s*\./g, '.'), true);
+});
 $('lvChips').addEventListener('click', function (e) { var b = e.target.closest('[data-lv]'); if (b && Q) { var v = b.getAttribute('data-lv'); openLearn(Q.theme, v === 'mix' ? 'mix' : +v); } });
 $('startQuiz').addEventListener('click', function () {
   Q.tasks = []; Q.seen = {}; Q.i = 0; Q.results = []; Q.wrong = []; Q.input = '';
@@ -1392,7 +1487,7 @@ $('startQuiz').addEventListener('click', function () {
 $('quitQuiz').addEventListener('click', function () { go('home'); });
 
 function renderProgress() {
-  var h = ''; for (var i = 0; i < ROUND; i++) h += '<i class="' + (Q.results[i] === true ? 'ok' : Q.results[i] === false ? 'no' : i === Q.i ? 'now' : '') + '"></i>';
+  var h = ''; for (var i = 0; i < ROUND; i++) h += '<i class="' + (Q.results[i] === true ? 'ok' : Q.results[i] === 'help' ? 'help' : Q.results[i] === false ? 'no' : i === Q.i ? 'now' : '') + '"></i>';
   $('progress').innerHTML = h; $('quizStars').textContent = stars();
 }
 /* Schwierigkeit passt sich an: 3 richtige in Folge -> eine Stufe schwerer (höchstens eine über der aktuellen),
@@ -1414,6 +1509,7 @@ function renderTask() {
     if (t.story) h += '<div class="story"><p id="storyText"' + (S.silben !== false ? ' class="silben"' : '') + '>' + (S.silben !== false ? silbenHTML(t.story) : esc(t.story)) + '</p>' + (canSpeak ? '<button class="btn ghost speak" id="speakBtn">🔊 Vorlesen</button>' : '') + '</div>';
     if (t.visual) h += '<div class="money">' + t.visual + '</div>';
     if (t.blocks) h += '<div class="tens big">' + tensHTML(t.blocks) + '</div>';
+    if (t.dots) h += dotsHTML(t.dots[0], t.dots[1]);
     if (t.say) h += '<div class="story sayword"><p class="word">' + numWordHTML(t.say) + '</p>' + (canSpeak ? '<button class="btn ghost speak" id="sayBtn">🔊 Nochmal hören</button>' : '') + '</div>';
     h += '<div class="task' + (t.story || t.visual || t.blocks || t.say ? ' small' : '') + '">' + esc(t.prompt || t.q) + ' <span class="answer" id="ans">&nbsp;</span>' + (t.unit ? ' <span class="unit">' + t.unit + '</span>' : '') + '</div><div id="fb"></div>' + padHTML();
   } else if (t.type === 'wall') {
@@ -1458,6 +1554,7 @@ function wallEnter(t) {
     t.sel = solvable ? solvable[0] : next[0];
     $('wall').innerHTML = wallHTML(t); return;
   }
+  if (!t.tried) { t.tried = true; t.firstGiven = Q.input; adapt(false); Q.input = ''; showRetry(t, wallHint(t, k).replace(/ = \d+\.$/, ' = ?')); return; }
   t.done[k] = false; t.reveal = true; t.answer = val; t.hint = wallHint(t, k);
   t.wq = 'Zahlenmauer: ' + wallHint(t, k).replace(/^.*(: |Also )/, '').replace(/ = \d+\.$/, ' = ?');
   $('wall').innerHTML = wallHTML(t);
@@ -1468,6 +1565,7 @@ $('quizBody').addEventListener('click', function (e) {
   var nx = e.target.closest('#nextBtn'); if (nx) { nextTask(); return; }
   if (e.target.closest('#speakBtn')) { speak(t.story, true); return; }
   if (e.target.closest('#sayBtn')) { speak(numWord(t.say), true); return; }
+  if (e.target.closest('#speakTip')) { var tw = document.createElement('div'); tw.innerHTML = t.tipText || ''; speak(tw.textContent.replace(/−/g, ' minus ').replace(/·/g, ' mal '), true); return; }
   if (e.target.closest('#speakHint')) { speak(('Richtig ist ' + t.answer + (t.unit ? ' ' + t.unit : '') + '. ' + t.hint).replace(/−/g, ' minus ').replace(/·/g, ' mal ').replace(/€/g, ' Euro').replace(/\bct\b/g, ' Cent'), true); return; }
   if (Q.locked) return;
   var bk = e.target.closest('[data-b]');
@@ -1493,8 +1591,7 @@ $('quizBody').addEventListener('click', function (e) {
   var o = e.target.closest('[data-o]');
   if (o && (t.type === 'clock' || t.type === 'pick')) {
     var opt = t.opts[+o.getAttribute('data-o')];
-    o.classList.add(opt.ok ? 'right' : 'wrong');
-    if (!opt.ok) { var btns = $('choices').children; for (var i = 0; i < btns.length; i++) if (t.opts[i].ok) btns[i].classList.add('right'); }
+    o.classList.add(opt.ok ? 'right' : 'wrong'); if (!opt.ok) o.disabled = true;
     check(opt.ok, t.type === 'pick' ? String(opt.label) : digital(opt.h, opt.m));
   }
 });
@@ -1508,20 +1605,73 @@ document.addEventListener('keydown', function (e) {
   else if (e.key === 'Enter') b = document.querySelector('#pad [data-k="ok"]');
   if (b) { e.preventDefault(); b.click(); }
 });
-var PRAISE = ['Richtig!', 'Super!', 'Toll gemacht!', 'Genau!', 'Klasse!', 'Prima!'];
-function check(ok, given) {
-  var t = Q.tasks[Q.i]; Q.locked = true; Q.results[Q.i] = ok;
-  var maxLv = Q.mix ? 1 : Math.min(THEMES[Q.theme].levels.length, Q.level + 1);
-  if (!Q.mix) {
-    if (ok) { Q.streak++; Q.miss = 0; if (Q.streak >= 3 && Q.dyn < maxLv) { Q.dyn++; Q.streak = 0; } }
-    else { Q.miss++; Q.streak = 0; if (Q.miss >= 2 && Q.dyn > 1) { Q.dyn--; Q.miss = 0; } }
+var PRAISE = ['Richtig!', 'Super!', 'Toll gerechnet!', 'Genau!', 'Klasse!', 'Prima!', 'Gut überlegt!', 'Stark!'];
+/* Schwierigkeit anpassen: zählt nur den ersten Versuch einer Aufgabe */
+function adapt(ok) {
+  if (Q.mix) return;
+  var maxLv = Math.min(THEMES[Q.theme].levels.length, Q.level + 1);
+  if (ok) { Q.streak++; Q.miss = 0; if (Q.streak >= 3 && Q.dyn < maxLv) { Q.dyn++; Q.streak = 0; } }
+  else { Q.miss++; Q.streak = 0; if (Q.miss >= 2 && Q.dyn > 1) { Q.dyn--; Q.miss = 0; } }
+}
+/* Erster Fehler: nicht gleich die Lösung zeigen, sondern einen Tipp geben und nochmal probieren lassen.
+   Der Tipp verrät das Ergebnis nicht, sondern zeigt den ersten Rechenschritt oder was am Fehler auffällt. */
+function firstTip(t, given) {
+  var g = parseInt(given, 10), a = t.answer, d = g - a, T = Q.theme;
+  if (t.type === 'clock') {
+    var o = t.opts.filter(function (x) { return digital(x.h, x.m) === given; })[0];
+    if (o && o.h === t.h) return 'Die Stunde stimmt schon! Schau jetzt auf den <b>langen Zeiger</b>: Jede Zahl bedeutet 5 Minuten.';
+    if (o && o.m === t.m) return 'Die Minuten stimmen! Schau nochmal auf den <b>kurzen Zeiger</b>.' + (t.m >= 30 ? ' Er ist schon über die ' + t.h + ' hinaus, aber noch nicht bei der nächsten Zahl.' : '');
+    return 'Schau zuerst auf den <b>kurzen Zeiger</b>: Welche Stunde ist es? Dann auf den <b>langen Zeiger</b> für die Minuten.';
   }
-  if (ok) { var gain = taskStars(t); Q.earned = (Q.earned || 0) + gain; addStars(gain); save(); $('fb').innerHTML = '<div class="feedback good"><strong>' + pick(PRAISE) + ' +' + gain + ' ★</strong></div>'; renderProgress(); var q0 = Q, i0 = Q.i; setTimeout(function () { if (Q === q0 && Q.i === i0) nextTask(); }, 900); }
+  if (t.type === 'pick') return 'Hör nochmal genau hin. Welche Zahl hörst du <b>am Ende</b>? Das sind die Zehner, und die schreibt man <b>vorne</b>.';
+  if (t.type === 'lay') return 'Schau auf die Zahl ' + digitsHTML(a) + ': Die <span class="pz">erste Ziffer</span> sagt, wie viele Zehnerstangen. Die <span class="pe">zweite Ziffer</span> sagt, wie viele Einerwürfel.';
+  if (isSwap(given, a)) return '<b>Hast du Zehner und Einer vertauscht?</b> Die Zehner stehen vorne, die Einer hinten.';
+  if (t.op && !isNaN(g)) {
+    if (t.op === '−' && g === t.a + t.b) return '<b>Achtung, Minus!</b> Hier wird etwas weggenommen. Das Ergebnis wird kleiner.';
+    if (t.op === '+' && g === t.a - t.b) return '<b>Achtung, Plus!</b> Hier kommt etwas dazu. Das Ergebnis wird größer.';
+  }
+  var near = '';
+  if (!isNaN(g) && (d === 10 || d === -10 || d === 20 || d === -20) && a >= 10) near = 'Die Einer stimmen schon! Schau nochmal genau auf die <b>Zehner</b>. ';
+  else if (!isNaN(g) && d !== 0 && Math.abs(d) <= 2) near = 'Ganz knapp daneben! ';
+  if (t.mal) return near + t.hint1 + (t.mal[0] <= 10 && t.mal[1] <= 10 && !t.dots ? dotsHTML(t.mal[0], t.mal[1], true) : '');
+  if (t.hint1) return near + t.hint1;
+  if (t.op && t.a != null) {
+    var A = t.a, B = t.b, e = A % 10, z = B - B % 10, be = B % 10, step;
+    if (t.op === '+') step = B % 10 === 0 ? 'Rechne mit den Zehnern: ' + Math.floor(A / 10) + ' Zehner + ' + B / 10 + ' Zehner.' : B >= 10 ? 'Rechne zuerst ' + A + ' + ' + z + ' = ' + (A + z) + '. Dann kommen noch die ' + be + ' Einer dazu.' : e + B > 10 ? 'Rechne zuerst bis zum Zehner: ' + A + ' + ' + (10 - e) + ' = ' + (A + 10 - e) + '. Wie viele fehlen dann noch?' : 'Die Zehner bleiben gleich. Rechne nur mit den Einern: ' + e + ' + ' + B + '.';
+    else step = B % 10 === 0 ? 'Rechne mit den Zehnern: ' + Math.floor(A / 10) + ' Zehner − ' + B / 10 + ' Zehner.' : B >= 10 ? 'Nimm zuerst die Zehner weg: ' + A + ' − ' + z + ' = ' + (A - z) + '. Dann noch die ' + be + ' Einer.' : B > e && e > 0 ? 'Rechne zuerst bis zum Zehner zurück: ' + A + ' − ' + e + ' = ' + (A - e) + '. Wie viele musst du dann noch wegnehmen?' : 'Die Zehner bleiben gleich. Rechne nur mit den Einern: ' + e + ' − ' + B + '.';
+    return near + step + (A + B <= 100 && A < 100 ? '<div class="tens">' + tensHTML(A) + '<span class="plus-sign">' + t.op + '</span>' + tensHTML(B, true) + '</div>' : '');
+  }
+  if (t.story) return near + (/ · /.test(t.hint) ? 'Wie viele <b>Gruppen</b> gibt es? Wie viele sind in <b>jeder Gruppe</b>? Du kannst auch plus rechnen: immer die gleiche Zahl dazu.' : 'Lies die Geschichte nochmal genau oder lass sie dir vorlesen. Stell sie dir wie einen Film vor: <b>Wird es mehr oder weniger?</b>');
+  if (T === 'geld') return near + 'Zähle zuerst das <b>größte</b> Geld. Dann zählst du Schritt für Schritt das kleinere dazu.';
+  if (T === 'stelle') return near + 'Zähle nochmal: Wie viele <span class="pz">Zehnerstangen</span>? Wie viele <span class="pe">Einerwürfel</span>?';
+  return near + 'Rechne nochmal in Ruhe, Schritt für Schritt.';
+}
+function canRetry(t) { return t.type === 'num' || t.type === 'clock' || t.type === 'pick' || t.type === 'lay' || t.type === 'wall'; }
+function showRetry(t, tip) {
+  t.tipText = tip;
+  $('fb').innerHTML = '<div class="feedback tip"><strong>' + pick(['Noch nicht ganz.', 'Hmm, schau nochmal.', 'Das stimmt noch nicht.']) + ' Versuch es nochmal!</strong><span>' + tip + '</span>' + (canSpeak ? '<div><button class="btn ghost small" id="speakTip">🔊 Tipp vorlesen</button></div>' : '') + '</div>';
+  Q.input = ''; if (t.type === 'num' || t.type === 'wall') showInput(t);
+  if (t.type === 'lay') { t.cur = 0; $('lay').innerHTML = layHTML(t); }
+}
+function check(ok, given) {
+  var t = Q.tasks[Q.i];
+  if (!ok && !t.tried && canRetry(t)) { t.tried = true; t.firstGiven = given; adapt(false); showRetry(t, firstTip(t, given)); return; }
+  var first = !t.tried; Q.locked = true; Q.results[Q.i] = ok ? (first ? true : 'help') : false;
+  if (first) adapt(ok);
+  if (ok) {
+    var gain = first ? taskStars(t) : 1; Q.earned = (Q.earned || 0) + gain; addStars(gain); save();
+    var run = 0; for (var ri = Q.i; ri >= 0 && Q.results[ri] === true; ri--) run++;
+    var praise = first ? (run === 3 ? 'Drei richtig hintereinander!' : run === 5 ? 'Fünf richtig hintereinander! Wow!' : pick(PRAISE)) : pick(['Jetzt stimmt’s!', 'Mit dem Tipp geschafft!', 'Genau, so geht’s!']);
+    if (!first) Q.wrong.push({ q: t.type === 'clock' ? 'Uhr ' + digital(t.h, t.m) : t.type === 'wall' ? (t.wq || 'Zahlenmauer') : t.story || t.type !== 'num' ? t.q : t.q + ' ?', given: t.firstGiven, answer: t.type === 'clock' ? digital(t.h, t.m) : t.answer, help: 1 });
+    $('fb').innerHTML = '<div class="feedback good"><strong>' + praise + ' +' + gain + ' ★</strong></div>'; renderProgress(); var q0 = Q, i0 = Q.i; setTimeout(function () { if (Q === q0 && Q.i === i0) nextTask(); }, first ? 900 : 1300);
+  }
   else {
+    if (t.type === 'clock' || t.type === 'pick') { var btns = $('choices').children; for (var bi = 0; bi < btns.length; bi++) if (t.opts[bi].ok) btns[bi].classList.add('right'); }
+    if (t.firstGiven != null && t.firstGiven !== given) given = t.firstGiven + ', dann ' + given;
     var right = t.type === 'clock' ? t.answerText : t.answer + (t.unit ? ' ' + t.unit : ''), swap = t.type !== 'clock' && isSwap(given, t.answer);
     Q.wrong.push({ q: t.type === 'clock' ? 'Uhr ' + digital(t.h, t.m) : t.type === 'wall' ? t.wq : t.story || t.type !== 'num' ? t.q : t.q + ' ?', given: given, answer: t.type === 'clock' ? digital(t.h, t.m) : t.answer, swap: swap || undefined });
     if (swap) Q.swaps = (Q.swaps || 0) + 1;
-    $('fb').innerHTML = '<div class="feedback bad"><strong>Fast! Richtig ist ' + esc(right) + '.</strong>' + (swap ? swapTip(t.answer) : '<span>' + esc(t.hint) + '</span>') + '<div class="row"><button class="btn" id="nextBtn">Weiter</button>' + (canSpeak && t.story ? '<button class="btn ghost" id="speakHint">🔊 Vorlesen</button>' : '') + '</div></div>';
+    $('fb').innerHTML = '<div class="feedback bad"><strong>Richtig ist ' + esc(right) + '. So geht’s:</strong>' + (swap ? swapTip(t.answer) : '<span>' + esc(t.hint) + '</span>') + '<div class="row"><button class="btn" id="nextBtn">Weiter</button>' + (canSpeak && t.story ? '<button class="btn ghost" id="speakHint">🔊 Vorlesen</button>' : '') + '</div></div>';
     renderProgress();
     if ($('pad')) { $('pad').hidden = true; $('quizBody').classList.add('miss'); }
     if ($('laypad')) $('laypad').hidden = true;
@@ -1533,7 +1683,7 @@ function taskStars(t) { return Q.mix ? 2 : (t.lv >= 3 ? 2 : 1) + (t.lv > Q.level
 function nextTask() { if (!Q || $('v-quiz').hidden) return; Q.i++; if (Q.i >= ROUND) finish(); else renderTask(); }
 
 function finish() {
-  var correct = Q.results.filter(Boolean).length, bonus = correct === ROUND ? 3 : 0, T = THEMES[Q.theme], got = (Q.earned || 0) + bonus;
+  var correct = Q.results.filter(function (x) { return x === true; }).length, helped = Q.results.filter(function (x) { return x === 'help'; }).length, bonus = correct === ROUND ? 3 : 0, T = THEMES[Q.theme], got = (Q.earned || 0) + bonus;
   addStars(bonus);
   var msg = '', next = null;
   if (Q.mix) msg = correct >= PASS ? 'Meister-Mix geschafft! Du kannst alles aus „' + T.name + '“.' : 'Der Meister-Mix ist knifflig. Übe einzelne Stufen und versuch es nochmal!';
@@ -1546,7 +1696,8 @@ function finish() {
     S.levels[Q.theme] = Q.level - 1; S.mastered[Q.theme] = false; touch(Q.theme);
     msg = 'Wir üben noch einmal <strong>' + T.levels[Q.level - 2].title + '</strong>. Dann klappt die nächste Stufe bestimmt!';
   } else msg = 'Für die nächste Stufe brauchst du ' + PASS + ' richtige Aufgaben. Du schaffst das!';
-  S.history.push({ d: new Date().toISOString(), theme: Q.theme, level: Q.mix ? 'Mix' : Q.level, score: correct, wrong: Q.wrong });
+  S.history.push({ d: new Date().toISOString(), theme: Q.theme, level: Q.mix ? 'Mix' : Q.level, score: correct, help: helped || undefined, wrong: Q.wrong });
+  var today = roundsToday(), dayBonus = today === DAILY ? 2 : 0; if (dayBonus) { addStars(dayBonus); got += dayBonus; }
   if (S.history.length > 200) S.history = S.history.slice(-200);
   save();
   $('resTrophy').hidden = true; $('resScore').classList.remove('perfect');
@@ -1554,11 +1705,11 @@ function finish() {
   $('resScore').textContent = correct + ' / ' + ROUND;
   var st = ''; for (var i = 0; i < Math.min(got, 30); i++) st += '<span style="animation-delay:' + i * 70 + 'ms">★</span>';
   $('resStars').innerHTML = st;
-  $('resEarned').innerHTML = 'Du hast <b>' + got + ' Sterne</b> gesammelt' + (bonus ? ' (mit 3 Bonus-Sternen)' : '') + '. Jetzt hast du <b>' + stars() + '</b>.';
+  $('resEarned').innerHTML = (helped ? 'Dazu hast du <b>' + helped + (helped === 1 ? ' Aufgabe' : ' Aufgaben') + ' mit Tipp</b> geschafft. ' : '') + 'Du hast <b>' + got + ' Sterne</b> gesammelt' + (bonus ? ' (mit 3 Bonus-Sternen)' : '') + (dayBonus ? '. Tagesziel geschafft: <b>+2 ★</b>' : '') + '. Jetzt hast du <b>' + stars() + '</b>.';
   $('resLevel').innerHTML = msg;
   Q.next = next; $('resAgain').textContent = next === 'mix' ? 'Zum Meister-Mix ★' : next ? 'Weiter mit Stufe ' + next : 'Nochmal üben';
   $('resMascot').innerHTML = owlSVG(correct >= PASS ? 'cheer' : correct >= 5 ? 'wink' : 'happy');
-  $('resBubble').textContent = resultLine(correct);
+  $('resBubble').textContent = resultLine(correct) + (today >= PAUSE_AT ? ' Du hast heute schon ' + today + ' Runden geschafft. Zeit für eine Pause? Dein Kopf merkt sich mehr, wenn du ausruhst.' : '');
   var rw = rewardState(); if (rw && rw.done && rw.have - got < rw.goal) $('resBubble').textContent += ' Und: Du hast deine Belohnung erreicht!';
   go('result');
   checkBadges();
@@ -2091,6 +2242,7 @@ var BADGES = [
   { id: 'profi-plus', name: 'Plus-Minus-Profi', desc: 'Alle Stufen bei Plus und Minus', col: '#1d72b0', sym: '±', test: function () { return !!S.mastered.plus; } },
   { id: 'profi-uhr', name: 'Uhren-Profi', desc: 'Alle Stufen bei Uhr lesen', col: '#c73d3d', sym: '◷', test: function () { return !!S.mastered.uhr; } },
   { id: 'profi-geld', name: 'Geld-Profi', desc: 'Alle Stufen bei Geld', col: '#c99a0a', sym: '€', test: function () { return !!S.mastered.geld; } },
+  { id: 'profi-mal', name: 'Einmaleins-Profi', desc: 'Alle Stufen beim Einmaleins', col: '#2f9e5b', sym: '·', test: function () { return !!S.mastered.mal; } },
   { id: 'profi-sach', name: 'Geschichten-Profi', desc: 'Alle Stufen bei Sachaufgaben', col: '#7a4d30', sym: '?', test: function () { return !!S.mastered.sach; } },
   { id: 'meister', name: 'Meister', desc: 'Einen Meister-Mix mit 8 richtig', col: '#6b3fb0', sym: 'M', test: function () { return S.history.some(function (h) { return h.level === 'Mix' && h.score >= PASS; }); } },
   { id: 'lesefuchs', name: 'Lesefuchs', desc: '5 gute Runden Sachaufgaben', col: '#f08a24', sym: 'Aa', test: function () { return goodSach() >= 5; } },
@@ -3161,10 +3313,10 @@ function renderParents() {
     h += '<div class="row"><label for="lv-' + k + '">Stufe ändern</label><select id="lv-' + k + '" data-lv="' + k + '">' + opts + '</select></div>';
     if (hist.length) {
       h += '<div class="table-wrap"><table><thead><tr><th>Wann</th><th>Stufe</th><th>Richtig</th></tr></thead><tbody>';
-      hist.slice(-8).reverse().forEach(function (x) { h += '<tr><td>' + fmtDate(x.d) + '</td><td>' + x.level + '</td><td>' + x.score + ' / ' + ROUND + '</td></tr>'; });
+      hist.slice(-8).reverse().forEach(function (x) { h += '<tr><td>' + fmtDate(x.d) + '</td><td>' + x.level + '</td><td>' + x.score + ' / ' + ROUND + (x.help ? ' <span class="muted">(+' + x.help + ' mit Tipp)</span>' : '') + '</td></tr>'; });
       h += '</tbody></table></div>';
       var wr = []; hist.slice().reverse().forEach(function (x) { (x.wrong || []).forEach(function (w) { if (wr.length < 8) wr.push(w); }); });
-      if (wr.length) { h += '<p class="muted">Zuletzt falsch:</p><div class="table-wrap"><table><thead><tr><th>Aufgabe</th><th>Antwort</th><th>Richtig</th></tr></thead><tbody>'; wr.forEach(function (w) { h += '<tr><td>' + esc(w.q) + '</td><td class="danger">' + esc(w.given) + (w.swap ? ' <span class="badge">Zahlendreher</span>' : '') + '</td><td>' + esc(w.answer) + '</td></tr>'; }); h += '</tbody></table></div>'; }
+      if (wr.length) { h += '<p class="muted">Zuletzt falsch oder erst mit Tipp:</p><div class="table-wrap"><table><thead><tr><th>Aufgabe</th><th>Antwort</th><th>Richtig</th></tr></thead><tbody>'; wr.forEach(function (w) { h += '<tr><td>' + esc(w.q) + '</td><td class="danger">' + esc(w.given) + (w.swap ? ' <span class="badge">Zahlendreher</span>' : '') + '</td><td>' + esc(w.answer) + '</td></tr>'; }); h += '</tbody></table></div>'; }
     } else h += '<p class="muted">Noch keine Runde gespielt.</p>';
     h += '</div>';
   });
