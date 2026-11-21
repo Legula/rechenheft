@@ -886,6 +886,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <div class="row"><input type="checkbox" id="skinIn" style="width:24px;height:24px"><label for="skinIn">Heft-Farben (Themes) erlauben (aus = immer das normale Karopapier; die Auswahl gilt pro Gerät)</label></div>
     <div class="row"><label for="codeIn">Familien-Code</label><input type="text" id="codeIn" maxlength="40" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="z. B. sonnenblume-42"><button class="btn ghost" id="codeSave">Speichern</button><button class="btn ghost" id="syncBtn">Jetzt abgleichen</button></div>
     <p id="syncStatus" class="muted"></p>
+    <p class="muted">Der Code wird auf diesem Gerät dreifach gespeichert und auf der Synology als Hauscode hinterlegt. Vergisst der Browser ihn, holt sich die App ihn beim Start von selbst zurück. Neue Geräte im Heimnetz bekommen ihn automatisch.</p>
     <div class="row"><button class="btn ghost" id="updBtn">Jetzt aktualisieren</button><span class="muted" id="updMsg">Holt sofort die neueste Version auf die Synology, für alle Geräte. Die anderen Geräte bekommen sie beim nächsten Öffnen.</span></div>
     <div class="row"><button class="btn ghost" id="testBtn">Testmodus starten</button><span class="muted">Alles ausprobieren mit 999 Sternen, ohne Philians Stand zu verändern.</span></div>
     <div class="row"><button class="btn ghost" id="resetAsk">Alles zurücksetzen</button>
@@ -990,7 +991,66 @@ function mergeState(L, R) {
 }
 
 /* Abgleich mit der Synology: sync.php liegt neben dieser Seite. Ohne Verbindung wird nur lokal gespeichert. */
-var SYNC = { code: TEST ? '' : (lsGet(KEY + '-code') || ''), state: 'off', last: 0, timer: 0, busy: false };
+/* Familien-Code robust merken: Der Kinder-Browser auf dem Fire Tablet löscht manchmal die Website-Daten (localStorage).
+   Darum liegt der Code dreifach auf dem Gerät (localStorage, Cookie, IndexedDB) und wird beim Start aus dem ersten
+   gefundenen Speicher wiederhergestellt und in die anderen zurückgeschrieben. Ist alles leer, fragt die App die Synology
+   nach dem Hauscode (sync.php?hauscode=1). Ein Link mit ?code=… oder #code=… setzt den Code ebenfalls.
+   "aus" heißt: Abgleich auf diesem Gerät bewusst abgeschaltet (dann nichts wiederherstellen). */
+var CK = KEY + '-code', CODE_OK = /^[A-Za-z0-9-]{4,40}$/;
+function ckGet() { try { var m = document.cookie.match(new RegExp('(?:^|;\\s*)' + CK + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : null; } catch (e) { return null; } }
+function ckSet(v) { try { document.cookie = CK + '=' + encodeURIComponent(v) + '; max-age=34560000; path=/; SameSite=Lax'; } catch (e) {} } // 400 Tage, wird bei jedem Start erneuert
+function idbRun(mode, fn, done) {
+  try {
+    if (!window.indexedDB) return done(null);
+    var rq = indexedDB.open('philian-rechenheft', 1), fertig = false;
+    function ende(v) { if (!fertig) { fertig = true; done(v); } }
+    rq.onupgradeneeded = function () { rq.result.createObjectStore('kv'); };
+    rq.onerror = rq.onblocked = function () { ende(null); };
+    rq.onsuccess = function () {
+      try { var db = rq.result, tx = db.transaction('kv', mode), r = fn(tx.objectStore('kv'));
+        tx.oncomplete = function () { db.close(); ende(r && r.result !== undefined ? r.result : null); };
+        tx.onerror = tx.onabort = function () { db.close(); ende(null); };
+      } catch (e) { ende(null); }
+    };
+    setTimeout(function () { ende(null); }, 1500); // manche Browser antworten nie
+  } catch (e) { done(null); }
+}
+function idbGet(done) { idbRun('readonly', function (st) { return st.get('code'); }, function (v) { done(typeof v === 'string' ? v : null); }); }
+function idbSet(v) { idbRun('readwrite', function (st) { st.put(v, 'code'); }, function () {}); }
+function codeMerken(c) { if (TEST) return; var v = c || 'aus'; lsSet(CK, v); ckSet(v); idbSet(v); }
+function codeAus(v) { return v && CODE_OK.test(v) ? v : ''; }
+function urlCode() {
+  var m = (location.search + '&' + location.hash).match(/[?&#]code=([A-Za-z0-9-]{4,40})(?:[&#]|$)/);
+  if (!m) return '';
+  var q = location.search.replace(/([?&])code=[^&]*/, '$1').replace(/[?&]+$/, '').replace('?&', '?'),
+    h = location.hash.replace(/([#&])code=[^&]*/, '$1').replace(/[#&]+$/, '').replace('#&', '#');
+  try { history.replaceState(null, '', location.pathname + q + h); } catch (e) {} // Code nicht in der Adresszeile stehen lassen
+  return m[1];
+}
+var SYNC = { code: TEST ? '' : codeAus(lsGet(CK) || ckGet()), state: 'off', last: 0, timer: 0, busy: false, src: '', merken: false };
+/* Beim Start: Code finden, in allen Speichern auffrischen, dann abgleichen. */
+function codeStart() {
+  if (TEST) return syncNow();
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {} // Browser bitten, die Daten nicht aufzuräumen
+  function nimm(v, src) {
+    if (v === 'aus') { SYNC.code = ''; SYNC.src = ''; codeMerken(''); return syncNow(); }
+    v = codeAus(v);
+    if (v) { SYNC.code = v; SYNC.src = src; codeMerken(v); }
+    syncNow();
+  }
+  var u = urlCode(); if (u) { SYNC.merken = true; return nimm(u, 'link'); }
+  var l = lsGet(CK), c = ckGet();
+  if (l) return nimm(l, '');
+  if (c) return nimm(c, 'cookie');
+  idbGet(function (w) {
+    if (w) return nimm(w, 'idb');
+    if (!window.fetch || !/^https?:$/.test(location.protocol)) return nimm('', '');
+    fetch('sync.php?hauscode=1', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { nimm(j && j.code, 'synology'); })
+      .catch(function () { nimm('', ''); });
+  });
+}
 function syncNow() {
   if (TEST) { SYNC.state = 'off'; return; }
   if (!SYNC.code) { SYNC.state = 'off'; return; }
@@ -1001,9 +1061,9 @@ function syncNow() {
     .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); return r.json(); })
     .then(function (res) {
       S = mergeState(S, fixShapes(res && res.state)); ensure(); save(true);
-      return fetch('sync.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: SYNC.code, state: S }) });
+      return fetch('sync.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: SYNC.code, state: S, merken: SYNC.merken }) }); // merken: Code als Hauscode auf der Synology hinterlegen
     })
-    .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); SYNC.state = 'ok'; SYNC.last = Date.now(); })
+    .then(function (r) { if (!r.ok) throw new Error('Fehler ' + r.status); SYNC.state = 'ok'; SYNC.last = Date.now(); SYNC.merken = false; })
     .catch(function (e) { SYNC.state = 'error'; SYNC.err = String((e && e.message) || e); })
     .then(function () { SYNC.busy = false; showSync(); if (!$('v-home').hidden) renderHome(); if (!$('v-build').hidden && !BV.busy) renderBuild(); if (!$('v-island').hidden) renderIsland(); if (!$('v-sky').hidden && !SV.con) renderSky(); if (!$('v-dress').hidden) renderDress(); else skApply(); });
 }
@@ -1014,6 +1074,8 @@ function showSync() {
     : SYNC.state === 'busy' ? 'Gleiche ab …'
     : SYNC.state === 'ok' ? 'Abgeglichen um ' + new Date(SYNC.last).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + '.'
     : 'Synology gerade nicht erreichbar (' + SYNC.err + '). Der Lernstand bleibt auf diesem Gerät und wird später abgeglichen.';
+  var SRC = { cookie: 'aus dem Cookie', idb: 'aus der Geräte-Datenbank', synology: 'von der Synology (Hauscode)', link: 'aus dem Link' };
+  if (SYNC.code && SRC[SYNC.src]) t += ' Der Browser hatte den Code vergessen; er wurde beim Start ' + SRC[SYNC.src] + ' wiederhergestellt.';
   el.textContent = t; el.className = SYNC.state === 'error' ? 'danger' : 'muted';
 }
 window.addEventListener('online', syncNow);
@@ -3453,8 +3515,8 @@ $('resetYes').addEventListener('click', function () { var n = S.name, ep = (S.ep
 $('codeSave').addEventListener('click', function () {
   var c = $('codeIn').value.trim();
   if (TEST) { $('syncStatus').textContent = 'Im Testmodus ist der Abgleich aus.'; return; }
-  if (c && !/^[A-Za-z0-9-]{4,40}$/.test(c)) { $('syncStatus').textContent = 'Der Code braucht 4 bis 40 Zeichen: Buchstaben ohne Umlaute, Ziffern oder Bindestriche.'; $('syncStatus').className = 'danger'; return; }
-  SYNC.code = c; lsSet(KEY + '-code', c); SYNC.state = c ? 'busy' : 'off'; showSync(); if (c) syncNow();
+  if (c && !CODE_OK.test(c)) { $('syncStatus').textContent = 'Der Code braucht 4 bis 40 Zeichen: Buchstaben ohne Umlaute, Ziffern oder Bindestriche.'; $('syncStatus').className = 'danger'; return; }
+  SYNC.code = c; SYNC.src = ''; SYNC.merken = !!c; codeMerken(c); SYNC.state = c ? 'busy' : 'off'; showSync(); if (c) syncNow();
 });
 $('syncBtn').addEventListener('click', syncNow);
 $('testBtn').addEventListener('click', function () {
@@ -4751,7 +4813,7 @@ function fixShapes(x, key) {
 S = fixShapes(S);
 ensure(); save(true); skApply();
 go('home');
-syncNow();
+codeStart();
 
 /* Neue Version von selbst laden: Der Kinder-Browser lässt die Seite oft tagelang offen und lädt nie neu.
    Darum fragt die App beim Start, beim Zurückkommen und alle 10 Minuten index.php (Synology) nach dem aktuellen Stand.
