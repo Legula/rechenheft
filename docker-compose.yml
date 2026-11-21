@@ -12,6 +12,8 @@ services:
       RECHENHEFT_DATA: /data
       # "aus" setzen, um automatische Updates abzuschalten
       RECHENHEFT_UPDATE_URL: https://raw.githubusercontent.com/Legula/rechenheft/main/index.html
+      # Familien-Code, den Geräte ohne Code automatisch bekommen (leer = der zuletzt im Elternbereich gespeicherte)
+      RECHENHEFT_CODE: ${RECHENHEFT_CODE:-}
       # Hausaufgaben-Wache: API-Schlüssel von console.anthropic.com.
       # Einfachster Weg: Datei "claude.env" neben diese Datei legen (Inhalt: ANTHROPIC_API_KEY=sk-ant-... oder nur der Schlüssel).
       # wache.php liest sie direkt, ohne Neustart. Alternativ .env oder den Wert hier eintragen.

@@ -2,7 +2,11 @@
 // Philians Rechenheft: Abgleich des Lernstands zwischen Geräten.
 // GET  sync.php?code=XYZ          -> {"state": {...}} oder {"state": null}
 // POST {"code": "XYZ", "state": {...}} -> {"ok": true}
+// GET  sync.php?hauscode=1        -> {"code": "XYZ"} oder {"code": null}
 // Pro Familien-Code wird eine JSON-Datei gespeichert. Der Dateiname ist ein Hash des Codes.
+// Hauscode: Vergisst ein Browser (z. B. Amazon Kids auf dem Fire Tablet) den Familien-Code, holt sich die App
+// beim Start den Hauscode von hier. Er kommt aus RECHENHEFT_CODE oder wird automatisch gemerkt: der erste
+// abgeglichene Code, später der zuletzt im Elternbereich gespeicherte. Gedacht nur fürs Heimnetz.
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -20,6 +24,13 @@ if (!is_dir($verzeichnis) && !@mkdir($verzeichnis, 0770, true)) {
 }
 
 $methode = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+$hausDatei = $verzeichnis . '/hauscode.txt';
+$gueltig = '/^[A-Za-z0-9-]{4,40}$/';
+
+if ($methode === 'GET' && isset($_GET['hauscode'])) {
+    $h = (string)(getenv('RECHENHEFT_CODE') ?: (is_file($hausDatei) ? trim((string)file_get_contents($hausDatei)) : ''));
+    antwort(200, ['code' => preg_match($gueltig, $h) ? $h : null]);
+}
 $koerper = null;
 if ($methode === 'POST') {
     $roh = file_get_contents('php://input', false, null, 0, 1000001);
@@ -34,7 +45,7 @@ if ($methode === 'POST') {
     antwort(405, ['error' => 'Methode nicht erlaubt']);
 }
 
-if (!preg_match('/^[A-Za-z0-9-]{4,40}$/', $code)) antwort(400, ['error' => 'ungültiger Code']);
+if (!preg_match($gueltig, $code)) antwort(400, ['error' => 'ungültiger Code']);
 $datei = $verzeichnis . '/' . hash('sha256', 'rechenheft:' . $code) . '.json';
 
 if ($methode === 'GET') {
@@ -51,4 +62,6 @@ if (file_put_contents($tmp, json_encode($stand, JSON_UNESCAPED_UNICODE), LOCK_EX
     @unlink($tmp);
     antwort(500, ['error' => 'Speichern fehlgeschlagen']);
 }
+// Hauscode merken: beim ersten Abgleich überhaupt oder wenn der Code im Elternbereich gespeichert wurde
+if (!empty($koerper->merken) || !is_file($hausDatei)) @file_put_contents($hausDatei, $code, LOCK_EX);
 antwort(200, ['ok' => true]);

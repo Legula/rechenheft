@@ -50,7 +50,9 @@ Auf der Synology läuft die App zusammen mit `sync.php`. Dann können alle Gerä
 3. In der **File Station** im Freigabeordner `docker` einen Ordner `rechenheft` anlegen und den *Inhalt* des ZIPs dort hineinlegen (so dass `docker/rechenheft/index.html` und `docker/rechenheft/docker-compose.yml` direkt darin liegen).
 4. **Container Manager → Projekt → Erstellen**: Name `rechenheft`, Pfad `/docker/rechenheft`, Quelle „Vorhandene docker-compose.yml verwenden“. Weiter, fertigstellen. Das Abbild `php:8.3-apache` wird einmal geladen.
 5. Im Browser öffnen: `http://<IP-der-Synology>:8088/`
-6. Auf jedem Gerät: **Für Eltern → Familien-Code** eintragen (überall derselbe, z. B. `sonnenblume-42`) und speichern.
+6. Auf einem Gerät: **Für Eltern → Familien-Code** eintragen (z. B. `sonnenblume-42`) und speichern. Die Synology merkt sich den Code als Hauscode; andere Geräte im Heimnetz übernehmen ihn beim Start von selbst. Alternativ `RECHENHEFT_CODE` in `docker-compose.yml` setzen oder die Adresse mit `#code=sonnenblume-42` öffnen.
+
+Vergisst ein Browser den Code (der Amazon-Kids-Browser löscht manchmal Website-Daten), stellt die App ihn beim Start aus Cookie, Geräte-Datenbank oder vom Hauscode der Synology wieder her. Der Elternbereich zeigt dann, woher er kam.
 
 Die App funktioniert auch ohne Verbindung zur Synology. Sie speichert dann auf dem Gerät und gleicht ab, sobald die Synology wieder erreichbar ist (zu Hause oder per VPN).
 
