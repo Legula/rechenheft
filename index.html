@@ -543,6 +543,40 @@ select, input[type=text], input[type=number] { font: inherit; padding: 8px 10px;
 .dsea { position: absolute; top: 4px; left: 6px; font-size: 1.15rem; }
 .dneu { position: absolute; top: -10px; right: -6px; background: #c22b26; color: #ffffff; font-weight: 800; font-size: .85rem; border-radius: 999px; padding: 2px 9px; }
 #homeMascot { cursor: pointer; }
+.dcard.rare:not(.on):not(.sel) { border-color: #e9a800; box-shadow: 0 4px 0 #e9a800; }
+.drare { position: absolute; top: -10px; left: -6px; background: #5a3fb0; color: #ffffff; font-weight: 800; font-size: .8rem; border-radius: 999px; padding: 2px 8px; }
+.dcard.rare .dsea { top: 14px; }
+/* Bewegte Teile (Begleiter, Zauber-Effekte, besondere Teile) */
+[class^="fx-"], [class*=" fx-"] { transform-box: fill-box; transform-origin: center; }
+.fx-tw { animation: fxtw 1.6s ease-in-out infinite; }
+@keyframes fxtw { 50% { opacity: .3; transform: scale(.45); } }
+.fx-prop { animation: fxprop .45s linear infinite; }
+@keyframes fxprop { 50% { transform: scaleX(.12); } }
+.fx-rise { animation: fxrise 4.2s linear infinite; }
+@keyframes fxrise { 0% { transform: translateY(14px); opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(-30px); opacity: 0; } }
+.fx-fall { animation: fxfall 3.2s linear infinite; }
+@keyframes fxfall { 0% { transform: translateY(-24px) rotate(0); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateY(24px) rotate(360deg); opacity: 0; } }
+.fx-shoot { animation: fxshoot 2.8s ease-in infinite; }
+@keyframes fxshoot { 0% { transform: translate(-10px, -8px); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(12px, 10px); opacity: 0; } }
+.fx-sway { transform-origin: 85% 100%; animation: fxsway 3s ease-in-out infinite; }
+@keyframes fxsway { 50% { transform: rotate(6deg); } }
+.fx-hop { transform-origin: 50% 100%; animation: fxhop 1.8s ease-in-out infinite; }
+@keyframes fxhop { 0%, 60%, 100% { transform: translateY(0); } 75% { transform: translateY(-4px); } }
+.fx-float { animation: fxfloat 2.4s ease-in-out infinite; }
+@keyframes fxfloat { 50% { transform: translate(-3px, -5px); } }
+.fx-tail { transform-origin: 0% 100%; animation: fxtail 2s ease-in-out infinite; }
+@keyframes fxtail { 50% { transform: rotate(-12deg); } }
+.fx-flap { transform-origin: 0% 100%; animation: fxflap .9s ease-in-out infinite; }
+@keyframes fxflap { 50% { transform: rotate(-16deg) scaleY(.85); } }
+.fx-shine { animation: fxshine 2.4s ease-in-out infinite; }
+@keyframes fxshine { 0%, 100% { opacity: .15; } 50% { opacity: .85; } }
+.fx-wave { animation: fxwave 6s ease-in-out infinite; }
+@keyframes fxwave { 50% { transform: translateX(6px) scaleY(1.15); opacity: .8; } }
+.fx-pulse { animation: fxpulse 2.6s ease-in-out infinite; }
+@keyframes fxpulse { 50% { transform: scale(1.05); opacity: .6; } }
+/* In den kleinen Bildern steht alles still (schont das Tablet) */
+.dcard [class*="fx-"], .dfigs [class*="fx-"], .dress-mini [class*="fx-"] { animation: none; }
+@media (prefers-reduced-motion: reduce) { [class^="fx-"], [class*=" fx-"] { animation: none !important; } }
 @media (min-width: 900px) and (orientation: landscape) { .dlayout { display: grid; grid-template-columns: 320px minmax(0, 1fr); align-items: start; } .dstage { position: sticky; top: 8px; } }
 @media (max-width: 520px) { .dress-mini { width: 110px; } .dfigs button { font-size: 1.05rem; padding: 8px; } .dfigs svg { width: 44px; } }
 @media (prefers-reduced-motion: reduce) { .dbig.bob svg, .dbig.hop svg { animation: none; } }
@@ -1584,8 +1618,9 @@ function renderHome() {
   $('wacheBadge').textContent = 'Dienstgrad: ' + wRank().name;
   $('homeMascot').innerHTML = owlSVG('happy');
   $('playDress').hidden = dOff; $('dressMini').innerHTML = owlSVG('happy', null, true) + paulSVG('happy', null, true);
-  $('dressBadge').textContent = dNeu.length ? (dNeu.length === 1 ? '1 neues Teil!' : dNeu.length + ' neue Teile!') : dSeasons().length ? dSeasons()[0][2] + ' Jetzt mit ' + dSeasons()[0][1] : 'Outfits für Olaf und Paul';
-  $('playDress').classList.toggle('neu', dNeu.length > 0);
+  var dShop = dOff ? [] : dShopNew();
+  $('dressBadge').textContent = dNeu.length ? (dNeu.length === 1 ? '1 neues Teil!' : dNeu.length + ' neue Teile!') : dShop.length ? '✨ Neue Sachen im Laden!' : dSeasons().length ? dSeasons()[0][2] + ' Jetzt mit ' + dSeasons()[0][1] : 'Outfits für Olaf und Paul';
+  $('playDress').classList.toggle('neu', dNeu.length + dShop.length > 0);
   $('homeMascot').className = 'mascot bob';
   $('homeBubble').textContent = hello();
   var td = roundsToday(), sk = dayStreak(), dots = '';
@@ -4340,7 +4375,7 @@ BADGES.push(
    Nur Objekte, keine Listen. own wird beim Abgleich vereinigt (gekauft bleibt gekauft), wear gewinnt nach S.at.dress, off nach S.at.dressOff.
    Jahreszeiten: Saison-Sachen gibt es nur in ihrem Zeitraum (Datum des Geräts) zu kaufen, gekauft bleiben sie für immer.
    Jede Jahreszeit bringt ein Geschenk mit. Solange das Kind nichts selbst anzieht (wear.auto), tragen die Figuren das Geschenk der Jahreszeit. */
-var D_SLOTS = [['kopf', 'Kopf'], ['gesicht', 'Augen'], ['koerper', 'Körper'], ['bg', 'Hintergrund']];
+var D_SLOTS = [['kopf', 'Kopf'], ['gesicht', 'Augen'], ['koerper', 'Körper'], ['tier', 'Begleiter'], ['effekt', 'Zauber-Effekte'], ['titel', 'Titel'], ['bg', 'Hintergrund']];
 var D_FIG = { o: 'Eule Olaf', p: 'Polizeihund Paul' };
 /* Ankerpunkte: wo Kopf, Augen, Hals und Bauch der Figur sitzen (x, y, Maßstab). Jedes Teil ist um (0,0) gezeichnet. */
 var D_AN = {
@@ -4470,18 +4505,202 @@ var DRESS = [
   { id: 'fledermaus', name: 'Fledermaus-Umhang', figs: 'op', slots: ['koerper'], season: 'halloween', price: 12, cape: '#4a2f7a', edge: 1 },
   { id: 'kuerbisse', name: 'Kürbisnacht', figs: 'op', slots: ['bg'], season: 'halloween', price: 12, bg: 'kuerbisse' }
 ];
+/* ---------- Neue Teile (Winter 2026): Hüte, Brillen, Körper, Hintergründe, Begleiter, Zauber-Effekte, Titel ----------
+   Begleiter stehen unten rechts neben der Figur (Boden = 0,0). Zauber-Effekte liegen über (oder hinter) der ganzen Figur.
+   Titel sind ein Band unter der Figur; das Bild wird dafür nach unten größer.
+   Bewegte Teile nutzen CSS-Klassen fx-…; in den kleinen Karten und bei „weniger Bewegung“ stehen sie still. */
+function dAdd(o, add) { for (var k in add) o[k] = add[k]; }
+/* Funkeln: Stern mit vier Zacken, blinkt (fx-tw) */
+function dSpark(x, y, r, c, delay, edge) {
+  var q = (r * .18).toFixed(1);
+  return '<g transform="translate(' + x + ' ' + y + ')"><path class="fx-tw" style="animation-delay:' + (delay || 0) + 's" d="M0 ' + (-r) + ' Q' + q + ' ' + (-q) + ' ' + r + ' 0 Q' + q + ' ' + q + ' 0 ' + r + ' Q' + (-q) + ' ' + q + ' ' + (-r) + ' 0 Q' + (-q) + ' ' + (-q) + ' 0 ' + (-r) + 'Z" fill="' + c + '"' + (edge ? ' stroke="' + edge + '" stroke-width="1"' : '') + '/></g>';
+}
+function dHeart(x, y, s, c, edge) { return '<path transform="translate(' + x + ' ' + y + ') scale(' + s + ')" d="M0 6 C-12 -2 -8 -13 0 -7 C8 -13 12 -2 0 6Z" fill="' + c + '"' + (edge ? ' stroke="' + edge + '" stroke-width="1.5"' : '') + '/>'; }
+function dLeaf(x, y, rot, s, c) { return '<g transform="translate(' + x + ' ' + y + ') rotate(' + rot + ') scale(' + s + ')"><path d="M0 0 Q14 -10 0 -34 Q-14 -10 0 0Z" fill="' + c + '"/><path d="M0 -2 V-30" stroke="#1f5a2a" stroke-width="1.5" opacity=".5"/></g>'; }
+
+dAdd(D_HAT, {
+  koch: '<circle cx="-15" cy="-25" r="12" fill="#ffffff" stroke="#b9c3d1" stroke-width="2.5"/><circle cx="15" cy="-25" r="12" fill="#ffffff" stroke="#b9c3d1" stroke-width="2.5"/><circle cx="0" cy="-33" r="14" fill="#ffffff" stroke="#b9c3d1" stroke-width="2.5"/><circle cx="-15" cy="-25" r="10.8" fill="#ffffff"/><circle cx="15" cy="-25" r="10.8" fill="#ffffff"/><circle cx="0" cy="-33" r="12.8" fill="#ffffff"/><rect x="-24" y="-16" width="48" height="18" rx="4" fill="#ffffff" stroke="#b9c3d1" stroke-width="2.5"/><path d="M-12 -12 v10 M0 -12 v10 M12 -12 v10" stroke="#e3e8ef" stroke-width="2"/>',
+  bau: '<path d="M-30 0 Q-30 -34 0 -34 Q30 -34 30 0Z" fill="#ffc61a" stroke="#c99a0a" stroke-width="2"/><path d="M-6 -33 Q0 -35 6 -33 L6 -3 L-6 -3Z" fill="#f2a900"/><path d="M-22 -14 Q-20 -26 -12 -29" stroke="#fff3c4" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="-38" y="-5" width="76" height="9" rx="4.5" fill="#f2a900" stroke="#c99a0a" stroke-width="2"/>',
+  feuer: '<path d="M-32 0 Q-32 -38 0 -38 Q32 -38 32 0Z" fill="#d63a3a" stroke="#8f2421" stroke-width="2"/><path d="M-5 -37 Q0 -44 5 -37 L5 -3 L-5 -3Z" fill="#ffd23f" stroke="#c99a0a" stroke-width="1.5"/><circle cx="-18" cy="-16" r="5.5" fill="#ffd23f" stroke="#c99a0a" stroke-width="1.5"/><circle cx="18" cy="-16" r="5.5" fill="#ffd23f" stroke="#c99a0a" stroke-width="1.5"/><ellipse cx="0" cy="1" rx="42" ry="7" fill="#b02e2b" stroke="#8f2421" stroke-width="2"/>',
+  cowboy: '<ellipse cx="0" cy="0" rx="46" ry="8" fill="#9a5f32" stroke="#6e4220" stroke-width="2"/><path d="M-22 -2 Q-26 -30 -10 -32 Q0 -26 10 -32 Q26 -30 22 -2Z" fill="#b97a44" stroke="#6e4220" stroke-width="2"/><rect x="-23" y="-11" width="46" height="7" fill="#5a3418"/>' + dStar(0, -7.5, 4.5, '#ffd23f'),
+  propeller: '<path d="M-30 1 Q-30 -30 0 -30 Q30 -30 30 1Z" fill="#2f6fd6"/><path d="M0 -30 Q-18 -26 -20 1 L-7 1 Q-6 -20 0 -30Z" fill="#d64541"/><path d="M0 -30 Q18 -26 20 1 L7 1 Q6 -20 0 -30Z" fill="#ffd23f"/><rect x="-32" y="-4" width="64" height="8" rx="4" fill="#2f9e5b"/><rect x="-1.5" y="-41" width="3" height="12" fill="#5b6782"/><g transform="translate(0 -41)"><g class="fx-prop"><ellipse cx="-12" cy="0" rx="12" ry="3.5" fill="#d64541" stroke="#8f2421"/><ellipse cx="12" cy="0" rx="12" ry="3.5" fill="#2f6fd6" stroke="#1d4f9c"/></g><circle cx="0" cy="0" r="3" fill="#ffd23f" stroke="#c99a0a"/></g>',
+  einhorn: '<path d="M-30 2 Q0 -14 30 2" stroke="#ff8fc0" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M-8 -6 L0 -48 L8 -6Z" fill="#fff1a8" stroke="#d9a300" stroke-width="2" stroke-linejoin="round"/><path d="M-6.5 -14 L6.5 -19 M-5 -24 L5 -29 M-3 -34 L3 -38" stroke="#d9a300" stroke-width="2"/><circle cx="-19" cy="-4" r="5.5" fill="#a77ee8"/><circle cx="-19" cy="-4" r="2.2" fill="#fff6c2"/><circle cx="19" cy="-4" r="5.5" fill="#5cc4f2"/><circle cx="19" cy="-4" r="2.2" fill="#fff6c2"/>',
+  regenkrone: '<path d="M-28 0 L-32 -30 L-15 -14 L0 -36 L15 -14 L32 -30 L28 0Z" fill="#ffd23f" stroke="#c99a0a" stroke-width="2.5" stroke-linejoin="round"/><path d="M-27 -4 H27" stroke="#ffe27a" stroke-width="3"/>' + [['#ef5b5b', -20], ['#f7b733', -10], ['#59c27a', 0], ['#3fa7e0', 10], ['#a77ee8', 20]].map(function (g) { return '<circle cx="' + g[1] + '" cy="-8" r="3.6" fill="' + g[0] + '" stroke="#ffffff" stroke-width="1"/>'; }).join('') + '<circle cx="-32" cy="-31" r="4" fill="#ef5b8a"/><circle cx="0" cy="-37" r="4.5" fill="#3fa7e0"/><circle cx="32" cy="-31" r="4" fill="#59c27a"/>' + dSpark(-40, -40, 6, '#ffffff', 0, '#c99a0a') + dSpark(40, -16, 5, '#ffffff', .5, '#c99a0a') + dSpark(14, -46, 5, '#ffffff', 1, '#c99a0a'),
+  doktor: '<path d="M-20 -12 L-20 0 Q0 7 20 0 L20 -12Z" fill="#2b2f40"/><path d="M-36 -14 L0 -27 L36 -14 L0 -1Z" fill="#1f2230" stroke="#4a5270" stroke-width="1.5" stroke-linejoin="round"/><path d="M0 -14 L27 -12 L28 4" stroke="#ffd23f" stroke-width="2.5" fill="none"/><path d="M25 4 h6 l-1 9 h-4Z" fill="#ffd23f"/><circle cx="0" cy="-14" r="2.5" fill="#ffd23f"/>'
+});
+dAdd(D_HAT_TOP, { koch: -48, bau: -36, feuer: -44, cowboy: -34, propeller: -45, einhorn: -50, regenkrone: -52, doktor: -29 });
+
+dAdd(D_EYE, {
+  herz: '<path d="M-30 -2 L-44 -5 M30 -2 L44 -5" stroke="#b8236a" stroke-width="3" stroke-linecap="round"/>' + [-16, 16].map(function (x) { return '<path d="M' + x + ' 12 C' + (x - 24) + ' -2 ' + (x - 14) + ' -21 ' + x + ' -8 C' + (x + 14) + ' -21 ' + (x + 24) + ' -2 ' + x + ' 12Z" fill="#ff5f8f" fill-opacity=".92" stroke="#b8236a" stroke-width="2"/><path d="M' + (x - 9) + ' -6 q2 -4 6 -3" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round"/>'; }).join('') + '<path d="M-3 -4 Q0 -7 3 -4" stroke="#b8236a" stroke-width="3" fill="none"/>',
+  monokel: '<circle cx="16" cy="0" r="13" fill="#d6efff" fill-opacity=".35" stroke="#c99a0a" stroke-width="3"/><path d="M8 -6 q4 -3 8 -2" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M16 13 Q22 30 8 44" stroke="#c99a0a" stroke-width="1.6" fill="none"/>',
+  erfinder: '<path d="M-30 -2 L-46 -4 M30 -2 L46 -4" stroke="#5a3a1a" stroke-width="5" stroke-linecap="round"/><circle cx="-16" cy="0" r="14" fill="#9fe0ff" fill-opacity=".5" stroke="#b8860b" stroke-width="5"/><circle cx="16" cy="0" r="14" fill="#9fe0ff" fill-opacity=".5" stroke="#b8860b" stroke-width="5"/><path d="M-3 -2 h6" stroke="#b8860b" stroke-width="5"/><circle cx="-16" cy="0" r="17.5" fill="none" stroke="#7a5a12" stroke-width="1.5"/><circle cx="16" cy="0" r="17.5" fill="none" stroke="#7a5a12" stroke-width="1.5"/><path d="M-24 -6 l6 -3 M8 -6 l6 -3" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>',
+  diamant: [-16, 16].map(function (x) { return '<path d="M' + (x - 15) + ' -4 L' + (x - 8) + ' -12 L' + (x + 8) + ' -12 L' + (x + 15) + ' -4 L' + x + ' 13Z" fill="#7fe3f5" fill-opacity=".85" stroke="#1f8fb0" stroke-width="2" stroke-linejoin="round"/><path d="M' + (x - 15) + ' -4 H' + (x + 15) + ' M' + (x - 4) + ' -12 L' + (x - 6) + ' -4 L' + x + ' 13 M' + (x + 4) + ' -12 L' + (x + 6) + ' -4 L' + x + ' 13" stroke="#1f8fb0" stroke-width="1" fill="none"/>'; }).join('') + '<path d="M-1 -6 h2 M-31 -5 L-44 -7 M31 -5 L44 -7" stroke="#1f8fb0" stroke-width="3" stroke-linecap="round"/>' + dSpark(-30, -16, 5, '#ffffff', 0, '#1f8fb0') + dSpark(30, 10, 4.5, '#ffffff', .6, '#1f8fb0') + dSpark(4, -18, 4, '#ffffff', 1.1, '#1f8fb0')
+});
+
+dAdd(D_BODY, {
+  krawatte: '<path d="M-7 -3 L7 -3 L5 6 L-5 6Z" fill="#1d4f9c"/><path d="M-5 6 L5 6 L10 34 L0 44 L-10 34Z" fill="#2f6fd6" stroke="#1d4f9c" stroke-width="1.5" stroke-linejoin="round"/><path d="M-5 15 L6 11 M-7 25 L8 20 M-8 34 L9 29" stroke="#ffd23f" stroke-width="2.5"/>',
+  tasche: '<path d="M26 -2 L-30 30" stroke="#1d72b0" stroke-width="5" stroke-linecap="round"/><rect x="-52" y="22" width="30" height="26" rx="6" fill="#2f6fd6" stroke="#1d4f9c" stroke-width="2"/><path d="M-52 30 Q-37 40 -22 30 L-22 28 Q-22 22 -28 22 L-46 22 Q-52 22 -52 28Z" fill="#1d4f9c"/>' + dStar(-37, 40, 5, '#ffd23f', '#c99a0a'),
+  ballons: '<g class="fx-sway"><path d="M-34 14 L-44 -26 M-34 14 L-29 -38 M-34 14 L-46 -46" stroke="#5b6782" stroke-width="1.2" fill="none"/>' + [[-44, -37, 9, '#ef5b5b'], [-29, -49, 9, '#ffd23f'], [-46, -55, 8, '#3fa7e0']].map(function (b) { return '<ellipse cx="' + b[0] + '" cy="' + b[1] + '" rx="' + b[2] + '" ry="' + (b[2] * 1.15).toFixed(1) + '" fill="' + b[3] + '"/><path d="M' + (b[0] - 2) + ' ' + (b[1] + b[2] * 1.15 - .5).toFixed(1) + ' l2 3 2 -3Z" fill="' + b[3] + '"/><ellipse cx="' + (b[0] - 3.5) + '" cy="' + (b[1] - 4) + '" rx="2.5" ry="4" fill="#ffffff" opacity=".6"/>'; }).join('') + '</g>',
+  gitarre: '<g transform="rotate(-38 4 26)"><rect x="1" y="-22" width="6" height="38" rx="2" fill="#7a4d30"/><rect x="-1" y="-29" width="10" height="9" rx="2" fill="#5a3418"/><ellipse cx="4" cy="22" rx="11" ry="9" fill="#e0862b" stroke="#9a5418" stroke-width="2"/><ellipse cx="4" cy="36" rx="14" ry="11" fill="#e0862b" stroke="#9a5418" stroke-width="2"/><ellipse cx="4" cy="29" rx="9.5" ry="10" fill="#e0862b"/><circle cx="4" cy="27" r="4.5" fill="#5a3418"/><path d="M2.5 -20 V40 M5.5 -20 V40" stroke="#f3e6c8" stroke-width=".9"/><rect x="-3" y="38" width="14" height="3" rx="1.5" fill="#5a3418"/></g>'
+});
+/* Glanz für den goldenen Umhang (hinter der Figur) */
+var D_SHINE = '<path class="fx-shine" d="M-20 4 Q-44 40 -38 58 L-28 58 Q-32 36 -11 4Z" fill="#fff6c2"/>' + dStar(-30, 44, 4, '#ffffff') + dStar(32, 48, 4, '#ffffff') + dStar(40, 26, 3, '#ffffff');
+
+dAdd(D_BGS, {
+  weltall: dBg('#141b3d', [[10, 12], [60, 6], [112, 54], [40, 22], [8, 70], [76, 18], [114, 96], [30, 120], [96, 122]].map(function (s, i) { return '<circle cx="' + s[0] + '" cy="' + s[1] + '" r="' + (i % 3 ? 1.2 : 1.8) + '" fill="#ffffff"/>'; }).join('') +
+    '<circle cx="96" cy="26" r="13" fill="#f2a24a"/><path d="M86 34 a13 13 0 0 0 23 -12 a14 14 0 0 1 -23 12Z" fill="#d9822b"/><ellipse cx="96" cy="26" rx="23" ry="5" fill="none" stroke="#ffd9a0" stroke-width="2.5" transform="rotate(-18 96 26)"/>' +
+    '<circle cx="18" cy="104" r="9" fill="#e86a6a"/><circle cx="15" cy="101" r="2.4" fill="#c94f4f"/><circle cx="21" cy="108" r="1.8" fill="#c94f4f"/>' +
+    '<g transform="translate(18 36) rotate(35)"><path d="M0 -12 Q6 -6 6 6 L-6 6 Q-6 -6 0 -12Z" fill="#ffffff"/><circle cx="0" cy="-2" r="2.5" fill="#3fa7e0"/><path d="M-6 2 L-10 9 L-6 7Z M6 2 L10 9 L6 7Z" fill="#d64541"/><path d="M-3 7 L0 13 L3 7Z" fill="#ffd23f"/></g>' + dStar(104, 76, 3.5, '#fff6c2')),
+  meer: dBg('#3a9fd6', '<rect x="0" y="0" width="120" height="18" fill="#62bce9"/><path d="M0 18 q10 -4 20 0 t20 0 t20 0 t20 0 t20 0 t20 0" stroke="#ffffff" stroke-width="2" fill="none" opacity=".6"/>' +
+    '<path d="M0 112 Q30 104 60 112 Q90 120 120 110 V160 H0Z" fill="#f0d58c"/>' +
+    '<path d="M10 128 Q4 114 10 102 Q16 90 10 78" stroke="#2f9e5b" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M20 128 Q26 116 20 106 Q14 96 20 88" stroke="#3fae68" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M110 128 Q104 112 110 98" stroke="#2f9e5b" stroke-width="5" fill="none" stroke-linecap="round"/>' +
+    '<g transform="translate(100 42)"><ellipse cx="0" cy="0" rx="9" ry="6" fill="#f7b733"/><path d="M8 0 L15 -6 L15 6Z" fill="#f7b733"/><path d="M-1 -5 v10" stroke="#ffffff" stroke-width="2"/><circle cx="-4" cy="-1" r="1.6" fill="#1f2a44"/></g>' +
+    '<g transform="translate(18 52) scale(-1 1)"><ellipse cx="0" cy="0" rx="8" ry="5" fill="#ef7aa8"/><path d="M7 0 L13 -5 L13 5Z" fill="#ef7aa8"/><circle cx="-4" cy="-1" r="1.5" fill="#1f2a44"/></g>' +
+    dStar(104, 119, 6, '#ef5b5b') + [[26, 98, 3], [100, 94, 2.5], [112, 70, 3.5], [14, 66, 2.5]].map(function (b, i) { return '<circle class="fx-rise" style="animation-delay:-' + (i * 1.1) + 's" cx="' + b[0] + '" cy="' + b[1] + '" r="' + b[2] + '" fill="none" stroke="#ffffff" stroke-width="1.5"/>'; }).join('')),
+  dschungel: dBg('#dff3d0', '<path d="M0 8 Q30 22 60 10 Q90 -2 120 12" stroke="#5a8a2a" stroke-width="3" fill="none"/>' + dLeaf(30, 16, 160, .4, '#3e9a4a') + dLeaf(84, 6, 200, .4, '#3e9a4a') +
+    dLeaf(4, 44, 55, 1, '#3e9a4a') + dLeaf(2, 84, 75, 1.1, '#2f7d3a') + dLeaf(116, 44, -55, 1, '#2f7d3a') + dLeaf(118, 86, -75, 1.1, '#3e9a4a') + dLeaf(14, 132, 25, 1, '#2f7d3a') + dLeaf(106, 132, -25, 1, '#2f7d3a') +
+    '<g transform="translate(98 22)"><ellipse cx="0" cy="6" rx="6" ry="9" fill="#e53b3b"/><circle cx="0" cy="-4" r="6" fill="#e53b3b"/><path d="M4 -5 q6 1 4 6 q-3 -2 -5 -1Z" fill="#ffd23f"/><circle cx="1" cy="-5" r="1.5" fill="#1f2a44"/><path d="M-4 3 Q-10 12 -4 18 L2 13Z" fill="#3fa7e0"/><path d="M-2 14 L-5 27 L3 15Z" fill="#2f9e5b"/></g>' +
+    '<g transform="translate(22 112)">' + [0, 72, 144, 216, 288].map(function (a) { return '<ellipse cx="0" cy="-6" rx="4" ry="6" fill="#ff7fb2" transform="rotate(' + a + ')"/>'; }).join('') + '<circle r="3" fill="#ffd23f"/></g>'),
+  schloss: dBg('#e3f1ff', '<ellipse cx="60" cy="16" rx="14" ry="5" fill="#ffffff"/><ellipse cx="70" cy="13" rx="9" ry="5" fill="#ffffff"/>' +
+    '<path d="M0 112 Q60 100 120 112 V160 H0Z" fill="#9ad38a"/><rect x="20" y="82" width="80" height="30" fill="#f3e1f0" stroke="#b48ab0" stroke-width="2"/><path d="M20 82 v-6 h8 v6 h8 v-6 h8 v6 M76 82 v-6 h8 v6 h8 v-6 h8 v6" fill="#f3e1f0" stroke="#b48ab0" stroke-width="2"/>' +
+    [8, 96].map(function (x) { return '<rect x="' + x + '" y="48" width="18" height="64" fill="#f3e1f0" stroke="#b48ab0" stroke-width="2"/><path d="M' + (x - 3) + ' 50 L' + (x + 9) + ' 24 L' + (x + 21) + ' 50Z" fill="#ff7fb2" stroke="#c2507f" stroke-width="2" stroke-linejoin="round"/><path d="M' + (x + 9) + ' 24 V12" stroke="#5b6782" stroke-width="1.5"/><path d="M' + (x + 9) + ' 12 l9 3 -9 3Z" fill="#ffd23f"/><path d="M' + (x + 5) + ' 72 v-6 a4 4 0 0 1 8 0 v6Z" fill="#7a5aa8"/>'; }).join('')),
+  klasse: dBg('#f6eedd', '<rect x="8" y="8" width="104" height="36" rx="3" fill="#2f5d46" stroke="#8a5a2b" stroke-width="4"/><text x="19" y="30" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="10" fill="#ffffff">2+3</text><text x="102" y="30" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="10" fill="#ffffff">=5</text><rect x="44" y="44" width="10" height="3" fill="#ffffff"/>' +
+    '<path d="M0 108 H120 V160 H0Z" fill="#d9b68a"/><path d="M0 108 H120" stroke="#b08a5a" stroke-width="2"/><rect x="6" y="94" width="22" height="6" rx="1" fill="#d64541"/><rect x="8" y="100" width="20" height="5" rx="1" fill="#2f6fd6"/><rect x="5" y="105" width="24" height="5" rx="1" fill="#2f9e5b"/>' +
+    '<circle cx="106" cy="102" r="7" fill="#e53b3b"/><path d="M106 95 q1 -4 4 -5" stroke="#5a3a1a" stroke-width="2" fill="none"/><ellipse cx="110" cy="92" rx="3" ry="1.6" fill="#2f9e5b"/>'),
+  nordlicht: dBg('#0f1d3a', [[12, 10], [40, 6], [70, 14], [102, 8], [24, 30], [112, 32], [8, 62], [88, 52]].map(function (s, i) { return '<circle cx="' + s[0] + '" cy="' + s[1] + '" r="' + (i % 2 ? 1.1 : 1.6) + '" fill="#ffffff"/>'; }).join('') +
+    '<path class="fx-wave" d="M-10 44 Q20 16 50 36 Q80 56 130 22" stroke="#4fe0a0" stroke-width="13" fill="none" stroke-linecap="round" opacity=".55"/><path class="fx-wave" style="animation-delay:-2s" d="M-10 62 Q24 36 56 54 Q86 70 130 42" stroke="#3fd0d6" stroke-width="9" fill="none" stroke-linecap="round" opacity=".45"/><path class="fx-wave" style="animation-delay:-4s" d="M-10 28 Q30 6 60 22 Q90 38 130 10" stroke="#b58cf0" stroke-width="7" fill="none" stroke-linecap="round" opacity=".45"/>' +
+    '<path d="M0 108 Q30 96 60 106 Q90 116 120 102 V160 H0Z" fill="#e8f1fb"/>' + [[12, 104], [104, 100], [114, 106]].map(function (t) { return '<path d="M' + t[0] + ' ' + (t[1] - 20) + ' L' + (t[0] + 7) + ' ' + t[1] + ' L' + (t[0] - 7) + ' ' + t[1] + 'Z" fill="#1f4a3a"/>'; }).join(''))
+});
+
+/* Begleiter: Boden = (0,0), etwa 30 breit und 30–40 hoch */
+var D_PET_AT = { o: [100, 127, 1], p: [103, 133, .92] };
+var D_PET = {
+  kueken: '<path d="M-6 0 l2 -3 2 3 M2 0 l2 -3 2 3" stroke="#f08a24" stroke-width="2" fill="none" stroke-linecap="round"/><g class="fx-hop"><ellipse cx="0" cy="-11" rx="11" ry="10" fill="#ffd23f" stroke="#c99a0a" stroke-width="1.5"/><circle cx="-2" cy="-24" r="7.5" fill="#ffd23f" stroke="#c99a0a" stroke-width="1.5"/><path d="M5 -12 q7 -2 5 5 q-3 -1 -5 -5Z" fill="#f2b400"/><circle cx="-4" cy="-26" r="1.7" fill="#1f2a44"/><path d="M-9 -24 l-5 1.5 5 2Z" fill="#f08a24"/><path d="M-2 -31 q-1 -5 -4 -3 M0 -31 q2 -5 5 -2" stroke="#c99a0a" stroke-width="1.5" fill="none"/></g>',
+  maus: '<path d="M10 -4 Q22 -2 20 -14 Q19 -20 24 -22" stroke="#c98a9a" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="-13" cy="-25" r="5.5" fill="#f5b8c8" stroke="#6b7280" stroke-width="1.5"/><circle cx="-2" cy="-26" r="5.5" fill="#f5b8c8" stroke="#6b7280" stroke-width="1.5"/><ellipse cx="2" cy="-8" rx="12" ry="9" fill="#a3a9b5" stroke="#6b7280" stroke-width="1.5"/><circle cx="-8" cy="-17" r="8" fill="#a3a9b5" stroke="#6b7280" stroke-width="1.5"/><circle cx="-10" cy="-19" r="1.7" fill="#1f2a44"/><circle cx="-16" cy="-15" r="2.2" fill="#ef7d8a"/><path d="M-15 -14 l-7 -2 M-15 -13 l-7 2" stroke="#6b7280" stroke-width="1"/><ellipse cx="-4" cy="-1" rx="4" ry="2" fill="#f5b8c8"/><ellipse cx="7" cy="-1" rx="4" ry="2" fill="#f5b8c8"/>',
+  schildi: '<ellipse cx="-8" cy="-2" rx="4" ry="3" fill="#8cc06a" stroke="#4f7a32" stroke-width="1.5"/><ellipse cx="8" cy="-2" rx="4" ry="3" fill="#8cc06a" stroke="#4f7a32" stroke-width="1.5"/><path d="M12 -6 l7 2 -6 2Z" fill="#8cc06a"/><circle cx="-17" cy="-9" r="6" fill="#8cc06a" stroke="#4f7a32" stroke-width="1.5"/><circle cx="-19" cy="-10" r="1.5" fill="#1f2a44"/><path d="M-21 -6 q2 1.5 4 0" stroke="#4f7a32" stroke-width="1.2" fill="none"/><path d="M-14 -4 Q-14 -24 0 -24 Q14 -24 14 -4Z" fill="#4f9a4a" stroke="#2f6a2a" stroke-width="1.5"/><path d="M-6 -21 l-4 8 4 7 8 0 4 -7 -4 -8Z" fill="#6fb866" stroke="#2f6a2a" stroke-width="1.2"/><ellipse cx="0" cy="-4" rx="15" ry="3" fill="#3e7a2a"/>',
+  katze: '<path class="fx-tail" d="M8 -4 Q22 -6 18 -20 Q16 -28 22 -30" stroke="#f08a24" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="-10" rx="10" ry="11" fill="#f7a440" stroke="#b86a1a" stroke-width="1.5"/><ellipse cx="-1" cy="-8" rx="5" ry="7" fill="#ffe2b8"/><path d="M-10 -31 L-9 -41 L-3 -34Z M6 -31 L5 -41 L-1 -34Z" fill="#f7a440" stroke="#b86a1a" stroke-width="1.5" stroke-linejoin="round"/><circle cx="-2" cy="-27" r="9" fill="#f7a440" stroke="#b86a1a" stroke-width="1.5"/><path d="M-6 -35 l1 4 M-2 -36 v4 M2 -35 l-1 4" stroke="#d9822b" stroke-width="1.5"/><circle cx="-6" cy="-28" r="1.7" fill="#1f2a44"/><circle cx="2" cy="-28" r="1.7" fill="#1f2a44"/><path d="M-3.5 -24 h3 l-1.5 2Z" fill="#ef7d8a"/><path d="M-5 -22 l-8 -1 M-5 -21 l-8 2 M1 -22 l8 -1 M1 -21 l8 2" stroke="#8a5a2b" stroke-width=".9"/>',
+  drache: '<g class="fx-flap"><path d="M2 -22 Q16 -42 28 -28 Q20 -28 18 -20 Q12 -24 8 -16Z" fill="#9be0a4" stroke="#2f7d3a" stroke-width="1.5" stroke-linejoin="round"/></g><path d="M8 -4 Q22 -2 24 -12 L28 -10 L25 -16 L20 -14 Q18 -8 8 -9Z" fill="#4fb35c" stroke="#2f7d3a" stroke-width="1.5" stroke-linejoin="round"/><ellipse cx="0" cy="-12" rx="11" ry="12" fill="#4fb35c" stroke="#2f7d3a" stroke-width="1.5"/><ellipse cx="-2" cy="-10" rx="6" ry="8" fill="#f3e6a0"/><path d="M-4 -14 h4 M-4 -10 h4 M-4 -6 h4" stroke="#d9c06a" stroke-width="1"/><path d="M8 -20 l5 -2 -2 5 M10 -14 l5 -1 -3 4" fill="#f7b733" stroke="#c97a1a" stroke-width="1"/><path d="M-8 -36 l-2 -6 4 4 M2 -36 l2 -6 -4 4" fill="#ffd23f" stroke="#c99a0a" stroke-width="1.2"/><circle cx="-3" cy="-29" r="9" fill="#4fb35c" stroke="#2f7d3a" stroke-width="1.5"/><ellipse cx="-10" cy="-26" rx="6.5" ry="5" fill="#5fc46c" stroke="#2f7d3a" stroke-width="1.5"/><circle cx="-13" cy="-27" r="1" fill="#2f7d3a"/><circle cx="-3" cy="-32" r="2.6" fill="#ffffff"/><circle cx="-3.6" cy="-32" r="1.5" fill="#1f2a44"/><path d="M-12 -23 q3 2 6 0" stroke="#2f7d3a" stroke-width="1.2" fill="none"/><ellipse cx="-6" cy="-1" rx="4" ry="2.4" fill="#2f9e4a"/><ellipse cx="5" cy="-1" rx="4" ry="2.4" fill="#2f9e4a"/>' +
+    '<g class="fx-rise" style="animation-delay:-1s">' + dHeart(-22, -36, .45, '#ff5f8f') + '</g><g class="fx-rise" style="animation-delay:-3s">' + dHeart(-18, -44, .35, '#ff5f8f') + '</g>',
+  biene: '<g class="fx-float"><g transform="translate(0 -28)"><path d="M-14 4 q-6 8 -14 4" stroke="#8a97ab" stroke-width="1.2" stroke-dasharray="2 2.5" fill="none"/><ellipse cx="-2" cy="-9" rx="6" ry="8" fill="#ffffff" fill-opacity=".85" stroke="#9fb3c8" stroke-width="1.2" transform="rotate(-20 -2 -9)"/><ellipse cx="6" cy="-8" rx="5" ry="7" fill="#ffffff" fill-opacity=".85" stroke="#9fb3c8" stroke-width="1.2" transform="rotate(20 6 -8)"/><ellipse cx="2" cy="0" rx="11" ry="7.5" fill="#ffd23f" stroke="#1f2230" stroke-width="1.5"/><path d="M0 -7 v14 M6 -6 v12" stroke="#1f2230" stroke-width="3"/><circle cx="-9" cy="-1" r="5.5" fill="#ffd23f" stroke="#1f2230" stroke-width="1.5"/><circle cx="-11" cy="-2" r="1.4" fill="#1f2230"/><path d="M-12 1 q2 1.5 4 0" stroke="#1f2230" stroke-width="1" fill="none"/><path d="M-9 -6 q-2 -5 -5 -6 M-7 -6 q1 -5 4 -6" stroke="#1f2230" stroke-width="1.2" fill="none"/></g></g>',
+  einhorn: '<path d="M10 -18 Q22 -20 20 -6 Q18 -12 12 -12" fill="#a77ee8"/><path d="M11 -16 Q19 -16 18 -8" stroke="#ff8fc0" stroke-width="2.5" fill="none"/><rect x="-9" y="-12" width="4" height="12" rx="2" fill="#ffffff" stroke="#b9c3d1"/><rect x="6" y="-12" width="4" height="12" rx="2" fill="#ffffff" stroke="#b9c3d1"/><ellipse cx="1" cy="-15" rx="13" ry="8" fill="#ffffff" stroke="#b9c3d1" stroke-width="1.5"/><rect x="-4" y="-12" width="4" height="12" rx="2" fill="#f3f5f9" stroke="#b9c3d1"/><rect x="2" y="-12" width="4" height="12" rx="2" fill="#f3f5f9" stroke="#b9c3d1"/><path d="M-10 -18 Q-14 -28 -12 -32 L-4 -28 Q-4 -22 -2 -18Z" fill="#ffffff" stroke="#b9c3d1" stroke-width="1.5"/><ellipse cx="-15" cy="-31" rx="8" ry="5.5" fill="#ffffff" stroke="#b9c3d1" stroke-width="1.5" transform="rotate(-20 -15 -31)"/><path d="M-13 -36 L-10 -48 L-9 -35Z" fill="#ffd23f" stroke="#c99a0a" stroke-width="1"/><circle cx="-6" cy="-36" r="3" fill="#ef5b5b"/><circle cx="-3" cy="-31" r="3" fill="#f7b733"/><circle cx="-2" cy="-25" r="3" fill="#59c27a"/><circle cx="-1" cy="-20" r="2.6" fill="#3fa7e0"/><circle cx="-16" cy="-32" r="1.5" fill="#1f2a44"/><circle cx="-20" cy="-28" r="1" fill="#ef9ab0"/>',
+  rudi: '<g transform="rotate(-20 10 -8)"><ellipse cx="16" cy="-12" rx="6" ry="13" fill="#8d939e" stroke="#4b5260" stroke-width="1.5"/><path d="M10 -20 h12 M10 -12 h12 M10 -4 h12" stroke="#3a3f4a" stroke-width="3"/></g><ellipse cx="0" cy="-11" rx="11" ry="11" fill="#8d939e" stroke="#4b5260" stroke-width="1.5"/><ellipse cx="0" cy="-9" rx="6" ry="7" fill="#d8dce3"/><path d="M-10 -34 L-9 -41 L-4 -36Z M6 -34 L7 -41 L2 -36Z" fill="#8d939e" stroke="#4b5260" stroke-width="1.5" stroke-linejoin="round"/><circle cx="-1" cy="-28" r="9" fill="#8d939e" stroke="#4b5260" stroke-width="1.5"/><path d="M-10 -30 Q-1 -24 8 -30 Q8 -26 4 -25 Q-1 -27 -6 -25 Q-10 -26 -10 -30Z" fill="#2a2d36"/><circle cx="-5" cy="-28" r="1.6" fill="#ffffff"/><circle cx="3" cy="-28" r="1.6" fill="#ffffff"/><ellipse cx="-1" cy="-22" rx="4.5" ry="3" fill="#ffffff"/><circle cx="-1" cy="-23" r="1.5" fill="#1f2230"/>' +
+    '<circle cx="-3" cy="-11" r="6" fill="#d9a066" stroke="#9a6a30" stroke-width="1.2"/><circle cx="-5" cy="-12" r="1" fill="#5a3418"/><circle cx="-1" cy="-9" r="1" fill="#5a3418"/><circle cx="-2" cy="-14" r="1" fill="#5a3418"/>',
+  welpe: '<ellipse cx="0" cy="-9" rx="10" ry="9" fill="#c98b4a" stroke="#8a5a2b" stroke-width="1.5"/><path class="fx-tail" d="M9 -10 q8 -4 8 -12" stroke="#c98b4a" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="-2" cy="-6" rx="5" ry="5" fill="#f3dfc3"/><circle cx="-2" cy="-24" r="9" fill="#c98b4a" stroke="#8a5a2b" stroke-width="1.5"/><path d="M-10 -28 Q-15 -22 -11 -15 Q-8 -20 -8 -26Z M6 -28 Q11 -22 7 -15 Q4 -20 4 -26Z" fill="#7a4a24"/><ellipse cx="-2" cy="-19" rx="5" ry="3.5" fill="#f3dfc3"/><circle cx="-2" cy="-20.5" r="1.7" fill="#2a1d14"/><circle cx="-6" cy="-25" r="1.5" fill="#1f2a44"/><circle cx="2" cy="-25" r="1.5" fill="#1f2a44"/><path d="M-11 -31 Q-2 -42 7 -31Z" fill="#1d3f7a"/><rect x="-12" y="-32" width="20" height="4" rx="1.5" fill="#13305f"/>' + dStar(-2, -35, 2.2, '#ffd23f')
+};
+function dPet(f, inner) { var A = D_PET_AT[f]; return '<g transform="translate(' + A[0] + ' ' + A[1] + ') scale(' + A[2] + ')">' + inner + '</g>'; }
+
+/* Zauber-Effekte: im Rahmen 0–120 × 0–130. back: liegt hinter der Figur */
+var D_FX = {
+  glitzer: dSpark(14, 30, 6, '#ffd23f', 0, '#c99a0a') + dSpark(106, 24, 5, '#ffd23f', .5, '#c99a0a') + dSpark(10, 78, 4.5, '#ffffff', 1, '#c99a0a') + dSpark(110, 72, 6, '#ffd23f', .3, '#c99a0a') + dSpark(20, 112, 5, '#ffffff', .8, '#c99a0a') + dSpark(102, 108, 4.5, '#ffd23f', 1.2, '#c99a0a'),
+  herzen: [[14, 100, .7], [106, 96, .6], [10, 62, .5], [110, 56, .7], [22, 34, .55], [98, 30, .5]].map(function (h, i) { return '<g class="fx-rise" style="animation-delay:-' + (i * .7).toFixed(1) + 's">' + dHeart(h[0], h[1], h[2], i % 2 ? '#ff5f8f' : '#e83e6c', '#b8236a') + '</g>'; }).join(''),
+  blasen: [[12, 104, 6], [108, 98, 5], [16, 64, 4], [106, 60, 7], [26, 30, 5], [96, 26, 4]].map(function (b, i) { return '<g class="fx-rise" style="animation-delay:-' + (i * .8).toFixed(1) + 's"><circle cx="' + b[0] + '" cy="' + b[1] + '" r="' + b[2] + '" fill="#ffffff" fill-opacity=".35" stroke="#3a8fd0" stroke-width="1.5"/><path d="M' + (b[0] - b[2] * .5) + ' ' + (b[1] - b[2] * .3) + ' q' + (b[2] * .2) + ' ' + (-b[2] * .4) + ' ' + (b[2] * .6) + ' ' + (-b[2] * .45) + '" stroke="#ffffff" stroke-width="1.5" fill="none"/></g>'; }).join(''),
+  konfetti: [[10, 20, '#ef5b5b', 20], [30, 8, '#ffd23f', -30], [92, 12, '#3fa7e0', 45], [110, 30, '#59c27a', -15], [8, 56, '#a77ee8', 60], [112, 62, '#ef5b8a', -40], [18, 92, '#f7b733', 10], [104, 96, '#3fa7e0', 70], [52, 4, '#59c27a', -60], [74, 6, '#ef5b5b', 30], [24, 116, '#a77ee8', -20], [98, 120, '#ffd23f', 50]].map(function (c, i) { return '<g transform="translate(' + c[0] + ' ' + c[1] + ')"><rect class="fx-fall" style="animation-delay:-' + (i * .45).toFixed(2) + 's" x="-2" y="-4" width="4" height="8" rx="1" fill="' + c[2] + '" transform="rotate(' + c[3] + ')"/></g>'; }).join(''),
+  sternregen: [[14, 14], [96, 8], [110, 46], [6, 52], [104, 88], [16, 92]].map(function (s, i) { return '<g class="fx-shoot" style="animation-delay:-' + (i * .6).toFixed(1) + 's"><path d="M' + s[0] + ' ' + s[1] + ' l-12 -8" stroke="#ffe27a" stroke-width="2" stroke-linecap="round" opacity=".7"/>' + dStar(s[0], s[1], 5, '#ffd23f', '#c99a0a') + '</g>'; }).join(''),
+  aura: '<g class="fx-pulse">' + [['#ef5b5b', 56], ['#f7b733', 52], ['#ffd23f', 48], ['#59c27a', 44], ['#3fa7e0', 40], ['#a77ee8', 36]].map(function (r) { return '<ellipse cx="60" cy="72" rx="' + r[1] + '" ry="' + (r[1] + 6) + '" fill="none" stroke="' + r[0] + '" stroke-width="3.5" opacity=".75"/>'; }).join('') + '</g>'
+};
+var D_FX_BACK = { aura: 1 };
+
+/* Titel: Text, Bandfarbe, Schriftfarbe, Farbe der Bandenden. Kontrast Schrift/Band mindestens 4,5:1 */
+var D_TITLE = {
+  rechenprofi: ['Rechenprofi', '#1d4f9c', '#ffffff', '#13305f'],
+  champion: ['Rechen-Champion', '#ffd23f', '#1f2a44', '#c99a0a'],
+  meister: ['Mathe-Meister', '#5a3fb0', '#ffffff', '#3b2878'],
+  sammler: ['Sternensammler', '#1f2f6b', '#ffe27a', '#121c45'],
+  spuernase: ['Spürnase', '#b0302b', '#ffffff', '#7a1f1c'],
+  schlaukopf: ['Schlaukopf', '#1f7a45', '#ffffff', '#135030'],
+  superstar: ['Superstar', '#b8236a', '#ffffff', '#7e1648', 1]
+};
+function dRibbon(T, y) {
+  var w = T[0].length * 6.6, fit = w > 90 ? ' textLength="90" lengthAdjust="spacingAndGlyphs"' : '';
+  return '<path d="M2 ' + (y + 4) + ' H16 V' + (y + 22) + ' H2 L7 ' + (y + 13) + 'Z M118 ' + (y + 4) + ' H104 V' + (y + 22) + ' H118 L113 ' + (y + 13) + 'Z" fill="' + T[3] + '"/>' +
+    '<rect x="10" y="' + y + '" width="100" height="19" rx="3" fill="' + T[1] + '" stroke="' + T[3] + '" stroke-width="1.5"/>' +
+    '<text x="60" y="' + (y + 13.6) + '" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="11"' + fit + ' fill="' + T[2] + '">' + T[0] + '</text>' +
+    (T[4] ? dSpark(12, y + 2, 5, '#ffffff', 0, '#c99a0a') + dSpark(108, y + 17, 5, '#ffffff', .7, '#c99a0a') : '');
+}
+
+/* Katalog der neuen Teile. rare: besonderes Teil (seltene Belohnung oder teuer), wird golden umrandet */
+var D_NEW = [
+  { id: 'koch', name: 'Kochmütze', figs: 'op', slots: ['kopf'], price: 8, hat: 'koch' },
+  { id: 'bau', name: 'Bauhelm', figs: 'op', slots: ['kopf'], price: 8, hat: 'bau' },
+  { id: 'cowboy', name: 'Cowboyhut', figs: 'op', slots: ['kopf'], price: 12, hat: 'cowboy' },
+  { id: 'feuer', name: 'Feuerwehr­helm', figs: 'op', slots: ['kopf'], price: 14, hat: 'feuer' },
+  { id: 'propeller', name: 'Propeller­mütze', figs: 'op', slots: ['kopf'], price: 18, hat: 'propeller' },
+  { id: 'einhornhut', name: 'Einhorn-Horn', figs: 'op', slots: ['kopf'], price: 20, hat: 'einhorn' },
+  { id: 'regenkrone', name: 'Regenbogen-Krone', figs: 'op', slots: ['kopf'], price: 60, rare: 1, hat: 'regenkrone' },
+  { id: 'doktor', name: 'Schlauer Hut', figs: 'op', slots: ['kopf'], reward: 'master1', hat: 'doktor' },
+  { id: 'herz', name: 'Herzbrille', figs: 'op', slots: ['gesicht'], price: 6, eye: 'herz' },
+  { id: 'monokel', name: 'Monokel', figs: 'op', slots: ['gesicht'], price: 6, eye: 'monokel' },
+  { id: 'erfinder', name: 'Erfinder­brille', figs: 'op', slots: ['gesicht'], price: 10, eye: 'erfinder' },
+  { id: 'diamant', name: 'Diamant­brille', figs: 'op', slots: ['gesicht'], price: 40, rare: 1, eye: 'diamant' },
+  { id: 'krawatte', name: 'Krawatte', figs: 'op', slots: ['koerper'], price: 6, neck: 'krawatte', dn: 46 },
+  { id: 'tasche', name: 'Schultasche', figs: 'op', slots: ['koerper'], price: 10, neck: 'tasche', dn: 50 },
+  { id: 'ballons', name: 'Luftballons', figs: 'op', slots: ['koerper'], price: 14, neck: 'ballons' },
+  { id: 'gitarre', name: 'Gitarre', figs: 'op', slots: ['koerper'], price: 15, neck: 'gitarre', dn: 46 },
+  { id: 'goldcape', name: 'Goldener Umhang', figs: 'op', slots: ['koerper'], reward: 'streak10', rare: 1, cape: '#f2c230', shine: 1 },
+  { id: 'kueken', name: 'Küken Piep', figs: 'op', slots: ['tier'], price: 15, pet: 'kueken' },
+  { id: 'maus', name: 'Maus Fips', figs: 'op', slots: ['tier'], price: 15, pet: 'maus' },
+  { id: 'schildi', name: 'Schildkröte Schildi', figs: 'op', slots: ['tier'], price: 18, pet: 'schildi' },
+  { id: 'katze', name: 'Katze Minka', figs: 'op', slots: ['tier'], price: 22, pet: 'katze' },
+  { id: 'drache', name: 'Drache Funki', figs: 'op', slots: ['tier'], price: 75, rare: 1, pet: 'drache' },
+  { id: 'biene', name: 'Biene Summ', figs: 'op', slots: ['tier'], reward: 'streak3', pet: 'biene' },
+  { id: 'rudi', name: 'Waschbär Rudi', figs: 'op', slots: ['tier'], reward: 'rudi5', pet: 'rudi' },
+  { id: 'einhorn', name: 'Einhorn Glitzer', figs: 'op', slots: ['tier'], reward: 'goal25', rare: 1, pet: 'einhorn' },
+  { id: 'welpe', name: 'Polizei-Welpe', figs: 'p', slots: ['tier'], reward: 'rank40', pet: 'welpe' },
+  { id: 'herzen', name: 'Herzchen', figs: 'op', slots: ['effekt'], price: 20, fx: 'herzen' },
+  { id: 'blasen', name: 'Seifen­blasen', figs: 'op', slots: ['effekt'], price: 20, fx: 'blasen' },
+  { id: 'aura', name: 'Regenbogen-Glanz', figs: 'op', slots: ['effekt'], price: 60, rare: 1, fx: 'aura' },
+  { id: 'glitzer', name: 'Glitzer', figs: 'op', slots: ['effekt'], reward: 'goal3', fx: 'glitzer' },
+  { id: 'konfetti', name: 'Konfetti', figs: 'op', slots: ['effekt'], reward: 'perfect10', rare: 1, fx: 'konfetti' },
+  { id: 'sternregen', name: 'Sternen­regen', figs: 'op', slots: ['effekt'], reward: 'stars1500', rare: 1, fx: 'sternregen' },
+  { id: 't-schlau', name: 'Titel „Schlaukopf“', figs: 'op', slots: ['titel'], price: 25, title: 'schlaukopf' },
+  { id: 't-star', name: 'Titel „Superstar“', figs: 'op', slots: ['titel'], price: 75, rare: 1, title: 'superstar' },
+  { id: 't-profi', name: 'Titel „Rechenprofi“', figs: 'op', slots: ['titel'], reward: 'perfect3', title: 'rechenprofi' },
+  { id: 't-sammler', name: 'Titel „Sternen­sammler“', figs: 'op', slots: ['titel'], reward: 'stars500', title: 'sammler' },
+  { id: 't-meister', name: 'Titel „Mathe-Meister“', figs: 'op', slots: ['titel'], reward: 'master3', title: 'meister' },
+  { id: 't-champion', name: 'Titel „Rechen-Champion“', figs: 'op', slots: ['titel'], reward: 'perfect25', rare: 1, title: 'champion' },
+  { id: 't-nase', name: 'Titel „Spürnase“', figs: 'p', slots: ['titel'], reward: 'rank15', title: 'spuernase' },
+  { id: 'weltall', name: 'Weltall', figs: 'op', slots: ['bg'], price: 20, bg: 'weltall' },
+  { id: 'meer', name: 'Unter Wasser', figs: 'op', slots: ['bg'], price: 18, bg: 'meer' },
+  { id: 'dschungel', name: 'Dschungel', figs: 'op', slots: ['bg'], price: 18, bg: 'dschungel' },
+  { id: 'schloss', name: 'Märchen­schloss', figs: 'op', slots: ['bg'], price: 18, bg: 'schloss' },
+  { id: 'klasse', name: 'Klassen­zimmer', figs: 'op', slots: ['bg'], price: 15, bg: 'klasse' },
+  { id: 'nordlicht', name: 'Polarlicht', figs: 'op', slots: ['bg'], price: 50, rare: 1, bg: 'nordlicht' }
+];
+D_NEW.forEach(function (it) { it.neu = 1; });
+/* Neue Teile vor den Jahreszeiten-Sachen einsortieren */
+(function () { var at = 0; while (at < DRESS.length && !DRESS[at].season) at++; DRESS.splice.apply(DRESS, [at, 0].concat(D_NEW)); })();
 DRESS.forEach(function (it) { if (it.price) it.price = teurer(it.price); }); // Preise siehe teurer()
 var D_BY = {}; DRESS.forEach(function (d) { D_BY[d.id] = d; });
+/* Belohnungen: [Text, wie viel schon geschafft, wie viel nötig] */
+function masteredCount() { var n = 0; for (var k in S.mastered) if (S.mastered[k]) n++; return n; }
+function dCases() { return wEnsure().cases.length; }
 var D_REWARD = {
-  perfect1: ['1 Runde mit 10 von 10', function () { return perfectCount() >= 1; }],
-  perfect5: ['5 Runden mit 10 von 10', function () { return perfectCount() >= 5; }],
-  streak5: ['5 Tage hintereinander üben', function () { return dayStreak() >= 5; }],
-  goal10: ['10-mal das Tagesziel schaffen', function () { return goalDays() >= 10; }],
-  rank3: ['Dienstgrad Polizeianwärter bei Paul', function () { return wEnsure().cases.length >= 3; }],
-  rank8: ['Dienstgrad Wachtmeister bei Paul', function () { return wEnsure().cases.length >= 8; }],
-  rank25: ['Dienstgrad Kommissar bei Paul', function () { return wEnsure().cases.length >= 25; }],
-  rank60: ['Dienstgrad Polizeichef bei Paul', function () { return wEnsure().cases.length >= 60; }]
+  perfect1: ['1 Runde mit 10 von 10', perfectCount, 1],
+  perfect3: ['3 Runden mit 10 von 10', perfectCount, 3],
+  perfect5: ['5 Runden mit 10 von 10', perfectCount, 5],
+  perfect10: ['10 Runden mit 10 von 10', perfectCount, 10],
+  perfect25: ['25 Runden mit 10 von 10', perfectCount, 25],
+  streak3: ['3 Tage hintereinander üben', dayStreak, 3],
+  streak5: ['5 Tage hintereinander üben', dayStreak, 5],
+  streak10: ['10 Tage hintereinander üben', dayStreak, 10],
+  goal3: ['3-mal das Tagesziel schaffen', goalDays, 3],
+  goal10: ['10-mal das Tagesziel schaffen', goalDays, 10],
+  goal25: ['25-mal das Tagesziel schaffen', goalDays, 25],
+  master1: ['Ein Thema ganz schaffen (alle Stufen)', masteredCount, 1],
+  master3: ['3 Themen ganz schaffen (alle Stufen)', masteredCount, 3],
+  stars500: ['500 Sterne verdienen', earnedTotal, 500],
+  stars1500: ['1500 Sterne verdienen', earnedTotal, 1500],
+  rudi5: ['Rudi 5-mal in der Keks-Jagd erwischen', function () { return S.best.caught || 0; }, 5],
+  rank3: ['Dienstgrad Polizeianwärter bei Paul', dCases, 3],
+  rank8: ['Dienstgrad Wachtmeister bei Paul', dCases, 8],
+  rank15: ['Dienstgrad Polizeimeister bei Paul', dCases, 15],
+  rank25: ['Dienstgrad Kommissar bei Paul', dCases, 25],
+  rank40: ['Dienstgrad Hauptkommissar bei Paul', dCases, 40],
+  rank60: ['Dienstgrad Polizeichef bei Paul', dCases, 60]
 };
+function dRewOk(k) { var R = D_REWARD[k]; return R[1]() >= R[2]; }
+/* Text mit Fortschritt, z. B. „5 Runden mit 10 von 10 (schon 2)“ */
+function dRewText(k, long) { var R = D_REWARD[k], n = Math.min(R[1](), R[2]); return R[0] + (R[2] > 1 && n > 0 ? (long ? '. Geschafft hast du schon ' + n + ' von ' + R[2] : ' (' + n + ' von ' + R[2] + ')') : ''); }
 /* Jahreszeiten nach Datum des Geräts. Feste vor allgemeinen Jahreszeiten (Reihenfolge = Vorrang beim Jahreszeiten-Look). */
 var D_SEASONS = [['advent', 'Weihnachtszeit', '🎄'], ['ostern', 'Osterzeit', '🐣'], ['halloween', 'Halloween', '🎃'], ['martin', 'Sankt Martin', '🏮'], ['winter', 'Winter', '❄️'], ['fruehling', 'Frühling', '🌷'], ['sommer', 'Sommer', '☀️'], ['herbst', 'Herbst', '🍂']];
 function easter(y) { var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451); return new Date(y, Math.floor((h + l - 7 * m + 114) / 31) - 1, ((h + l - 7 * m + 114) % 31) + 1); }
@@ -4529,13 +4748,20 @@ function dUnlock() {
   ['o', 'p'].forEach(function (f) {
     dFor(f).forEach(function (it) {
       var k = f + '.' + it.id; if (d.own[k]) return;
-      if ((it.reward && D_REWARD[it.reward][1]()) || (it.gift && dSeasonOn(it.season))) { d.own[k] = 1; got.push(k); }
+      if ((it.reward && dRewOk(it.reward)) || (it.gift && dSeasonOn(it.season))) { d.own[k] = 1; got.push(k); }
     });
   });
   if (got.length) save();
   return got;
 }
 var DSEEN_KEY = KEY + '-dress-seen';
+/* Neu im Laden: welche Teile dieses Gerät schon im Schrank gesehen hat (nur lokal). Beim ersten Mal gelten die Teile mit neu: 1 als neu. */
+var DSHOP_KEY = KEY + '-dress-shop';
+function dShopNew() {
+  var seen; try { seen = JSON.parse(lsGet(DSHOP_KEY) || 'null'); } catch (e) { seen = null; }
+  return DRESS.filter(function (it) { return seen ? seen.indexOf(it.id) < 0 : it.neu; }).filter(function (it) { return !it.season || dSeasonOn(it.season); }).map(function (it) { return it.id; });
+}
+function dShopSeen() { lsSet(DSHOP_KEY, JSON.stringify(DRESS.map(function (it) { return it.id; }))); }
 function dUnseen() {
   var seen; try { seen = JSON.parse(lsGet(DSEEN_KEY) || 'null'); } catch (e) { seen = null; }
   var own = Object.keys(dEnsure().own);
@@ -4558,21 +4784,27 @@ function dWith(look, id) { var o = {}, it = D_BY[id], k; for (k in look) o[k] = 
 function dIds(look) { var ids = []; D_SLOTS.forEach(function (sl) { var id = look[sl[0]]; if (id && ids.indexOf(id) < 0) ids.push(id); }); return ids; }
 /* Ebenen für die Figur: bg (ganz hinten), back (hinter dem Körper), front (vor allem). hat/body sagen, ob Mütze bzw. Halsband der Figur ersetzt werden. */
 function dLayers(f, look, noBg) {
-  var L = { bg: '', back: '', front: '', hat: false, body: false, top: 0, bot: f === 'p' ? 134 : 130 };
+  var L = { bg: '', back: '', front: '', hat: false, body: false, top: 0, bot: f === 'p' ? 134 : 130, title: '' };
   dIds(look).forEach(function (id) {
     var it = D_BY[id];
     if (it.bg && !noBg) L.bg += D_BGS[it.bg];
     if (it.cape) L.back += dAt(f, 'hals', D_CAPE(it.cape, it.edge)) ;
     if (it.cape) L.front += dAt(f, 'hals', '<circle cx="0" cy="0" r="5" fill="#ffd23f" stroke="#c99a0a" stroke-width="1.5"/>');
+    if (it.shine) L.back += dAt(f, 'hals', D_SHINE);
+    if (it.pet) L.front += dPet(f, D_PET[it.pet]);
+    if (it.fx) { if (D_FX_BACK[it.fx]) L.back = D_FX[it.fx] + L.back; else L.front += D_FX[it.fx]; }
+    if (it.title) L.title = it.title;
     if (it.body) { L.front += f === 'o' ? dAt(f, 'hals', dOlafBody(it.body)) : dAt(f, 'hals', dPaulBody(it.body)); L.body = true; }
     if (it.neck) L.front += dAt(f, 'hals', D_BODY[it.neck]);
     if (it.beard) L.front += dAt(f, 'bart', D_BEARD);
     if (it.eye) L.front += dAt(f, 'auge', D_EYE[it.eye]);
-    var dn = it.cape ? 63 : it.neck === 'medaille' ? 42 : it.body === 'schneemann' ? 56 : 0;
+    var dn = it.dn || (it.cape ? 63 : it.neck === 'medaille' ? 42 : it.body === 'schneemann' ? 56 : 0);
     if (dn) { var H = D_AN[f].hals; L.bot = Math.max(L.bot, Math.ceil(H[1] + dn * H[2]) + 2); }
     if (it.hat) { L.front += dAt(f, 'kopf', D_HAT[it.hat]); L.hat = true; var A = D_AN[f].kopf; L.top = Math.min(L.top, Math.floor(A[1] + D_HAT_TOP[it.hat] * A[2]) - 3); }
     if (id === 'astro') { L.hat = true; L.front += dAt(f, 'mitte', '<circle cx="0" cy="0" r="50" fill="#bfe3ff" fill-opacity=".28" stroke="#e3e9f1" stroke-width="7"/><circle cx="0" cy="0" r="50" fill="none" stroke="#8a97ab" stroke-width="2"/><path d="M-34 -24 Q-24 -40 -6 -44" stroke="#ffffff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".9"/><rect x="-20" y="44" width="40" height="10" rx="4" fill="#d64541"/>'); }
   });
+  /* Titel-Band unter der Figur: das Bild wird nach unten größer */
+  if (L.title) { var ry = L.bot - 3; L.front += dRibbon(D_TITLE[L.title], ry); L.bot = ry + 24; }
   /* Hohe Hüte ragen über das Bild hinaus: dann wird das Bild nach oben größer (viewBox), nichts wird abgeschnitten */
   if (L.top < 0 || L.bot > 130) L.bg = L.bg.replace(/y="0" width="120" height="130"/g, 'y="' + L.top + '" width="120" height="' + (L.bot - L.top) + '"');
   L.vb = '0 ' + L.top + ' 120 ' + (L.bot - L.top);
@@ -4656,10 +4888,10 @@ function skSwatch(k) {
 function figSVG(f, mood, look, noBg) { return f === 'p' ? paulSVG(mood, look, noBg) : owlSVG(mood, look, noBg); }
 
 /* Bildschirm Kleiderschrank */
-var DV = { f: 'o', sel: '', from: 'home', neu: [], mood: 'happy', msg: '' };
+var DV = { f: 'o', sel: '', from: 'home', neu: [], shop: [], mood: 'happy', msg: '' };
 function openDress(f, from) {
   DV.f = f || 'o'; DV.sel = ''; DV.from = from || 'home'; DV.mood = 'happy'; DV.msg = '';
-  dUnlock(); DV.neu = dUnseen(); dMarkSeen();
+  dUnlock(); DV.neu = dUnseen(); dMarkSeen(); DV.shop = dShopNew(); dShopSeen();
   go('dress'); renderDress();
 }
 function dVisible(f, it) { return dOwns(f, it.id) || it.reward || (!it.season || dSeasonOn(it.season)) && !it.gift; }
@@ -4667,7 +4899,7 @@ function dTag(f, it, look) {
   var worn = dIds(look).indexOf(it.id) >= 0;
   if (worn) return ['on', '✓ Angezogen'];
   if (dOwns(f, it.id)) return ['own', it.gift ? '🎁 Geschenk' : it.reward ? '🏆 Verdient' : 'Im Schrank'];
-  if (it.reward) return ['locked', '🔒 ' + D_REWARD[it.reward][0]];
+  if (it.reward) return ['locked', '🔒 ' + dRewText(it.reward)];
   return [stars() >= it.price ? 'buy' : 'buy far', it.price + ' ★'];
 }
 function dSayText() {
@@ -4681,8 +4913,9 @@ function dSayText() {
   var worn = dIds(dLook(f)).indexOf(it.id) >= 0;
   if (worn) return 'Das trage ich gerade: ' + it.name + '. Gefällt es dir?';
   if (dOwns(f, it.id)) return it.name + ' ist in meinem Schrank. Soll ich das anziehen?';
-  if (it.reward) return it.name + ' kann man nicht kaufen. So bekommst du es: ' + D_REWARD[it.reward][0] + '.';
+  if (it.reward) return (it.rare ? 'Ein ganz besonderes Teil! ' : '') + it.name + ' kann man nicht kaufen. So bekommst du es: ' + dRewText(it.reward, true) + '.';
   var sea = it.season ? ' Das gibt es nur jetzt in der ' + dSeasonName(it.season)[1] + '. Gekauft bleibt es für immer.' : '';
+  if (it.rare) sea = ' Ein ganz besonderes Teil!' + sea;
   if (st >= it.price) return it.name + ' kostet ' + it.price + ' Sterne. Du hast ' + st + '.' + sea;
   return it.name + ' kostet ' + it.price + ' Sterne. Dir fehlen noch ' + (it.price - st) + '. Rechne noch ein bisschen, dann klappt es!' + sea;
 }
@@ -4716,8 +4949,8 @@ function renderDress() {
     h += '<h3 class="dslot">' + sl[1] + '</h3><div class="dgrid">';
     items.forEach(function (x) {
       var t = dTag(f, x, look), sea = x.season ? dSeasonName(x.season) : null;
-      h += '<button class="dcard ' + t[0] + (x.id === DV.sel ? ' sel' : '') + '" data-d="' + x.id + '" aria-label="' + esc(x.name + ', ' + t[1]) + '">' +
-        (sea ? '<span class="dsea" title="' + sea[1] + '">' + sea[2] + '</span>' : '') + (DV.neu.indexOf(f + '.' + x.id) >= 0 ? '<span class="dneu">Neu!</span>' : '') +
+      h += '<button class="dcard ' + t[0] + (x.rare ? ' rare' : '') + (x.id === DV.sel ? ' sel' : '') + '" data-d="' + x.id + '" aria-label="' + esc(x.name + ', ' + (x.rare ? 'besonderes Teil, ' : '') + t[1]) + '">' +
+        (sea ? '<span class="dsea" title="' + sea[1] + '">' + sea[2] + '</span>' : '') + (x.rare ? '<span class="drare">✨ Besonders</span>' : '') + (DV.neu.indexOf(f + '.' + x.id) >= 0 || (!dOwns(f, x.id) && DV.shop.indexOf(x.id) >= 0) ? '<span class="dneu">Neu!</span>' : '') +
         figSVG(f, 'happy', dWith({}, x.id)) + '<b>' + esc(x.name) + '</b><span class="dtag">' + esc(t[1]) + '</span></button>';
     });
     h += '</div>';
