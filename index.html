@@ -910,6 +910,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
 (function () {
 'use strict';
 var KEY = 'philian-rechenheft-v1';
+var UPD = { home: function () {} }; // wird unten gesetzt: lädt neue Version, sobald die Startseite erscheint
 /* Testmodus für Erwachsene: eigener Speicher, 999 Sterne, kein Abgleich. Endet beim Schließen des Tabs. */
 var TEST = false; try { TEST = sessionStorage.getItem('rechenheft-test') === '1'; } catch (e) {}
 if (TEST) KEY = KEY + '-test';
@@ -1511,7 +1512,7 @@ var THEMES = {
 
 /* ---------- Navigation ---------- */
 var VIEWS = ['home', 'learn', 'quiz', 'result', 'chase', 'build', 'island', 'sky', 'wache', 'dress', 'badges', 'gate', 'parents'];
-function go(v) { if (v !== 'wache' && !$('v-wache').hidden) wLeave(); if (v !== 'dress' && typeof skApply === 'function' && document.documentElement.getAttribute('data-skin') !== (skCur() === 'std' ? null : skCur())) skApply(); VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') renderHome(); if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
+function go(v) { if (v !== 'wache' && !$('v-wache').hidden) wLeave(); if (v !== 'dress' && typeof skApply === 'function' && document.documentElement.getAttribute('data-skin') !== (skCur() === 'std' ? null : skCur())) skApply(); VIEWS.forEach(function (x) { $('v-' + x).hidden = x !== v; }); if (v === 'home') { renderHome(); UPD.home(); } if (v === 'parents') renderParents(); window.scrollTo(0, 0); }
 document.addEventListener('click', function (e) { var t = e.target.closest('[data-go]'); if (t) { stopGame(); go(t.getAttribute('data-go')); } });
 
 function renderHome() {
@@ -4751,6 +4752,35 @@ S = fixShapes(S);
 ensure(); save(true); skApply();
 go('home');
 syncNow();
+
+/* Neue Version von selbst laden: Der Kinder-Browser lässt die Seite oft tagelang offen und lädt nie neu.
+   Darum fragt die App beim Start, beim Zurückkommen und alle 10 Minuten index.php (Synology) nach dem aktuellen Stand.
+   Ist das Programm dort anders als das laufende, lädt sie neu, aber nur auf der Startseite (nie mitten in einer Runde).
+   Höchstens einmal pro 10 Minuten, damit es nie in einer Schleife hängt. Ohne index.php (z. B. GitHub Pages) passiert nichts. */
+(function () {
+  if (TEST || !window.fetch || !/^https?:$/.test(location.protocol)) return;
+  var RK = KEY + '-reload';
+  function hash(t) { var x = 0; for (var i = 0; i < t.length; i++) x = (x * 31 + t.charCodeAt(i)) | 0; return x; }
+  function progText(html) { var o = '<' + 'script>', c = '<' + '/script>', a = html.lastIndexOf(o), e = html.lastIndexOf(c); return a < 0 || e < a ? null : html.slice(a + o.length, e); } // Tags zerlegt, sonst endet hier der Skriptblock
+  var sc = document.scripts, mine = hash(sc[sc.length - 1].textContent), neu = false;
+  function idle() { return !document.hidden && !$('v-home').hidden; }
+  function reload() {
+    var last = +(lsGet(RK) || 0); if (Date.now() - last < 600000) return;
+    lsSet(RK, String(Date.now()));
+    if (/index\.html$/.test(location.pathname)) location.replace(location.pathname.replace(/index\.html$/, '')); else location.reload();
+  }
+  function check() {
+    if (neu) { if (idle()) reload(); return; }
+    fetch('index.php?stand=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.ok && /html/.test(r.headers.get('Content-Type') || '') ? r.text() : null; })
+      .then(function (t) { var p = t && t.indexOf('<html') >= 0 ? progText(t) : null; if (p && hash(p) !== mine) { neu = true; if (idle()) reload(); } })
+      .catch(function () {});
+  }
+  setTimeout(check, 4000);
+  setInterval(check, 600000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) check(); });
+  UPD.home = function () { if (neu) setTimeout(function () { if (idle()) reload(); }, 400); };
+})();
 })();
 </script>
 
