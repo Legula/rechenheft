@@ -468,6 +468,7 @@ body.testing .wrap { padding-bottom: 90px; }
 .flash { animation: flash .5s; }
 @keyframes flash { from { filter: brightness(2.2); } to { filter: none; } }
 .lvchips { display: flex; gap: 8px; flex-wrap: wrap; }
+.starinfo { margin: 4px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--accent-soft); font-weight: 700; }
 .lvchips button { padding: 8px 14px; border-radius: 999px; border: 2px solid var(--line); background: var(--card); font-weight: 700; font-size: 1rem; }
 .lvchips button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .lvchips button.mix { border-style: dashed; border-color: var(--star); }
@@ -649,7 +650,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <button class="topic play" id="playChase">
       <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><rect x="22" y="4" width="20" height="56" rx="3" fill="#6b6f76"/><rect x="31" y="8" width="2" height="8" fill="#fff"/><rect x="31" y="22" width="2" height="8" fill="#fff"/><rect x="25" y="38" width="14" height="22" rx="4" fill="#f4f6f8" stroke="#1d4f9c" stroke-width="2"/><rect x="26" y="45" width="6" height="3" fill="#3d8bff"/><rect x="32" y="45" width="6" height="3" fill="#9cc3ff"/><circle cx="12" cy="18" r="6" fill="#c98b4a"/><circle cx="10" cy="17" r="1.2" fill="#5a3418"/><circle cx="14" cy="20" r="1.2" fill="#5a3418"/><circle cx="52" cy="12" r="5" fill="#c98b4a"/><circle cx="32" cy="18" r="6" fill="#9a9a9a"/><rect x="27" y="16" width="10" height="3" fill="#2f2f2f"/></svg>
       <h3>Die Keks-Jagd</h3>
-      <p class="level" id="chaseInfo">Kostet 5 Sterne · hol Waschbär Rudi ein</p>
+      <p class="level" id="chaseInfo">Kostet 8 Sterne · hol Waschbär Rudi ein</p>
       <span class="badge" id="chaseBadge">Noch nie erwischt</span>
     </button>
     <button class="topic play" id="playBuild">
@@ -735,7 +736,7 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
     <div class="rudi" id="chEndPic"></div>
     <h2 id="chEndTitle"></h2>
     <p id="chEndText"></p>
-    <div class="row" style="justify-content:center"><button class="btn" id="chAgain">Nochmal (5 Sterne)</button><button class="btn ghost" data-go="home">Zur Startseite</button></div>
+    <div class="row" style="justify-content:center"><button class="btn" id="chAgain">Nochmal (8 Sterne)</button><button class="btn ghost" data-go="home">Zur Startseite</button></div>
   </div>
 </section>
 
@@ -861,10 +862,16 @@ window.onerror = function (msg, src, line) { var b = document.getElementById('er
   <div id="parentBody" style="display:flex;flex-direction:column;gap:16px"></div>
   <div class="sheet">
     <h3>Belohnung</h3>
-    <p class="muted">Leg eine echte Belohnung fest. Philian sieht auf der Startseite, wie viele Sterne noch fehlen. Es zählen alle Sterne, die ab jetzt verdient werden. Ausgeben im Spielzimmer zieht nichts ab.</p>
+    <p class="muted">Leg eine echte Belohnung fest. Philian sieht auf der Startseite, wie viele Sterne noch fehlen. Es zählen die Sterne, die ab jetzt verdient und nicht ausgegeben werden: Was Philian für Spiele, Kleiderschrank, Heft-Farben, Olafs Land, Baustelle oder Sternwarte ausgibt, fehlt beim Sparziel. Beim Einlösen werden die gesparten Sterne abgezogen.</p>
     <div id="rewardNow" class="muted"></div>
     <div class="row"><label for="rewText">Was gibt es?</label><input type="text" id="rewText" maxlength="40" placeholder="z. B. Eis essen gehen"></div>
     <div class="row"><label for="rewGoal">Wie viele Sterne?</label><input type="number" id="rewGoal" min="10" max="2000" step="10" value="200" style="width:110px" inputmode="numeric"><button class="btn ghost" id="rewSave">Belohnung festlegen</button><button class="btn ghost" id="rewDone" hidden>Eingelöst, Ziel entfernen</button></div>
+  </div>
+  <div class="sheet">
+    <h3>Sterne-Bremse</h3>
+    <p class="muted">Neue Stufen bringen immer volle Sterne. Wiederholungen schon geschaffter Stufen bringen 1 ★ pro Aufgabe (Meister-Mix 2 ★), aber nur bei den ersten Runden am Tag. Danach rechnet Philian ohne Sterne weiter und bekommt den Hinweis, in welcher Stufe es wieder Sterne gibt. Es wird nichts abgezogen.</p>
+    <div class="row"><label for="bremseIn">Wiederholungen mit Sternen pro Tag</label><select id="bremseIn"><option value="0">keine</option><option value="1">1 Runde</option><option value="2">2 Runden</option><option value="3">3 Runden (empfohlen)</option><option value="5">5 Runden</option><option value="99">unbegrenzt (Bremse aus)</option></select></div>
+    <div id="bremseNow" class="muted"></div>
   </div>
   </div>
   <div class="ppane" data-pane="wache" hidden>
@@ -906,8 +913,17 @@ var KEY = 'philian-rechenheft-v1';
 /* Testmodus für Erwachsene: eigener Speicher, 999 Sterne, kein Abgleich. Endet beim Schließen des Tabs. */
 var TEST = false; try { TEST = sessionStorage.getItem('rechenheft-test') === '1'; } catch (e) {}
 if (TEST) KEY = KEY + '-test';
-var COST = 5, PASS = 8, LOW = 4, ROUND = 10, DAILY = 2, PAUSE_AT = 5;
+var COST = 8, PASS = 8, LOW = 4, ROUND = 10, DAILY = 2, PAUSE_AT = 5;
 function hKey(d) { d = new Date(d); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+/* Sterne-Bremse: Wiederholungen geschaffter Stufen und Meister-Mix bringen nur an den ersten n Runden pro Tag Sterne
+   (Wiederholung 1 ★ pro Aufgabe, Mix 2 ★). Danach ist es Training ohne Sterne. Neue Stufen bringen immer volle Sterne. */
+var BREMSE_STD = 3;
+function bremseN() { var b = S.bremse; return b && typeof b.n === 'number' ? b.n : BREMSE_STD; } // 99 = keine Bremse
+function repToday() { var k = hKey(Date.now()), n = 0; S.history.forEach(function (h) { if (h.rep && h.level !== 'test' && hKey(h.d) === k) n++; }); return n; }
+function starRule(k, lv, mix) {
+  var rep = !!mix || lv < S.levels[k] || !!S.mastered[k], left = Math.max(0, bremseN() - repToday());
+  return { rep: rep, free: rep && bremseN() < 99 && left <= 0, left: left };
+}
 function roundsToday() { var k = hKey(Date.now()), n = 0; S.history.forEach(function (h) { if (h.level !== 'test' && hKey(h.d) === k) n++; }); return n; }
 function dayStreak() { var days = {}; S.history.forEach(function (h) { days[hKey(h.d)] = 1; }); var n = 0, d = new Date(); if (!days[hKey(d)]) d.setDate(d.getDate() - 1); while (days[hKey(d)]) { n++; d.setDate(d.getDate() - 1); } return n; }
 function lastScore(theme, level) { for (var i = S.history.length - 1; i >= 0; i--) { var x = S.history[i]; if (x.theme === theme) return x.level === level ? x.score : null; } return null; }
@@ -934,11 +950,15 @@ function ensure() {
   S.best = merge({ caught: 0, chase: 0, crumbs: 0 }, S.best || {});
   if (!S.mastered) S.mastered = {};
   if (!S.history) S.history = [];
+  if (S.reward && S.reward.text && S.reward.ss == null) S.reward.ss = spentTotal(); // altes Sparziel: Ausgaben zählen ab jetzt
   wEnsure(); dEnsure();
 }
 function stars() { var t = 0; for (var k in S.dev) t += (S.dev[k].e || 0) - (S.dev[k].s || 0); return Math.max(0, t); }
 function addStars(n) { S.dev[DEV].e += n; }
 function spendStars(n) { S.dev[DEV].s += n; }
+/* Preise im Shop (Olafs Land, Sternwarte, Kleiderschrank, Heft-Farben, Sondersteine): die Tabellen enthalten die alten Grundpreise,
+   teurer() rechnet sie hoch: 1 → 2, 2 → 4, 3 → 5, ab 4 doppelt. So muss man für Besonderes länger sparen. */
+function teurer(p) { return p <= 0 ? 0 : p <= 2 ? p * 2 : p === 3 ? 5 : p * 2; }
 function touch(k) { S.at['lv-' + k] = Date.now(); }
 
 function mergeState(L, R) {
@@ -952,6 +972,7 @@ function mergeState(L, R) {
   if ((Ra.name || 0) > (o.at.name || 0)) { o.name = R.name; o.at.name = Ra.name; }
   if ((Ra.silben || 0) > (o.at.silben || 0)) { o.silben = R.silben; o.at.silben = Ra.silben; }
   if ((Ra.reward || 0) > (o.at.reward || 0)) { o.reward = R.reward || null; o.at.reward = Ra.reward; }
+  if ((Ra.bremse || 0) > (o.at.bremse || 0)) { o.bremse = R.bremse || null; o.at.bremse = Ra.bremse; }
   if ((Ra.island || 0) > (o.at.island || 0) && R.island) { o.island = R.island; o.at.island = Ra.island; }
   if ((Ra.sky || 0) > (o.at.sky || 0) && R.sky) { o.sky = R.sky; o.at.sky = Ra.sky; }
   wMerge(o, R);
@@ -1545,22 +1566,31 @@ function openLearn(k, pickLv) {
   if (mix) {
     $('learnBadge').textContent = T.name + ' · Meister-Mix';
     $('learnTitle').textContent = 'Meister-Mix: alles gemischt';
-    $('learnBody').innerHTML = '<p>Du hast alle Stufen geschafft! Im Meister-Mix kommen Aufgaben aus allen ' + n + ' Stufen durcheinander. Zeig, was du kannst! Jede richtige Aufgabe bringt 2 Sterne.</p><p class="muted">Tippe oben auf eine Stufe, um ihre Erklärung nochmal zu sehen.</p>';
+    $('learnBody').innerHTML = '<p>Du hast alle Stufen geschafft! Im Meister-Mix kommen Aufgaben aus allen ' + n + ' Stufen durcheinander. Zeig, was du kannst!</p><p class="muted">Tippe oben auf eine Stufe, um ihre Erklärung nochmal zu sehen.</p>';
   } else {
     $('learnBadge').textContent = T.name + ' · Stufe ' + lv + (lv < cur || S.mastered[k] ? ' (Wiederholung)' : '');
     $('learnTitle').textContent = L.title;
     $('learnBody').innerHTML = L.explain;
   }
+  $('learnBody').innerHTML += starInfoHTML(k, lv, mix);
   go('learn');
 }
+function starInfoHTML(k, lv, mix) {
+  var r = starRule(k, lv, mix), cur = S.levels[k], up = !S.mastered[k] && lv < cur, t;
+  if (!r.rep) t = '<span class="ico">★</span> Neue Stufe: Hier gibt es ' + (lv >= 3 ? '2 Sterne' : '1 Stern') + ' pro Aufgabe, für Profi-Aufgaben einen extra.';
+  else if (r.free) t = '<span class="ico">💪</span> Heute hast du schon ' + bremseN() + (bremseN() === 1 ? ' Wiederholung' : ' Wiederholungen') + ' mit Sternen geschafft. Diese Runde ist Training ohne Sterne. Das macht dich trotzdem schlauer!' + (up ? ' Neue Sterne gibt es in <b>Stufe ' + cur + '</b>.' : ' Neue Sterne gibt es in einem anderen Thema oder morgen wieder.');
+  else t = '<span class="ico">🔁</span> ' + (mix ? 'Meister-Mix: 2 Sterne pro Aufgabe.' : 'Wiederholung: 1 Stern pro Aufgabe.') + (bremseN() < 99 ? ' Heute noch ' + (r.left === 1 ? 'eine Runde' : r.left + ' Runden') + ' mit Sternen.' : '') + (up ? ' Mehr Sterne gibt es in <b>Stufe ' + cur + '</b>.' : '');
+  return '<p class="starinfo">' + t + '</p>';
+}
 $('learnSpeak').addEventListener('click', function () {
-  var d = document.createElement('div'); d.innerHTML = $('learnBody').innerHTML.replace(/<br\s*\/?>/g, '. ').replace(/<\/p>/g, '. ');
+  var d = document.createElement('div'); d.innerHTML = $('learnBody').innerHTML.replace(/<br\s*\/?>/g, '. ').replace(/<\/p>/g, '. '); d.querySelectorAll('.ico').forEach(function (x) { x.remove(); }); // Symbole nicht vorlesen
   speak(($('learnTitle').textContent + '. ' + d.textContent).replace(/−/g, ' minus ').replace(/·/g, ' mal ').replace(/×/g, ' mal ').replace(/€/g, ' Euro').replace(/\bct\b/g, ' Cent').replace(/=/g, ' gleich ').replace(/\s*\.\s*\./g, '.'), true);
 });
 $('lvChips').addEventListener('click', function (e) { var b = e.target.closest('[data-lv]'); if (b && Q) { var v = b.getAttribute('data-lv'); openLearn(Q.theme, v === 'mix' ? 'mix' : +v); } });
 $('startQuiz').addEventListener('click', function () {
   Q.tasks = []; Q.seen = {}; Q.i = 0; Q.results = []; Q.wrong = []; Q.input = '';
   Q.dyn = Q.level; Q.earned = 0; Q.streak = 0; Q.miss = 0;
+  var sr = starRule(Q.theme, Q.level, Q.mix); Q.rep = sr.rep; Q.free = sr.free;
   go('quiz'); renderTask();
 });
 $('quitQuiz').addEventListener('click', function () { go('home'); });
@@ -1738,11 +1768,11 @@ function check(ok, given) {
   var first = !t.tried; Q.locked = true; Q.results[Q.i] = ok ? (first ? true : 'help') : false;
   if (first) adapt(ok);
   if (ok) {
-    var gain = first ? taskStars(t) : 1; Q.earned = (Q.earned || 0) + gain; addStars(gain); save();
+    var gain = first ? taskStars(t) : (Q.free ? 0 : 1); Q.earned = (Q.earned || 0) + gain; addStars(gain); save();
     var run = 0; for (var ri = Q.i; ri >= 0 && Q.results[ri] === true; ri--) run++;
     var praise = first ? (run === 3 ? 'Drei richtig hintereinander!' : run === 5 ? 'Fünf richtig hintereinander! Wow!' : pick(PRAISE)) : pick(['Jetzt stimmt’s!', 'Mit dem Tipp geschafft!', 'Genau, so geht’s!']);
     if (!first) Q.wrong.push({ q: t.type === 'clock' ? 'Uhr ' + digital(t.h, t.m) : t.type === 'wall' ? (t.wq || 'Zahlenmauer') : t.story || t.type !== 'num' ? t.q : t.q + ' ?', given: t.firstGiven, answer: t.type === 'clock' ? digital(t.h, t.m) : t.answer, help: 1 });
-    $('fb').innerHTML = '<div class="feedback good"><strong>' + praise + ' +' + gain + ' ★</strong></div>'; renderProgress(); var q0 = Q, i0 = Q.i; setTimeout(function () { if (Q === q0 && Q.i === i0) nextTask(); }, first ? 900 : 1300);
+    $('fb').innerHTML = '<div class="feedback good"><strong>' + praise + (gain ? ' +' + gain + ' ★' : '') + '</strong></div>'; renderProgress(); var q0 = Q, i0 = Q.i; setTimeout(function () { if (Q === q0 && Q.i === i0) nextTask(); }, first ? 900 : 1300);
   }
   else {
     if (t.type === 'clock' || t.type === 'pick') { var btns = $('choices').children; for (var bi = 0; bi < btns.length; bi++) if (t.opts[bi].ok) btns[bi].classList.add('right'); }
@@ -1757,12 +1787,13 @@ function check(ok, given) {
     var wh = document.querySelector('.wallhelp'); if (wh) wh.hidden = true;
   }
 }
-/* Sterne pro Aufgabe: Stufe 1-2 = 1, Stufe 3-4 = 2, Profi-Aufgabe (über der eigenen Stufe) +1 */
-function taskStars(t) { return Q.mix ? 2 : (t.lv >= 3 ? 2 : 1) + (t.lv > Q.level ? 1 : 0); } // Meister-Mix: jede Aufgabe 2 Sterne
+/* Sterne pro Aufgabe: neue Stufe 1-2 = 1, Stufe 3-4 = 2, Profi-Aufgabe (über der eigenen Stufe) +1.
+   Meister-Mix 2, Wiederholung einer geschafften Stufe 1, über der Sterne-Bremse 0. */
+function taskStars(t) { if (Q.free) return 0; if (Q.mix) return 2; if (Q.rep) return 1; return (t.lv >= 3 ? 2 : 1) + (t.lv > Q.level ? 1 : 0); }
 function nextTask() { if (!Q || $('v-quiz').hidden) return; Q.i++; if (Q.i >= ROUND) finish(); else renderTask(); }
 
 function finish() {
-  var correct = Q.results.filter(function (x) { return x === true; }).length, helped = Q.results.filter(function (x) { return x === 'help'; }).length, bonus = correct === ROUND ? 3 : 0, T = THEMES[Q.theme], got = (Q.earned || 0) + bonus;
+  var correct = Q.results.filter(function (x) { return x === true; }).length, helped = Q.results.filter(function (x) { return x === 'help'; }).length, bonus = correct === ROUND && !Q.free ? (Q.rep && !Q.mix ? 1 : 3) : 0, T = THEMES[Q.theme], got = (Q.earned || 0) + bonus;
   addStars(bonus);
   var msg = '', next = null;
   if (Q.mix) msg = correct >= PASS ? 'Meister-Mix geschafft! Du kannst alles aus „' + T.name + '“.' : 'Der Meister-Mix ist knifflig. Übe einzelne Stufen und versuch es nochmal!';
@@ -1775,7 +1806,7 @@ function finish() {
     S.levels[Q.theme] = Q.level - 1; S.mastered[Q.theme] = false; touch(Q.theme);
     msg = 'Wir üben noch einmal <strong>' + T.levels[Q.level - 2].title + '</strong>. Dann klappt die nächste Stufe bestimmt!';
   } else msg = 'Für die nächste Stufe brauchst du ' + PASS + ' richtige Aufgaben. Du schaffst das!';
-  S.history.push({ d: new Date().toISOString(), theme: Q.theme, level: Q.mix ? 'Mix' : Q.level, score: correct, help: helped || undefined, wrong: Q.wrong });
+  S.history.push({ d: new Date().toISOString(), theme: Q.theme, level: Q.mix ? 'Mix' : Q.level, score: correct, help: helped || undefined, rep: Q.rep ? 1 : undefined, free: Q.free ? 1 : undefined, wrong: Q.wrong });
   var today = roundsToday(), dayBonus = today === DAILY ? 2 : 0; if (dayBonus) { addStars(dayBonus); got += dayBonus; }
   if (S.history.length > 200) S.history = S.history.slice(-200);
   save();
@@ -1784,8 +1815,10 @@ function finish() {
   $('resScore').textContent = correct + ' / ' + ROUND;
   var st = ''; for (var i = 0; i < Math.min(got, 30); i++) st += '<span style="animation-delay:' + i * 70 + 'ms">★</span>';
   $('resStars').innerHTML = st;
-  $('resEarned').innerHTML = (helped ? 'Dazu hast du <b>' + helped + (helped === 1 ? ' Aufgabe' : ' Aufgaben') + ' mit Tipp</b> geschafft. ' : '') + 'Du hast <b>' + got + ' Sterne</b> gesammelt' + (bonus ? ' (mit 3 Bonus-Sternen)' : '') + (dayBonus ? '. Tagesziel geschafft: <b>+2 ★</b>' : '') + '. Jetzt hast du <b>' + stars() + '</b>.';
+  $('resEarned').innerHTML = (helped ? 'Dazu hast du <b>' + helped + (helped === 1 ? ' Aufgabe' : ' Aufgaben') + ' mit Tipp</b> geschafft. ' : '') + (Q.free ? 'Das war Training ohne Sterne. Super, dass du übst!' + (dayBonus ? ' Tagesziel geschafft: <b>+2 ★</b>.' : '') : 'Du hast <b>' + got + ' Sterne</b> gesammelt' + (bonus ? ' (mit ' + bonus + ' Bonus-' + (bonus === 1 ? 'Stern' : 'Sternen') + ')' : '') + (dayBonus ? '. Tagesziel geschafft: <b>+2 ★</b>' : '') + '.') + ' Jetzt hast du <b>' + stars() + '</b>.' +
+    (Q.rep && !Q.mix && !S.mastered[Q.theme] && Q.level < S.levels[Q.theme] ? ' Mehr Sterne gibt es in deiner <b>Stufe ' + S.levels[Q.theme] + '</b>!' : '');
   $('resLevel').innerHTML = msg;
+  if (!next && Q.rep && !Q.mix && !S.mastered[Q.theme] && Q.level < S.levels[Q.theme]) next = S.levels[Q.theme]; // Anreiz: zurück zur eigenen Stufe
   Q.next = next; $('resAgain').textContent = next === 'mix' ? 'Zum Meister-Mix ★' : next ? 'Weiter mit Stufe ' + next : 'Nochmal üben';
   $('resMascot').innerHTML = owlSVG(correct >= PASS ? 'cheer' : correct >= 5 ? 'wink' : 'happy');
   $('resBubble').textContent = resultLine(correct) + (today >= PAUSE_AT ? ' Du hast heute schon ' + today + ' Runden geschafft. Zeit für eine Pause? Dein Kopf merkt sich mehr, wenn du ausruhst.' : '');
@@ -2292,9 +2325,12 @@ function resultLine(correct) {
 
 /* ---------- Belohnung der Eltern ---------- */
 function earnedTotal() { var t = 0; for (var k in S.dev) t += S.dev[k].e || 0; return t; }
+function spentTotal() { var t = 0; for (var k in S.dev) t += S.dev[k].s || 0; return t; }
+/* Sparziel: zählt verdiente minus ausgegebene Sterne seit dem Festlegen (start = verdient, ss = ausgegeben zu dem Zeitpunkt).
+   Höchstens so viele, wie gerade da sind. Beim Einlösen werden die Sterne abgezogen. */
 function rewardState() {
   var r = S.reward; if (!r || !r.text) return null;
-  var have = Math.max(0, earnedTotal() - (r.start || 0));
+  var have = Math.max(0, Math.min(stars(), earnedTotal() - (r.start || 0) - (spentTotal() - (r.ss != null ? r.ss : spentTotal()))));
   return { text: r.text, goal: r.goal, have: Math.min(have, r.goal), done: have >= r.goal };
 }
 function renderReward() {
@@ -2302,7 +2338,8 @@ function renderReward() {
   if (!r) { el.hidden = true; return; }
   el.hidden = false;
   el.innerHTML = '<span class="level">Deine Belohnung</span><strong>' + esc(r.text) + '</strong><div class="bar"><i style="width:' + Math.round(r.have / r.goal * 100) + '%"></i></div><span>' +
-    (r.done ? 'Geschafft! Sag Mama oder Papa Bescheid. ★' : r.have + ' von ' + r.goal + ' Sternen · noch ' + (r.goal - r.have)) + '</span>';
+    (r.done ? 'Geschafft! Sag Mama oder Papa Bescheid. ★' : r.have + ' von ' + r.goal + ' Sternen · noch ' + (r.goal - r.have)) + '</span>' +
+    (r.done ? '' : '<span class="muted">Tipp: Was du im Spielzimmer ausgibst, fehlt beim Sparen.</span>');
 }
 
 /* ---------- Abzeichen ---------- */
@@ -2454,7 +2491,7 @@ var PRICE = { '9': 15, '0': 20, T: 20, U: 25, S: 30, V: 40, o: 10, x: 10, m: 10,
 var PRICE2 = { 'ä': 8, 'è': 10, 'ç': 12, 'ö': 15, 'ã': 20, 'é': 20, 'ü': 25, 'ß': 25, 'à': 25, 'á': 25, 'â': 30, 'å': 40, 'æ': 50,
   'ù': 2, 'ú': 2, 'ý': 3, 'ó': 2, 'ò': 3, 'ô': 3, 'õ': 3, 'ê': 5, W: 8, 'ì': 8, Z: 10, 'í': 10, X: 12, 'ï': 12, 'ñ': 12, Y: 15, 'ë': 15, 'î': 25 };
 for (var pk in PRICE2) PRICE[pk] = PRICE2[pk];
-MATS.forEach(function (m) { m.p = PRICE[m.k] || 1; });
+MATS.forEach(function (m) { m.p = teurer(PRICE[m.k] || 1); });
 var ZONES = [
   { id: 'insel', name: 'Insel', terrain: ['WWSGGGGGGGGGGSWW', 'WWWEEEEEEEEEEWWW'], res: 'MNOPRQ', water: 'P', hi: 'Hier hat alles angefangen. Ein Haus mit Tür und Dach lockt Tiere an.' },
   { id: 'hof', name: 'Bauernhof', terrain: ['GGGGGFFFFFFGGGGG', 'EEEEEEEEEEEEEEEE'], res: 'BCDEFA', water: 'P', hi: 'Auf dem Bauernhof wohnen gern Kuh, Schwein, Schaf, Huhn und Pferd. Bau einen Stall mit Tür und Dach!' },
@@ -2673,7 +2710,8 @@ var SKY_CON = [
   { k: 'kwagen', name: 'Kleiner Wagen', s: 35, d: 1, pts: [[8, 10], [24, 18], [40, 26], [55, 34], [60, 58], [90, 60], [86, 36]], e: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 3]] },
   { k: 'zwillinge', name: 'Zwillinge', s: 100, d: -5, pts: [[20, 5], [55, 8], [25, 40], [60, 40], [22, 72], [62, 72]], e: [[0, 1], [0, 2], [2, 4], [1, 3], [3, 5]] }];
 var SKY_SLOTS = [[6, 6], [90, 4], [174, 8], [258, 4], [8, 66], [92, 64], [176, 68], [260, 64]];
-var CON_COST = 5;
+var CON_COST = 10;
+[SKY_BUILD, SKY_PLANETS, SKY_EXTRAS].forEach(function (l) { l.forEach(function (x) { if (x.p) x.p = teurer(x.p); }); });
 var SV = { cat: 'bau', con: null, step: 0, wrong: -1, msg: '', mood: 'happy', catchFx: 0 };
 function skyEnsure() {
   if (!S.sky || typeof S.sky !== 'object') { S.sky = { own: {}, con: {}, shoot: {} }; if (!S.at.sky) S.at.sky = 1; } // so alt wie möglich: ein echter Stand anderswo gewinnt
@@ -2890,7 +2928,7 @@ function celebrate() {
 // S.dev[…].b zählt weiter alle gesetzten Steine. Ältere Spielstände (Steine liefen der Reihe nach) werden übernommen.
 var BRICK = { r: ['#d64541', '#9e2f2c'], w: ['#a8dcf5', '#5fa6cc'], d: ['#8a5a3b', '#5e3c26'], y: ['#3d4b63', '#252f40'], s: ['#9aa3ad', '#6b737c'], f: ['#f4f4f4', '#b9b9b9'], l: ['#ffd23f', '#c99a0a'], b: ['#2f6fd6', '#1d4b99'], k: ['#2f9e5b', '#1e6b3c'], o: ['#f08a24', '#b05e10'], v: ['#8e5bd6', '#5f3a9a'], p: ['#f28dbb', '#c0567f'], g: ['#f5c518', '#a77d00', 1], e: ['#3fd6cf', '#168a83', 1] };
 // Besondere Steine kosten mehr Sterne als normale (1 Stern).
-var BPRICE = { g: 5, e: 3 };
+var BPRICE = { g: 10, e: 5 }; // Gold- und Kristallsteine, normale Steine 1 Stern
 function bPrice(c) { return BPRICE[c] || 1; }
 function planCost(pl) { return planBricks(pl).reduce(function (t, b) { return t + bPrice(b.c); }, 0); }
 var BCOL = { r: ['Rot', 'roter'], w: ['Hellblau', 'hellblauer'], d: ['Braun', 'brauner'], y: ['Dunkelgrau', 'dunkelgrauer'], s: ['Grau', 'grauer'], f: ['Weiß', 'weißer'], l: ['Gelb', 'gelber'], b: ['Blau', 'blauer'], k: ['Grün', 'grüner'], o: ['Orange', 'oranger'], v: ['Lila', 'lila'], p: ['Rosa', 'rosa'], g: ['Gold', 'goldener'], e: ['Kristall', 'Kristall'] };
@@ -3381,8 +3419,10 @@ document.querySelector('.ptabs').addEventListener('click', function (e) { var b 
 function renderParents() {
   showPTab(lsGet(PTAB_KEY) || 'rechen');
   var rw = rewardState();
-  $('rewardNow').innerHTML = rw ? 'Aktuell: <strong>' + esc(rw.text) + '</strong> bei ' + rw.goal + ' Sternen · ' + rw.have + ' verdient' + (rw.done ? ' · <strong>erreicht!</strong>' : '') : 'Noch keine Belohnung festgelegt.';
-  $('rewDone').hidden = !rw;
+  $('rewardNow').innerHTML = rw ? 'Aktuell: <strong>' + esc(rw.text) + '</strong> bei ' + rw.goal + ' Sternen · ' + rw.have + ' gespart' + (rw.done ? ' · <strong>erreicht!</strong>' : '') : 'Noch keine Belohnung festgelegt.';
+  $('rewDone').hidden = !rw; if (rw) $('rewDone').textContent = 'Eingelöst, Ziel entfernen' + (rw.have ? ' (zieht ' + rw.have + ' ★ ab)' : '');
+  $('bremseIn').value = String(bremseN()); var rt = repToday(), ft = S.history.filter(function (h) { return h.free && h.level !== 'test' && hKey(h.d) === hKey(Date.now()); }).length;
+  $('bremseNow').textContent = 'Heute: ' + rt + (rt === 1 ? ' Wiederholungsrunde' : ' Wiederholungsrunden') + (ft ? ', davon ' + ft + ' ohne Sterne' : '') + '.';
   $('nameIn').value = S.name; $('codeIn').value = SYNC.code; $('silbenIn').checked = S.silben !== false; $('dressIn').checked = !dEnsure().off; $('skinIn').checked = !dEnsure().skinOff; showSync();
   var h = '<div class="sheet"><h3>Überblick</h3><div class="kv"><div><span>Sterne</span><strong>' + stars() + '</strong></div><div><span>Runden gesamt</span><strong>' + S.history.length + '</strong></div><div><span>Rudi erwischt</span><strong>' + (S.best.caught || 0) + '×</strong></div><div><span>Bausteine gesetzt</span><strong>' + bricksPlaced() + '</strong></div><div><span>Schnellste Keks-Jagd</span><strong>' + (S.best.chase ? S.best.chase + ' s' : '–') + '</strong></div><div><span>Krümel-Rekord</span><strong>' + (S.best.crumbs || '–') + '</strong></div><div><span>Kleiderschrank</span><strong>' + Object.keys(dEnsure().own).length + ' Teile' + (dEnsure().off ? ' (ausgeschaltet)' : '') + '</strong></div><div><span>Sternwarte</span><strong>' + skyBuilt() + ' / ' + SKY_BUILD.length + '</strong></div><div><span>Sternschnuppen-Serie</span><strong>' + (skyEnsure().shoot.streak || 0) + ' (beste ' + (S.sky.shoot.best || 0) + ')</strong></div><div><span>Zahlendreher (letzte 20 Runden)</span><strong>' + swapCount() + '</strong></div></div><p class="muted">Zahlendreher heißt: Zehner und Einer vertauscht, z. B. 34 statt 43. Philian bekommt dann einen Tipp mit Stangen und Würfeln. Üben lässt sich das im Thema „Zehner und Einer“.</p></div>';
   Object.keys(THEMES).forEach(function (k) {
@@ -3450,9 +3490,10 @@ $('updBtn').addEventListener('click', function () {
 $('rewSave').addEventListener('click', function () {
   var t = $('rewText').value.trim(), g = parseInt($('rewGoal').value, 10);
   if (!t || !(g >= 10)) { $('rewardNow').textContent = 'Bitte eine Belohnung und mindestens 10 Sterne eintragen.'; return; }
-  S.reward = { text: t, goal: Math.min(g, 5000), start: earnedTotal() }; S.at.reward = Date.now(); save(); $('rewText').value = ''; renderParents();
+  S.reward = { text: t, goal: Math.min(g, 5000), start: earnedTotal(), ss: spentTotal() }; S.at.reward = Date.now(); save(); $('rewText').value = ''; renderParents();
 });
-$('rewDone').addEventListener('click', function () { S.reward = null; S.at.reward = Date.now(); save(); renderParents(); });
+$('rewDone').addEventListener('click', function () { var rw = rewardState(); if (rw && rw.have) spendStars(rw.have); S.reward = null; S.at.reward = Date.now(); save(); renderParents(); }); // gesparte Sterne werden beim Einlösen verbraucht
+$('bremseIn').addEventListener('change', function () { S.bremse = { n: parseInt($('bremseIn').value, 10) }; S.at.bremse = Date.now(); save(); renderParents(); });
 $('silbenIn').addEventListener('change', function () { S.silben = $('silbenIn').checked; S.at.silben = Date.now(); save(); });
 
 /* ---------- Hausaufgaben-Wache mit Polizeihund Paul ----------
@@ -4366,6 +4407,7 @@ var DRESS = [
   { id: 'fledermaus', name: 'Fledermaus-Umhang', figs: 'op', slots: ['koerper'], season: 'halloween', price: 12, cape: '#4a2f7a', edge: 1 },
   { id: 'kuerbisse', name: 'Kürbisnacht', figs: 'op', slots: ['bg'], season: 'halloween', price: 12, bg: 'kuerbisse' }
 ];
+DRESS.forEach(function (it) { if (it.price) it.price = teurer(it.price); }); // Preise siehe teurer()
 var D_BY = {}; DRESS.forEach(function (d) { D_BY[d.id] = d; });
 var D_REWARD = {
   perfect1: ['1 Runde mit 10 von 10', function () { return perfectCount() >= 1; }],
@@ -4509,6 +4551,7 @@ var SKINS = [
     pal: { paper: '#f5fbef', grid: '#dcebcd', ink: '#1c2a17', muted: '#475840', margin: '#e0527a', accent: '#2d6e35', 'accent-ink': '#ffffff', 'accent-soft': '#e1f1dc', 'accent-dark': '#1a4620', line: '#c7deb8' },
     pat: '<g fill="rgba(224,82,122,.12)"><circle cx="24" cy="24" r="5"/><circle cx="32" cy="24" r="5"/><circle cx="28" cy="18" r="5"/><circle cx="28" cy="30" r="5"/></g><g fill="rgba(45,110,53,.10)"><circle cx="88" cy="88" r="5"/><circle cx="96" cy="88" r="5"/><circle cx="92" cy="82" r="5"/><circle cx="92" cy="94" r="5"/></g>' }
 ];
+SKINS.forEach(function (k) { if (k.price) k.price = teurer(k.price); }); // Heft-Farben: 40–60 ★
 var SK_BY = {}; SKINS.forEach(function (k) { SK_BY[k.id] = k; });
 function skPal(k) { var p = {}, x; if (!k.dark) for (x in SK_LIGHT) p[x] = SK_LIGHT[x]; for (x in k.pal) p[x] = k.pal[x]; return p; }
 (function () {
